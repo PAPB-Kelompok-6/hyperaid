@@ -1,5 +1,6 @@
 package com.kelompok6.hyperaid.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,12 +41,22 @@ fun SplashScreen(
         composition, iterations = LottieConstants.IterateForever
     )
     var showLogo by remember { mutableStateOf(false) }
+
     // Jalankan efek sekali: delay lalu panggil onFinished()
     LaunchedEffect(Unit) {
-        delay(delayMillis)
-        showLogo = true
-        delay(logoDelayMillis)
-        onFinished()
+        try {
+            Log.d("SplashScreen", "LaunchedEffect started - will delay $delayMillis ms")
+            delay(delayMillis)
+            showLogo = true
+            Log.d("SplashScreen", "showLogo=true - will delay $logoDelayMillis ms before finishing")
+            delay(logoDelayMillis)
+            Log.d("SplashScreen", "Calling onFinished() now")
+            onFinished()
+        } catch (t: Throwable) {
+            Log.e("SplashScreen", "Exception in splash LaunchedEffect", t)
+            // rethrow if you want crash to surface
+            throw t
+        }
     }
     Box(
         modifier = Modifier
