@@ -9,16 +9,23 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.kelompok6.hyperaid.ui.screens.SplashScreen
+import com.kelompok6.hyperaid.ui.screens.start.LoginScreen
+import com.kelompok6.hyperaid.ui.screens.start.RegisterScreen
 
 @Composable
 fun RootNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = Routes.SPLASH) {
         composable(Routes.SPLASH) {
             SplashScreen(onFinished = {
-                // Navigate to HOME (compose MainScaffold)
-                navController.navigate(Routes.HOME) {
-                    popUpTo(Routes.SPLASH) { inclusive = true }
-                    launchSingleTop = true
+                // if user session is not valid, navigate to login page
+                // else, navigate to home
+                if (true) {
+                    navController.navigate(Routes.LOGIN)
+                } else {
+                    navController.navigate(Routes.HOME) {
+                        popUpTo(Routes.SPLASH) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 }
             })
         }
@@ -26,6 +33,16 @@ fun RootNavGraph(navController: NavHostController) {
         // Show the main scaffold when HOME route is requested at root level
         composable(Routes.HOME) {
             MainScaffold() // MainScaffold hosts the bottom bar and internal NavHost
+        }
+
+        // ======================================
+        // AUTH ROUTES
+        // ======================================
+        composable(Routes.LOGIN) {
+            LoginScreen(navController)
+        }
+        composable(Routes.REGISTER) {
+            RegisterScreen(navController)
         }
     }
 }
