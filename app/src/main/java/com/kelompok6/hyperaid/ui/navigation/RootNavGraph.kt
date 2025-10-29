@@ -20,7 +20,10 @@ fun RootNavGraph(navController: NavHostController) {
                 // if user session is not valid, navigate to login page
                 // else, navigate to home
                 if (true) {
-                    navController.navigate(Routes.LOGIN)
+                    navController.navigate(Routes.LOGIN) {
+                        popUpTo(Routes.SPLASH) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 } else {
                     navController.navigate(Routes.HOME) {
                         popUpTo(Routes.SPLASH) { inclusive = true }

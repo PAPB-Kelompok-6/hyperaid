@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "743852926449",
+    "project_id": "hyperaid-b7647",
+    "storage_bucket": "hyperaid-b7647.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:743852926449:android:8f4401c29cc52dada9d050",
+        "android_client_info": {
+          "package_name": "com.kelompok6.hyperaid"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "743852926449-1fi133tas9v5uq1aliu9s4qckukd7k84.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA85uQxF5bpW0y0HSiO5ID3tf3Hxr_jn8I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "743852926449-1fi133tas9v5uq1aliu9s4qckukd7k84.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

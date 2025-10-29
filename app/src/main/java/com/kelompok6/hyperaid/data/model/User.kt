@@ -4,13 +4,11 @@ import com.kelompok6.hyperaid.data.enum.Gender
 
 data class User (
     val id: String,
-    val email: String,
-    val password: String,
-    val age: Int,
-    val gender: Gender,
+    val fullName: String,
 
-    val avatar: String = "",
-    val name: String = "",
-    val address: String = "",
+    val gender: Gender?,
+    val age: Int?,
+    val avatar: String?,
+    val address: String?,
     val languagePreference: String = "id_en",
 )
