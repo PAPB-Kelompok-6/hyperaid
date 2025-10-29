@@ -125,14 +125,17 @@ fun MainBottomBar(navController: NavHostController, modifier: Modifier = Modifie
                         contentDescription = item.label,
                         tint = Color.Unspecified,
                         modifier = Modifier
-                            .size(if (isSelected) 20.dp else 20.dp) // <-- increased sizes
+                            .size(if (isSelected) 24.dp else 24.dp) // <-- increased sizes
                             .scale(scale)
+                            .padding(
+                                top = 5.dp
+                            )
                     )
                     Text(
                         text = item.label,
                         style = MaterialTheme.typography.labelSmall,
                         color = labelColor,
-                        modifier = Modifier.padding(top = 6.dp) // slightly larger gap
+                        modifier = Modifier.padding(top = 4.dp) // slightly larger gap
                     )
                 }
             }
