@@ -87,7 +87,10 @@ fun LoginScreen(navController: NavHostController) {
                 Label("Don't have an account?")
                 Text(
                     modifier = Modifier.clickable() {
-                        navController.navigate("Register")
+                        navController.navigate("Register") {
+                            popUpTo("Login") { inclusive = true }
+                            launchSingleTop = true
+                        }
                     },
                     text = "Register",
                     style = MaterialTheme.typography.bodySmall,
@@ -157,7 +160,12 @@ fun LoginField(navController: NavController) {
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ),
             shape = RoundedCornerShape(25f),
-            onClick = { navController.navigate("Home") },
+            onClick = {
+                navController.navigate("Home") {
+                    popUpTo("Login") { inclusive = true }
+                    launchSingleTop = true
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
 
             ) {

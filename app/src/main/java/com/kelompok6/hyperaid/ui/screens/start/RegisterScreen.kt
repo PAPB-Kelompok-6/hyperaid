@@ -81,7 +81,10 @@ fun RegisterScreen(navController: NavHostController) {
                 Label("Have an account?")
                 Text(
                     modifier = Modifier.clickable() {
-                        navController.navigate("Login")
+                        navController.navigate("Login") {
+                            popUpTo("Register") { inclusive = true }
+                            launchSingleTop = true
+                        }
                     },
                     text = "Login",
                     style = MaterialTheme.typography.bodySmall,
@@ -149,7 +152,12 @@ fun RegisterField(navController: NavController) {
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ),
             shape = RoundedCornerShape(25f),
-            onClick = { navController.navigate("Login") },
+            onClick = {
+                navController.navigate("Login") {
+                    popUpTo("Register") { inclusive = true }
+                    launchSingleTop = true
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Label("REGISTER")
