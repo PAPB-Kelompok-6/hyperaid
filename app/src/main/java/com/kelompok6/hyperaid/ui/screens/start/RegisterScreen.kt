@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -18,11 +19,14 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,22 +38,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.material3.SnackbarHostState
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.kelompok6.hyperaid.R
 
 @Composable
-fun RegisterScreen(navController: NavHostController) {
+fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel = viewModel()) {
     val scrollState = rememberScrollState()
+    val state = viewModel.registerState
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(state) {
+        if (state is RegisterState.Error) {
+            snackbarHostState.showSnackbar(state.message)
+            viewModel.registerState = RegisterState.Idle
+        }
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp, 50.dp),
-        contentAlignment = Alignment.Center
+            .padding(20.dp, 50.dp)
     ) {
         Column(
-            modifier = Modifier.verticalScroll(scrollState),
+            modifier = Modifier
+                .verticalScroll(scrollState)
+                .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -61,18 +77,17 @@ fun RegisterScreen(navController: NavHostController) {
 
             Text(
                 text = "Register to your account and manage your health right away!",
-                modifier = Modifier
-                    .padding(20.dp, 10.dp),
-                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(20.dp, 10.dp),
+                style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Normal,
                 textAlign = TextAlign.Center
             )
 
-            RegisterField(navController)
+            RegisterField(navController, viewModel, snackbarHostState)
             OrDivider()
             LoginOAuth(navController)
 
-            Spacer(modifier = Modifier.padding(0.dp, 25.dp))
+            Spacer(modifier = Modifier.height(25.dp))
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -80,23 +95,33 @@ fun RegisterScreen(navController: NavHostController) {
             ) {
                 Label("Have an account?")
                 Text(
-                    modifier = Modifier.clickable() {
+                    text = "Login",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.clickable {
                         navController.navigate("Login") {
                             popUpTo("Register") { inclusive = true }
                             launchSingleTop = true
                         }
-                    },
-                    text = "Login",
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Bold,
+                    }
                 )
             }
         }
+
+        if (state is RegisterState.Loading) {
+            LoadingFullscreen()
+        }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
 
+
 @Composable
-fun RegisterField(navController: NavController) {
+fun RegisterField(navController: NavController, viewModel: AuthViewModel, snackbarHostState: SnackbarHostState) {
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -144,23 +169,32 @@ fun RegisterField(navController: NavController) {
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 10.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         Button(
+            onClick = {
+                if (password != confirmPassword) {
+                    viewModel.showAuthError("Passwords do not match")
+                } else {
+                    viewModel.register(fullName, email, password)
+                }
+            },
+            shape = RoundedCornerShape(25f),
+            modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
-            ),
-            shape = RoundedCornerShape(25f),
-            onClick = {
-                navController.navigate("Login") {
-                    popUpTo("Register") { inclusive = true }
-                    launchSingleTop = true
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
+            )
         ) {
             Label("REGISTER")
+        }
+
+        if (viewModel.registerState is RegisterState.Success) {
+            LaunchedEffect(Unit) {
+                navController.navigate("home") {
+                    popUpTo("register") { inclusive = true }
+                }
+            }
         }
     }
 }
