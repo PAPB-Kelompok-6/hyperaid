@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -77,11 +78,13 @@ fun MainBottomBar(navController: NavHostController, modifier: Modifier = Modifie
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                // add navigationBarsPadding so content isn't cramped against system nav
+                .navigationBarsPadding()
                 .padding( // use the 4-edges overload
                     start = 12.dp,
-                    top = 12.dp,
+                    top = 15.dp,
                     end = 12.dp,
-                    bottom = 30.dp
+                    bottom = 15.dp // increased bottom padding for more separation from system nav
                 ),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -89,9 +92,9 @@ fun MainBottomBar(navController: NavHostController, modifier: Modifier = Modifie
             bottomItems.forEach { item ->
                 val isSelected = currentRoute == item.route
 
-                // animated scale for icon
+                // animated scale for icon (subtle pop)
                 val scale by animateFloatAsState(
-                    targetValue = if (isSelected) 1.18f else 1f,
+                    targetValue = if (isSelected) 1f else 1f,
                     animationSpec = tween(durationMillis = 220)
                 )
 
@@ -116,11 +119,14 @@ fun MainBottomBar(navController: NavHostController, modifier: Modifier = Modifie
                         }
                         .animateContentSize()
                 ) {
+                    // increase icon size so it's more visible
                     Icon(
                         painter = painterResource(id = if (isSelected) item.activeIconRes else item.inactiveIconRes),
                         contentDescription = item.label,
                         tint = Color.Unspecified,
-                        modifier = Modifier.scale(scale)
+                        modifier = Modifier
+                            .size(if (isSelected) 20.dp else 20.dp) // <-- increased sizes
+                            .scale(scale)
                     )
                     Text(
                         text = item.label,

@@ -8,11 +8,11 @@ sealed class BottomNavItem(
     val inactiveIconRes: Int,
     val label: String
 ) {
-    object Home : BottomNavItem(Routes.HOME, R.drawable.navbar_home_active, R.drawable.navbar_home_inactive, "Home")
-    object FitSync : BottomNavItem(Routes.FITSYNC, R.drawable.navbar_fit_sync_active, R.drawable.navbar_fit_sync_inactive, "FitSync")
-    object VitalSync : BottomNavItem(Routes.VITALSYNC, R.drawable.navbar_vital_sync_active, R.drawable.navbar_vital_sync_inactive, "VitalSync")
-    object Reminder : BottomNavItem(Routes.REMINDER, R.drawable.navbar_reminder_active, R.drawable.navbar_reminder_inactive, "Reminder")
-    object Profile : BottomNavItem(Routes.PROFILE, R.drawable.navbar_profile_active, R.drawable.navbar_profile_inactive, "Profile")
+    object Home : BottomNavItem(Routes.HOME, R.drawable.navbar_home_on, R.drawable.navbar_home_off, "Home")
+    object FitSync : BottomNavItem(Routes.FITSYNC, R.drawable.navbar_fitsync_on, R.drawable.navbar_fitsync_off, "FitSync")
+    object VitalSync : BottomNavItem(Routes.VITALSYNC, R.drawable.navbar_vitalsync_on, R.drawable.navbar_vitalsync_off, "VitalSync")
+    object Reminder : BottomNavItem(Routes.REMINDER, R.drawable.navbar_reminder_on, R.drawable.navbar_reminder_off, "Reminder")
+    object Profile : BottomNavItem(Routes.PROFILE, R.drawable.navbar_profile_on, R.drawable.navbar_profile_off, "Profile")
 }
 
 val bottomItems = listOf(
