@@ -191,8 +191,8 @@ fun RegisterField(navController: NavController, viewModel: AuthViewModel, snackb
 
         if (viewModel.registerState is RegisterState.Success) {
             LaunchedEffect(Unit) {
-                navController.navigate("home") {
-                    popUpTo("register") { inclusive = true }
+                navController.navigate("Home") {
+                    popUpTo("Register") { inclusive = true }
                 }
             }
         }
