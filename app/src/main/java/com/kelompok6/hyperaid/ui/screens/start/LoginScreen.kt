@@ -1,6 +1,8 @@
 package com.kelompok6.hyperaid.ui.screens.start
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,29 +20,44 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.kelompok6.hyperaid.R
 
 @Composable
-fun LoginScreen(navController: NavHostController) {
+fun LoginScreen(navController: NavHostController, viewModel: AuthViewModel = viewModel()) {
     val scrollState = rememberScrollState()
+    val loginState = viewModel.loginState
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(loginState) {
+        if (loginState is LoginState.Error) {
+            snackbarHostState.showSnackbar(loginState.message)
+            viewModel.loginState = LoginState.Idle
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -74,7 +91,7 @@ fun LoginScreen(navController: NavHostController) {
                 textAlign = TextAlign.Center
             )
 
-            LoginField(navController)
+            LoginField(navController, viewModel)
             OrDivider()
             LoginOAuth(navController)
 
@@ -87,7 +104,10 @@ fun LoginScreen(navController: NavHostController) {
                 Label("Don't have an account?")
                 Text(
                     modifier = Modifier.clickable() {
-                        navController.navigate("Register")
+                        navController.navigate("Register") {
+                            popUpTo("Login") { inclusive = true }
+                            launchSingleTop = true
+                        }
                     },
                     text = "Register",
                     style = MaterialTheme.typography.bodySmall,
@@ -95,11 +115,20 @@ fun LoginScreen(navController: NavHostController) {
                 )
             }
         }
+
+        if (loginState is LoginState.Loading) {
+            LoadingFullscreen()
+        }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
 
 @Composable
-fun LoginField(navController: NavController) {
+fun LoginField(navController: NavController, viewModel: AuthViewModel) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
@@ -157,11 +186,20 @@ fun LoginField(navController: NavController) {
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ),
             shape = RoundedCornerShape(25f),
-            onClick = { navController.navigate("Home") },
+            onClick = {
+                viewModel.login(email, password)
+            },
             modifier = Modifier.fillMaxWidth(),
-
-            ) {
+        ) {
             Label("LOGIN")
+        }
+
+        if (viewModel.loginState is LoginState.Success) {
+            LaunchedEffect(Unit) {
+                navController.navigate("Home") {
+                    popUpTo("Login") { inclusive = true }
+                }
+            }
         }
     }
 }
@@ -178,7 +216,9 @@ fun LoginOAuth(navController: NavController) {
                 contentColor = MaterialTheme.colorScheme.onSecondary
             ),
             shape = RoundedCornerShape(25f),
-            onClick = { navController.navigate("Home") },
+            onClick = {
+                // navController.navigate("Home")
+            },
             modifier = Modifier.fillMaxWidth(),
 
             ) {
@@ -201,7 +241,9 @@ fun LoginOAuth(navController: NavController) {
                 contentColor = MaterialTheme.colorScheme.onSecondary
             ),
             shape = RoundedCornerShape(25f),
-            onClick = { navController.navigate("Home") },
+            onClick = {
+                // navController.navigate("Home")
+            },
             modifier = Modifier.fillMaxWidth(),
 
             ) {
@@ -254,4 +296,22 @@ fun Label(text: String, modifier: Modifier = Modifier, textAlign: TextAlign = Te
         fontWeight = FontWeight.Normal,
         textAlign = textAlign
     )
+}
+
+@Composable
+fun LoadingFullscreen() {
+    val alpha by animateFloatAsState(targetValue = 1f)
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White.copy(alpha = alpha)),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(70.dp),
+            strokeWidth = 5.dp,
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
 }
