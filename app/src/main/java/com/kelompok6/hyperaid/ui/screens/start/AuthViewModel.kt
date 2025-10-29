@@ -15,11 +15,14 @@ class AuthViewModel(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     var loginState by mutableStateOf<LoginState>(LoginState.Idle)
-        private set
-
     var registerState by mutableStateOf<RegisterState>(RegisterState.Idle)
 
     fun login(email: String, password: String) {
+        if (email.isBlank() || password.isBlank()) {
+            loginState = LoginState.Error("All fields are required")
+            return
+        }
+
         loginState = LoginState.Loading
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
@@ -67,6 +70,7 @@ class AuthViewModel(
     // preferably using snackbar
     fun showAuthError(message: String) {
         registerState = RegisterState.Error(message)
+        loginState = LoginState.Error(message)
     }
 }
 

@@ -24,8 +24,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,13 +41,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.kelompok6.hyperaid.R
 
 @Composable
-fun LoginScreen(navController: NavHostController) {
+fun LoginScreen(navController: NavHostController, viewModel: AuthViewModel = viewModel()) {
     val scrollState = rememberScrollState()
+    val loginState = viewModel.loginState
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(loginState) {
+        if (loginState is LoginState.Error) {
+            snackbarHostState.showSnackbar(loginState.message)
+            viewModel.loginState = LoginState.Idle
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -78,7 +91,7 @@ fun LoginScreen(navController: NavHostController) {
                 textAlign = TextAlign.Center
             )
 
-            LoginField(navController)
+            LoginField(navController, viewModel)
             OrDivider()
             LoginOAuth(navController)
 
@@ -102,11 +115,20 @@ fun LoginScreen(navController: NavHostController) {
                 )
             }
         }
+
+        if (loginState is LoginState.Loading) {
+            LoadingFullscreen()
+        }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
 
 @Composable
-fun LoginField(navController: NavController) {
+fun LoginField(navController: NavController, viewModel: AuthViewModel) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
@@ -165,15 +187,19 @@ fun LoginField(navController: NavController) {
             ),
             shape = RoundedCornerShape(25f),
             onClick = {
-                navController.navigate("Home") {
-                    popUpTo("Login") { inclusive = true }
-                    launchSingleTop = true
-                }
+                viewModel.login(email, password)
             },
             modifier = Modifier.fillMaxWidth(),
-
-            ) {
+        ) {
             Label("LOGIN")
+        }
+
+        if (viewModel.loginState is LoginState.Success) {
+            LaunchedEffect(Unit) {
+                navController.navigate("Home") {
+                    popUpTo("Login") { inclusive = true }
+                }
+            }
         }
     }
 }
@@ -190,7 +216,9 @@ fun LoginOAuth(navController: NavController) {
                 contentColor = MaterialTheme.colorScheme.onSecondary
             ),
             shape = RoundedCornerShape(25f),
-            onClick = { navController.navigate("Home") },
+            onClick = {
+                // navController.navigate("Home")
+            },
             modifier = Modifier.fillMaxWidth(),
 
             ) {
@@ -213,7 +241,9 @@ fun LoginOAuth(navController: NavController) {
                 contentColor = MaterialTheme.colorScheme.onSecondary
             ),
             shape = RoundedCornerShape(25f),
-            onClick = { navController.navigate("Home") },
+            onClick = {
+                // navController.navigate("Home")
+            },
             modifier = Modifier.fillMaxWidth(),
 
             ) {
