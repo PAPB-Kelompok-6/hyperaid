@@ -34,6 +34,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.kelompok6.hyperaid.ui.screens.fitsync.bmi.BMIScreen
+import com.kelompok6.hyperaid.ui.screens.fitsync.nutritrack.NutriTrackScreen
 import com.kelompok6.hyperaid.ui.screens.home.HomeScreen
 import com.kelompok6.hyperaid.ui.screens.profile.ProfileScreen
 import com.kelompok6.hyperaid.ui.screens.profile.ProfileViewModel
@@ -56,7 +57,8 @@ private fun MainNavHost(navController: NavHostController, modifier: Modifier = M
     // Start at HOME, and define the top-level destinations in the order you wanted.
     NavHost(navController, startDestination = Routes.HOME, modifier = modifier) {
         composable(Routes.HOME) { HomeScreen(navController) }
-        composable(Routes.FITSYNC) { BMIScreen(navController) }
+        composable(Routes.FITSYNCBMI) { BMIScreen(navController) }
+        composable(Routes.FITSYNCNUTRITRACK) { NutriTrackScreen(navController) }
         composable(Routes.VITALSYNC) { VitalsyncScreen(navController) }
         composable(Routes.REMINDER) { ReminderScreen(navController) }
         composable(Routes.PROFILE) {
