@@ -43,7 +43,6 @@ android {
 }
 
 dependencies {
-
     // Navigation Dependencies
     val navVersion = "2.7.3"
     implementation(platform("androidx.compose:compose-bom:$navVersion"))
