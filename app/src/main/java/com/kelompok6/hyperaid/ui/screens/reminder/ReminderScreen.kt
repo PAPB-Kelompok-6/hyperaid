@@ -1,6 +1,7 @@
 package com.kelompok6.hyperaid.ui.screens.reminder
 
 import android.app.TimePickerDialog
+import android.content.Context
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.getValue
@@ -40,11 +41,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -62,6 +66,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.kelompok6.hyperaid.R
 import com.kelompok6.hyperaid.data.model.Reminder
+import com.kelompok6.hyperaid.data.repository.ReminderRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalTime
 
@@ -69,7 +76,11 @@ import java.time.LocalTime
 fun ReminderScreen(navController: NavHostController) {
     var showCards by remember { mutableStateOf(false) }
     var selectedReminder by remember { mutableStateOf<String?>(null) }
-    var reminders by remember { mutableStateOf(listOf<Reminder>())}
+
+    val context = LocalContext.current
+
+    val viewModel = remember { ReminderViewModel(context) }
+    val reminders by viewModel.reminders.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize()) {
         // ReminderScreen jika daftar reminder kosong
@@ -101,11 +112,15 @@ fun ReminderScreen(navController: NavHostController) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
+                    .padding    (16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                items(items = reminders) { reminder ->
-                    ReminderList(reminder)
+                items(reminders) { reminder ->
+                    ReminderList(
+                        reminder = reminder,
+//                        onEdit = { selectedReminder = "" },
+//                        onDelete = { viewModel.deleteReminder(reminder) }
+                    )
                 }
             }
         }
@@ -153,8 +168,9 @@ fun ReminderScreen(navController: NavHostController) {
             RecordReminder (
                 selectedReminder!!,
                 onSave = { reminder ->
-                    reminders = reminders + reminder
+                    viewModel.addReminder(reminder)
                     selectedReminder = null
+                    showCards = false
                 }
             )
         }
@@ -190,7 +206,7 @@ fun ReminderCard(title: String, imageRes: Int, onClick: (String) -> Unit) { // F
 }
 
 @Composable
-fun ReminderList(reminder: Reminder) { // Fungsi buat namppilin list reminder (kalau ada)
+fun ReminderList(reminder: Reminder) { // Fungsi buat namppilin list reminder (kalau ada) // onEdit: () -> Unit, onDelete: () -> Unit,  onToggle: (Reminder, Boolean) -> Unit
     var nyalaGak by remember { mutableStateOf(reminder.isActive) }
 
     Card(
@@ -212,6 +228,16 @@ fun ReminderList(reminder: Reminder) { // Fungsi buat namppilin list reminder (k
                 Text(reminder.time, fontSize = 20.sp)
                 Text(reminder.days, fontSize = 12.sp)
             }
+
+//            Row {
+//                IconButton(onClick = onEdit) {
+//                    Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(20.dp))
+//                }
+//                IconButton(onClick = onDelete) {
+//                    Icon(Icons.Default.Delete, contentDescription = "Delete", modifier = Modifier.size(20.dp))
+//                }
+//            }
+            Spacer(modifier = Modifier.width(8.dp))
             Switch(
                 checked = nyalaGak,
                 onCheckedChange = { nyalaGak = !nyalaGak }
@@ -221,7 +247,7 @@ fun ReminderList(reminder: Reminder) { // Fungsi buat namppilin list reminder (k
 }
 
 @Composable
-fun DraggableBottomSheet( // Fungsi buat
+fun DraggableBottomSheet( // Fungsi buat munculin surface
     visible: Boolean,
     onDismiss: () -> Unit,
     content: @Composable ColumnScope.() -> Unit

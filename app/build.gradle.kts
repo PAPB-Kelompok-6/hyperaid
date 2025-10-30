@@ -61,6 +61,10 @@ dependencies {
     // Desugar Depedencies
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 
+    // Datastore
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation("com.google.code.gson:gson:2.10.1")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
