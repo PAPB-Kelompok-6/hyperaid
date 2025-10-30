@@ -1,6 +1,7 @@
 package com.kelompok6.hyperaid.ui.screens.start
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -182,8 +183,8 @@ fun LoginField(navController: NavController, viewModel: AuthViewModel) {
 
         Button(
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
+                containerColor = Color(0xFF2B2B2B),
+                contentColor = Color(0xFFF6C9CB)
             ),
             shape = RoundedCornerShape(25f),
             onClick = {
@@ -212,9 +213,10 @@ fun LoginOAuth(navController: NavController) {
     ) {
         Button(
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary
+                containerColor = Color.White,
+                contentColor = Color.DarkGray
             ),
+            border = BorderStroke(1.dp, Color.DarkGray),
             shape = RoundedCornerShape(25f),
             onClick = {
                 // navController.navigate("Home")
@@ -237,9 +239,10 @@ fun LoginOAuth(navController: NavController) {
 
         Button(
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary
+                containerColor = Color.White,
+                contentColor = Color.DarkGray
             ),
+            border = BorderStroke(1.dp, Color.DarkGray),
             shape = RoundedCornerShape(25f),
             onClick = {
                 // navController.navigate("Home")
