@@ -12,4 +12,6 @@ object Routes {
     const val HEALTH_DISCLAIMER = "HealthDisclaimer"
     const val ONBOARDING = "OnBoarding"
     const val LANGUAGE = "Language"
+    const val ABOUT = "About"
+
 }

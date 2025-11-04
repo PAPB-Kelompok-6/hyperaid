@@ -10,6 +10,7 @@ import com.kelompok6.hyperaid.ui.screens.start.RegisterScreen
 import com.kelompok6.hyperaid.ui.screens.start.HealthDisclaimerScreen
 import com.kelompok6.hyperaid.ui.screens.start.OnBoardingScreen
 import com.kelompok6.hyperaid.ui.screens.start.LanguageScreen
+import com.kelompok6.hyperaid.ui.screens.about.AboutScreen
 
 @Composable
 fun RootNavGraph(navController: NavHostController) {
@@ -34,6 +35,11 @@ fun RootNavGraph(navController: NavHostController) {
             MainScaffold() // MainScaffold hosts the bottom bar and internal NavHost
         }
 
+        // About screen reachable from LanguageScreen (and others)
+        composable(Routes.ABOUT) {
+            AboutScreen(navController = navController, onContinue = {})
+        }
+
         // ======================================
         // AUTH ROUTES
         // ======================================
@@ -51,7 +57,8 @@ fun RootNavGraph(navController: NavHostController) {
 
         // Language selection
         composable(Routes.LANGUAGE) {
-            LanguageScreen(navController = navController)
+            LanguageScreen(navController = navController, onContinue = {})
         }
+
     }
 }
