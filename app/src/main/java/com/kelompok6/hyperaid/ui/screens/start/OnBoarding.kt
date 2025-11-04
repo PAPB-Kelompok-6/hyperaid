@@ -124,7 +124,7 @@ fun OnBoardingScreen(
                     containerColor = Color(0xFF222222),
                     contentColor = Color.White,
                     shape = androidx.compose.foundation.shape.CircleShape,
-                    modifier = Modifier.size(56.dp)
+                    modifier = Modifier.size(48.dp)
                 ) {
                     Icon(
                         // use AutoMirrored variant to avoid deprecation warning

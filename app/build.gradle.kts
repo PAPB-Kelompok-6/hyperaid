@@ -46,6 +46,7 @@ dependencies {
     implementation(libs.androidx.foundation)
     implementation(libs.androidx.room.common.jvm)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.foundation.layout)
     // Navigation Dependencies
     val navVersion = "2.7.3"
     implementation(platform("androidx.compose:compose-bom:$navVersion"))
@@ -89,4 +90,8 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-analytics")
+
+    //Material3 & Lazy grid
+    implementation("androidx.compose.material3:material3:<versi>")
+    implementation("androidx.compose.foundation:foundation:<versi>")
 }

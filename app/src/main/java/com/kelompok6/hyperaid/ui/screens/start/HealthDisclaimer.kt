@@ -184,14 +184,12 @@ fun HealthDisclaimerScreen(
                 }
             }
 
-
-
-            Spacer(modifier = Modifier.padding(top = 60.dp))
+            Spacer(modifier = Modifier.padding(top = 10.dp))
 
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 36.dp),
+                    .fillMaxSize()   // ✅ ini penting supaya bisa push ke bottom
+                    .padding(bottom = 100.dp),  // ✅ jarak FAB dari bottom
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom
             ) {
@@ -208,10 +206,9 @@ fun HealthDisclaimerScreen(
                     containerColor = Color(0xFF222222),
                     contentColor = Color.White,
                     shape = androidx.compose.foundation.shape.CircleShape,
-                    modifier = Modifier.size(56.dp)
+                    modifier = Modifier.size(48.dp)
                 ) {
                     Icon(
-                        // use AutoMirrored variant to avoid deprecation warning
                         imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = "Continue",
                         modifier = Modifier.size(28.dp)

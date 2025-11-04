@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.Scaffold
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -36,7 +35,6 @@ import androidx.navigation.compose.rememberNavController
 import com.kelompok6.hyperaid.ui.screens.fitsync.bmi.BMIScreen
 import com.kelompok6.hyperaid.ui.screens.home.HomeScreen
 import com.kelompok6.hyperaid.ui.screens.profile.ProfileScreen
-import com.kelompok6.hyperaid.ui.screens.profile.ProfileViewModel
 import com.kelompok6.hyperaid.ui.screens.reminder.ReminderScreen
 import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncScreen
 
@@ -60,9 +58,9 @@ private fun MainNavHost(navController: NavHostController, modifier: Modifier = M
         composable(Routes.VITALSYNC) { VitalsyncScreen(navController) }
         composable(Routes.REMINDER) { ReminderScreen(navController) }
         composable(Routes.PROFILE) {
-//            val profileViewModel: ProfileViewModel = viewModel()
             ProfileScreen(navController /** profileViewModel **/) // NANTI DI-PASS PROFILE VIEW MODEL
         }
+        // removed About composable from here — About is registered at RootNavGraph to avoid duplicate routes across nav graphs
     }
 }
 
