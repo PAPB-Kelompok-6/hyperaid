@@ -46,7 +46,7 @@ fun RootNavGraph(navController: NavHostController) {
 
         // Health Disclaimer (Onboarding flow)
         composable(Routes.HEALTH_DISCLAIMER) {
-            HealthDisclaimerScreen()
+            HealthDisclaimerScreen(navController = navController, onContinue = {})
         }
 
         // Language selection
