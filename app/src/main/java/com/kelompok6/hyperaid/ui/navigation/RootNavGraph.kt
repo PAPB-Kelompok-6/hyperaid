@@ -1,9 +1,5 @@
 package com.kelompok6.hyperaid.ui.navigation
 
-import android.util.Log
-import androidx.compose.material3.Text
-import androidx.compose.material3.Surface
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -11,26 +7,26 @@ import androidx.navigation.compose.composable
 import com.kelompok6.hyperaid.ui.screens.SplashScreen
 import com.kelompok6.hyperaid.ui.screens.start.LoginScreen
 import com.kelompok6.hyperaid.ui.screens.start.RegisterScreen
+import com.kelompok6.hyperaid.ui.screens.start.HealthDisclaimerScreen
+import com.kelompok6.hyperaid.ui.screens.start.OnBoardingScreen
+import com.kelompok6.hyperaid.ui.screens.start.LanguageScreen
 
 @Composable
 fun RootNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = Routes.SPLASH) {
         composable(Routes.SPLASH) {
             SplashScreen(onFinished = {
-                // if user session is not valid, navigate to login page
-                // else, navigate to home
-                if (true) {
-                    navController.navigate(Routes.LOGIN) {
-                        popUpTo(Routes.SPLASH) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                } else {
-                    navController.navigate(Routes.HOME) {
-                        popUpTo(Routes.SPLASH) { inclusive = true }
-                        launchSingleTop = true
-                    }
+                // after splash, go to onboarding (or login/home depending on session)
+                navController.navigate(Routes.ONBOARDING) {
+                    popUpTo(Routes.SPLASH) { inclusive = true }
+                    launchSingleTop = true
                 }
             })
+        }
+
+        // OnBoarding route
+        composable(Routes.ONBOARDING) {
+            OnBoardingScreen(navController = navController, onContinue = {})
         }
 
         // Show the main scaffold when HOME route is requested at root level
@@ -46,6 +42,16 @@ fun RootNavGraph(navController: NavHostController) {
         }
         composable(Routes.REGISTER) {
             RegisterScreen(navController)
+        }
+
+        // Health Disclaimer (Onboarding flow)
+        composable(Routes.HEALTH_DISCLAIMER) {
+            HealthDisclaimerScreen()
+        }
+
+        // Language selection
+        composable(Routes.LANGUAGE) {
+            LanguageScreen(navController = navController)
         }
     }
 }
