@@ -77,7 +77,7 @@ fun MainBottomBar(navController: NavHostController, modifier: Modifier = Modifie
             .fillMaxWidth()
             .padding(horizontal = 0.dp, vertical = 0.dp),
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp, bottomStart = 0.dp, bottomEnd = 0.dp),
-        color = Color.LightGray,
+        color = Color(0xFFF2F2F2),
         tonalElevation = 4.dp
     ) {
         Row(

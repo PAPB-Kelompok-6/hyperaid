@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -36,6 +35,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.kelompok6.hyperaid.R
+import com.airbnb.lottie.compose.LottieConstants
 import com.kelompok6.hyperaid.ui.navigation.Routes
 
 @Composable
@@ -72,7 +72,11 @@ fun OnBoardingScreen(
             val composition by rememberLottieComposition(
                 LottieCompositionSpec.RawRes(R.raw.doctorprescription)
             )
-            val progress by animateLottieCompositionAsState(composition)
+            val progress by animateLottieCompositionAsState(
+                composition = composition,
+                iterations = LottieConstants.IterateForever, // <-- Loop infinite
+                speed = 1.0f, // Optional: bisa atur kecepatan animasi
+            )
             LottieAnimation(
                 composition = composition,
                 progress = { progress },
