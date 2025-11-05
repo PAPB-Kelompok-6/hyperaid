@@ -85,7 +85,7 @@ fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel = 
 
             RegisterField(navController, viewModel, snackbarHostState)
             OrDivider()
-            LoginOAuth(navController)
+            LoginOAuth(navController, viewModel)
 
             Spacer(modifier = Modifier.height(25.dp))
 
