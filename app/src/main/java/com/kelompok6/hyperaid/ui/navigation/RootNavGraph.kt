@@ -25,24 +25,19 @@ fun RootNavGraph(navController: NavHostController) {
             })
         }
 
-        // OnBoarding route
         composable(Routes.ONBOARDING) {
             OnBoardingScreen(navController = navController, onContinue = {})
         }
 
-        // Show the main scaffold when HOME route is requested at root level
         composable(Routes.HOME) {
-            MainScaffold() // MainScaffold hosts the bottom bar and internal NavHost
+            MainScaffold()
         }
 
-        // About screen reachable from LanguageScreen (and others)
         composable(Routes.ABOUT) {
             AboutScreen(navController = navController, onContinue = {})
         }
 
-        // ======================================
-        // AUTH ROUTES
-        // ======================================
+
         composable(Routes.LOGIN) {
             LoginScreen(navController)
         }
@@ -50,12 +45,10 @@ fun RootNavGraph(navController: NavHostController) {
             RegisterScreen(navController)
         }
 
-        // Health Disclaimer (Onboarding flow)
         composable(Routes.HEALTH_DISCLAIMER) {
             HealthDisclaimerScreen(navController = navController, onContinue = {})
         }
 
-        // Language selection
         composable(Routes.LANGUAGE) {
             LanguageScreen(navController = navController, onContinue = {})
         }

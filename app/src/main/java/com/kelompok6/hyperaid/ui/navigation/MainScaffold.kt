@@ -51,7 +51,7 @@ fun MainScaffold() {
 
 @Composable
 private fun MainNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
-    // Start at HOME, and define the top-level destinations in the order you wanted.
+
     NavHost(navController, startDestination = Routes.HOME, modifier = modifier) {
         composable(Routes.HOME) { HomeScreen(navController) }
         composable(Routes.FITSYNC) { BMIScreen(navController) }
@@ -60,7 +60,6 @@ private fun MainNavHost(navController: NavHostController, modifier: Modifier = M
         composable(Routes.PROFILE) {
             ProfileScreen(navController /** profileViewModel **/) // NANTI DI-PASS PROFILE VIEW MODEL
         }
-        // removed About composable from here — About is registered at RootNavGraph to avoid duplicate routes across nav graphs
     }
 }
 
@@ -69,7 +68,6 @@ fun MainBottomBar(navController: NavHostController, modifier: Modifier = Modifie
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
 
-    // Rounded container to match mockup (only top corners rounded)
     Surface(
         modifier = modifier
             .fillMaxWidth()
@@ -81,13 +79,12 @@ fun MainBottomBar(navController: NavHostController, modifier: Modifier = Modifie
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                // add navigationBarsPadding so content isn't cramped against system nav
                 .navigationBarsPadding()
-                .padding( // use the 4-edges overload
+                .padding(
                     start = 12.dp,
                     top = 15.dp,
                     end = 12.dp,
-                    bottom = 15.dp // increased bottom padding for more separation from system nav
+                    bottom = 15.dp
                 ),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -95,13 +92,11 @@ fun MainBottomBar(navController: NavHostController, modifier: Modifier = Modifie
             bottomItems.forEach { item ->
                 val isSelected = currentRoute == item.route
 
-                // animated scale for icon (subtle pop)
                 val scale by animateFloatAsState(
                     targetValue = if (isSelected) 1f else 1f,
                     animationSpec = tween(durationMillis = 220)
                 )
 
-                // animated color for label
                 val labelColor by animateColorAsState(
                     targetValue = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
                     animationSpec = tween(durationMillis = 220)
@@ -122,7 +117,6 @@ fun MainBottomBar(navController: NavHostController, modifier: Modifier = Modifie
                         }
                         .animateContentSize()
                 ) {
-                    // increase icon size so it's more visible
                     Icon(
                         painter = painterResource(id = if (isSelected) item.activeIconRes else item.inactiveIconRes),
                         contentDescription = item.label,
