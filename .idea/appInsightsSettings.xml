@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.kelompok6.hyperaid" />
+                  <option name="mobileSdkAppId" value="1:743852926449:android:8f4401c29cc52dada9d050" />
+                  <option name="projectId" value="hyperaid-b7647" />
+                  <option name="projectNumber" value="743852926449" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
