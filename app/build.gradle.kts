@@ -87,4 +87,9 @@ dependencies {
     //Material3 & Lazy grid
     implementation("androidx.compose.material3:material3:<versi>")
     implementation("androidx.compose.foundation:foundation:<versi>")
+
+    // OAuth
+    implementation("com.google.gms:google-services:4.4.2")
+    implementation("androidx.credentials:credentials:1.3.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 }

@@ -29,6 +29,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.kelompok6.hyperaid.ui.helper.AuthHelper
 
 // Main Profile Screen
 @Preview(showBackground = true)
@@ -48,6 +51,10 @@ fun ProfileScreen(
     profileViewModel: ProfileViewModel? = null
 ) {
 //    val profileData by profileViewModel.profileData.collectAsState()
+
+    val displayName by produceState(initialValue = "Loading...") {
+        value = AuthHelper.getDisplayName()
+    }
 
     Column(
         modifier = Modifier
@@ -110,14 +117,14 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "USER NAME",
+                    text = displayName,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF2D2D2D)
                 )
 
                 Text(
-                    text = "USERNAME@GMAIL.COM",
+                    text = AuthHelper.getCurrentUser()?.email ?: "Not logged in",
                     fontSize = 14.sp,
                     color = Color.Gray,
                     modifier = Modifier.padding(top = 4.dp)
@@ -151,33 +158,87 @@ fun ProfileScreen(
         // ADJUST ALL THE ICON
         ProfileSettingCard("Account Settings") {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                SettingCardContent({}, Icons.Default.Lock, "changePasswordIcon", "Change Password", "Change your password")
-                SettingCardContent({}, Icons.Default.Delete, "deleteAccountIcon", "Delete Account", "Permanently delete your account")
+                SettingCardContent(
+                    {},
+                    Icons.Default.Lock,
+                    "changePasswordIcon",
+                    "Change Password",
+                    "Change your password"
+                )
+                SettingCardContent(
+                    {},
+                    Icons.Default.Delete,
+                    "deleteAccountIcon",
+                    "Delete Account",
+                    "Permanently delete your account"
+                )
             }
         }
         Spacer(modifier = Modifier.padding(8.dp))
 
         ProfileSettingCard("App Preferences") {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                SettingCardContent({}, Icons.Default.Clear, "globeIcon", "Language", "Change your language")
-                SettingCardContent({}, Icons.Default.Notifications, "notificationIcon", "Notifications", "Turn on/off notifications")
+                SettingCardContent(
+                    {},
+                    Icons.Default.Clear,
+                    "globeIcon",
+                    "Language",
+                    "Change your language"
+                )
+                SettingCardContent(
+                    {},
+                    Icons.Default.Notifications,
+                    "notificationIcon",
+                    "Notifications",
+                    "Turn on/off notifications"
+                )
             }
         }
         Spacer(modifier = Modifier.padding(8.dp))
 
         ProfileSettingCard("Health Information") {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                SettingCardContent({}, Icons.Default.Clear, "heartbeatIcon", "Connected Device", "View and manage connected health devices")
-                SettingCardContent({}, Icons.Default.Clear, "historyIcon", "Medical History", "View your blood pressure history")
+                SettingCardContent(
+                    {},
+                    Icons.Default.Clear,
+                    "heartbeatIcon",
+                    "Connected Device",
+                    "View and manage connected health devices"
+                )
+                SettingCardContent(
+                    {},
+                    Icons.Default.Clear,
+                    "historyIcon",
+                    "Medical History",
+                    "View your blood pressure history"
+                )
             }
         }
         Spacer(modifier = Modifier.padding(8.dp))
 
         ProfileSettingCard("Support") {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                SettingCardContent({}, Icons.Default.Clear, "helpIcon", "FAQ", "View frequently asked questions")
-                SettingCardContent({}, Icons.Default.Clear, "privacyIcon", "Privacy Policy", "Read our privacy policy")
-                SettingCardContent({}, Icons.Default.Clear, "termsIcon", "Terms of Service", "Read our terms and conditions")
+                SettingCardContent(
+                    {},
+                    Icons.Default.Clear,
+                    "helpIcon",
+                    "FAQ",
+                    "View frequently asked questions"
+                )
+                SettingCardContent(
+                    {},
+                    Icons.Default.Clear,
+                    "privacyIcon",
+                    "Privacy Policy",
+                    "Read our privacy policy"
+                )
+                SettingCardContent(
+                    {},
+                    Icons.Default.Clear,
+                    "termsIcon",
+                    "Terms of Service",
+                    "Read our terms and conditions"
+                )
             }
         }
         Spacer(modifier = Modifier.padding(8.dp))
@@ -196,7 +257,8 @@ fun ProfileScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Clear, /** CHANGE THIS TO A RELEVANT ICON **/
+                        imageVector = Icons.Default.Clear,
+                        /** CHANGE THIS TO A RELEVANT ICON **/
                         contentDescription = "Logout",
                         tint = Color.Red,
                         modifier = Modifier.size(24.dp)
@@ -270,7 +332,8 @@ fun SettingCardContent(
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                imageVector = icon, /** CHANGE THIS TO A RELEVANT ICON **/
+                imageVector = icon,
+                /** CHANGE THIS TO A RELEVANT ICON **/
                 contentDescription = iconContentDescription,
                 tint = Color.LightGray,
                 modifier = Modifier.size(24.dp)
