@@ -205,6 +205,56 @@ fun ReminderScreen(navController: NavHostController) {
                 )
             }
         }
+
+        var editingReminder by remember { mutableStateOf<Reminder?>(null) }
+
+// ...
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(reminders) { reminder ->
+                ReminderList(
+                    reminder = reminder,
+                    onEdit = { editingReminder = reminder }, // ✅ saat klik edit
+                    onDelete = { viewModel.deleteReminder(reminder) },
+                    onActive = { rem, isActive ->
+                        viewModel.updateReminder(rem.copy(isActive = isActive))
+                    }
+                )
+            }
+        }
+
+// ...
+
+        // Bottom sheet untuk edit reminder
+        DraggableBottomSheet(
+            visible = editingReminder != null,
+            onDismiss = { editingReminder = null }
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(40.dp)
+                    .height(5.dp)
+                    .clip(RoundedCornerShape(50))
+                    .background(Color.LightGray)
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+
+            editingReminder?.let { reminderToEdit ->
+                RecordReminder(
+                    reminderTitle = reminderToEdit.title,
+                    existingReminder = reminderToEdit, // ✅ kirim data lama
+                    onSave = { updated ->
+                        viewModel.updateReminder(updated)
+                        editingReminder = null
+                    }
+                )
+            }
+        }
+
     }
 }
 
@@ -267,10 +317,10 @@ fun ReminderList(
                 Text(reminder.time, fontSize = 20.sp)
                 Text(reminder.days.joinToString(", "), fontSize = 12.sp)
             }
-//            Spacer(modifier = Modifier.width(12.dp))
-//            IconButton(onClick = onEdit) {
-//                Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(20.dp))
-//            }
+            Spacer(modifier = Modifier.width(12.dp))
+            IconButton(onClick = onEdit) {
+                Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(20.dp))
+            }
             Spacer(modifier = Modifier.width(8.dp))
             IconButton(onClick = onDelete) {
                 Icon(Icons.Default.Delete, contentDescription = "Delete", modifier = Modifier.size(20.dp))
@@ -352,10 +402,27 @@ fun DraggableBottomSheet( // Fungsi buat munculin surface
 }
 
 @Composable
-fun RecordReminder(reminderTitle: String, onSave: (Reminder) -> Unit) { // Fungsi buat set hari dan tanggal reminder
+fun RecordReminder(
+    reminderTitle: String,
+    existingReminder: Reminder? = null, // ✅ opsional
+    onSave: (Reminder) -> Unit
+) {
     val context = LocalContext.current
-    var selectedTime by remember { mutableStateOf(LocalTime.now()) }
-    val selectedDays = remember { mutableStateListOf<String>() }
+    var selectedTime by remember {
+        mutableStateOf(
+            existingReminder?.let {
+                val (hour, minute) = it.time.split(":").map(String::toInt)
+                LocalTime.of(hour, minute)
+            } ?: LocalTime.now()
+        )
+    }
+
+    val selectedDays = remember {
+        mutableStateListOf<String>().apply {
+            existingReminder?.days?.let { addAll(it) }
+        }
+    }
+
     var showTimePicker by remember { mutableStateOf(false) }
 
     Text("Reminder for $reminderTitle", fontWeight = FontWeight.Bold, fontSize = 18.sp)
@@ -373,7 +440,7 @@ fun RecordReminder(reminderTitle: String, onSave: (Reminder) -> Unit) { // Fungs
         )
     }
 
-    if (showTimePicker) { // Ini digunakan buat milih jam reminder
+    if (showTimePicker) {
         val timePicker = TimePickerDialog(
             context,
             { _, hour, minute ->
@@ -389,7 +456,7 @@ fun RecordReminder(reminderTitle: String, onSave: (Reminder) -> Unit) { // Fungs
     Text("Repeat", fontWeight = FontWeight.Bold, fontSize = 16.sp)
     Spacer(Modifier.height(20.dp))
 
-    val days = listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat") // Pilih hari reminder
+    val days = listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
     Row(
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier.fillMaxWidth()
@@ -415,19 +482,23 @@ fun RecordReminder(reminderTitle: String, onSave: (Reminder) -> Unit) { // Fungs
 
     Spacer(Modifier.height(30.dp))
 
-    Button( // Tombol simpan reminder
+    Button(
         onClick = {
             onSave(
                 Reminder(
+                    id = existingReminder?.id ?: 0, // ✅ pakai ID lama kalau edit
                     title = reminderTitle,
                     time = "${selectedTime.hour}:${selectedTime.minute.toString().padStart(2, '0')}",
                     days = selectedDays,
-                    isActive = true
+                    isActive = existingReminder?.isActive ?: true
                 )
             )
             Toast.makeText(
                 context,
-                "Reminder $reminderTitle diset pada ${selectedDays.joinToString()} jam ${selectedTime.hour}:${selectedTime.minute}",
+                if (existingReminder == null)
+                    "Reminder $reminderTitle diset."
+                else
+                    "Reminder $reminderTitle diperbarui.",
                 Toast.LENGTH_LONG
             ).show()
         },
@@ -435,6 +506,10 @@ fun RecordReminder(reminderTitle: String, onSave: (Reminder) -> Unit) { // Fungs
         colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
         modifier = Modifier.fillMaxWidth().height(50.dp)
     ) {
-        Text("SAVE", color = Color.White, fontWeight = FontWeight.Bold)
+        Text(
+            if (existingReminder == null) "SAVE" else "UPDATE",
+            color = Color.White,
+            fontWeight = FontWeight.Bold
+        )
     }
 }
