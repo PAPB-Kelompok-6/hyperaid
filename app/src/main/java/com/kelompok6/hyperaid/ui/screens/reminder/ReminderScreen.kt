@@ -4,6 +4,7 @@ import android.app.TimePickerDialog
 import android.content.Context
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,27 +64,37 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.kelompok6.hyperaid.R
+import com.kelompok6.hyperaid.data.database.ReminderDatabase
 import com.kelompok6.hyperaid.data.model.Reminder
 import com.kelompok6.hyperaid.data.repository.ReminderRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalTime
+import kotlin.getValue
 
 @Composable
 fun ReminderScreen(navController: NavHostController) {
-    var showCards by remember { mutableStateOf(false) }
-    var selectedReminder by remember { mutableStateOf<String?>(null) }
-
     val context = LocalContext.current
 
-    val viewModel = remember { ReminderViewModel(context) }
-    val reminders by viewModel.reminders.collectAsState()
+    // ✅ Inisialisasi Room + Repository + ViewModel
+    val database = remember { ReminderDatabase.getDatabase(context) }
+    val repository = remember { ReminderRepository(database.reminderDAO()) }
+    val factory = remember { ReminderViewModelFactory(repository) }
+    val viewModel: ReminderViewModel = viewModel(factory = factory)
+
+    var showCards by remember { mutableStateOf(false) }
+    var selectedReminder by remember { mutableStateOf<String?>(null) }
+    var editingReminder by remember { mutableStateOf<Reminder?>(null) }
+
+    val reminders by viewModel.reminders.collectAsState(initial = emptyList())
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // ReminderScreen jika daftar reminder kosong
+
+        // Jika belum ada reminder
         if (reminders.isEmpty()) {
             Column(
                 modifier = Modifier
@@ -101,7 +112,8 @@ fun ReminderScreen(navController: NavHostController) {
                 Spacer(Modifier.height(16.dp))
                 Text("A little reminder for you!", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                 Spacer(Modifier.height(8.dp))
-                Text("Never miss a health check-up again! Use this feature to keep track of all your appointments.",
+                Text(
+                    "Never miss a health check-up again! Use this feature to keep track of all your appointments.",
                     textAlign = TextAlign.Center,
                     fontSize = 14.sp,
                     modifier = Modifier.padding(horizontal = 32.dp)
@@ -112,20 +124,23 @@ fun ReminderScreen(navController: NavHostController) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding    (16.dp),
+                    .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(reminders) { reminder ->
                     ReminderList(
                         reminder = reminder,
-//                        onEdit = { selectedReminder = "" },
-//                        onDelete = { viewModel.deleteReminder(reminder) }
+                        onEdit = { editingReminder = reminder },
+                        onDelete = { viewModel.deleteReminder(reminder) },
+                        onActive = { rem, isActive ->
+                            viewModel.updateReminder(rem.copy(isActive = isActive))
+                        }
                     )
                 }
             }
         }
 
-        // FAB di kanan bawah
+        // Tombol tambah reminder
         FloatingActionButton(
             onClick = { showCards = !showCards },
             modifier = Modifier
@@ -137,20 +152,28 @@ fun ReminderScreen(navController: NavHostController) {
             Icon(Icons.Default.Add, contentDescription = "Add Reminder", tint = Color.White)
         }
 
-        // Pilihan reminder
+        // Bottom Sheet Pilihan Reminder
         DraggableBottomSheet(
             visible = showCards,
             onDismiss = { showCards = false }
         ) {
-            Box(modifier = Modifier.width(40.dp) .height(5.dp) .clip(RoundedCornerShape(50)) .background(Color.LightGray))
+            Box(
+                modifier = Modifier
+                    .width(40.dp)
+                    .height(5.dp)
+                    .clip(RoundedCornerShape(50))
+                    .background(Color.LightGray)
+            )
             Text("Remind Me to Record", fontWeight = FontWeight.Bold, fontSize = 18.sp)
             Spacer(Modifier.height(20.dp))
-            LazyVerticalGrid(columns = GridCells.Fixed(2),
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(300.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(18.dp)) {
+                verticalArrangement = Arrangement.spacedBy(18.dp)
+            ) {
                 item { ReminderCard("Weight & BMI", R.drawable.timbangan) { selectedReminder = it } }
                 item { ReminderCard("Blood Pressure", R.drawable.sfigmomanometer) { selectedReminder = it } }
                 item { ReminderCard("Heart Rate", R.drawable.hati) { selectedReminder = it } }
@@ -158,24 +181,35 @@ fun ReminderScreen(navController: NavHostController) {
             }
         }
 
-        // Set waktu & hari reminder
+        // Bottom Sheet Record Reminder
         DraggableBottomSheet(
             visible = selectedReminder != null,
             onDismiss = { selectedReminder = null }
         ) {
-            Box(modifier = Modifier.width(40.dp) .height(5.dp) .clip(RoundedCornerShape(50)) .background(Color.LightGray))
-            Spacer(modifier = Modifier.height(20.dp))
-            RecordReminder (
-                selectedReminder!!,
-                onSave = { reminder ->
-                    viewModel.addReminder(reminder)
-                    selectedReminder = null
-                    showCards = false
-                }
+            Box(
+                modifier = Modifier
+                    .width(40.dp)
+                    .height(5.dp)
+                    .clip(RoundedCornerShape(50))
+                    .background(Color.LightGray)
             )
+            Spacer(modifier = Modifier.height(20.dp))
+            selectedReminder?.let { title ->
+                RecordReminder(
+                    reminderTitle = title,
+                    onSave = { reminder ->
+                        viewModel.addReminder(reminder)
+                        selectedReminder = null
+                        showCards = false
+                    }
+                )
+            }
         }
     }
 }
+
+//@Composable
+//fun ScreenAwal
 
 @Composable
 fun ReminderCard(title: String, imageRes: Int, onClick: (String) -> Unit) { // Fungsi buat nampilin pilihan reminder
@@ -206,7 +240,11 @@ fun ReminderCard(title: String, imageRes: Int, onClick: (String) -> Unit) { // F
 }
 
 @Composable
-fun ReminderList(reminder: Reminder) { // Fungsi buat namppilin list reminder (kalau ada) // onEdit: () -> Unit, onDelete: () -> Unit,  onToggle: (Reminder, Boolean) -> Unit
+fun ReminderList(
+    reminder: Reminder,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+    onActive: (Reminder, Boolean) -> Unit) { // Fungsi buat namppilin list reminder (kalau ada) //
     var nyalaGak by remember { mutableStateOf(reminder.isActive) }
 
     Card(
@@ -219,28 +257,31 @@ fun ReminderList(reminder: Reminder) { // Fungsi buat namppilin list reminder (k
         Row(
             modifier = Modifier
                 .padding(16.dp)
+//                .clickable { onCheckedChange(reminder.isActive)}
                 .fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+//            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column {
+            Column(Modifier.weight(1f)) {
                 Text(reminder.title, fontWeight = FontWeight.Bold)
                 Text(reminder.time, fontSize = 20.sp)
-                Text(reminder.days, fontSize = 12.sp)
+                Text(reminder.days.joinToString(", "), fontSize = 12.sp)
             }
-
-//            Row {
-//                IconButton(onClick = onEdit) {
-//                    Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(20.dp))
-//                }
-//                IconButton(onClick = onDelete) {
-//                    Icon(Icons.Default.Delete, contentDescription = "Delete", modifier = Modifier.size(20.dp))
-//                }
+//            Spacer(modifier = Modifier.width(12.dp))
+//            IconButton(onClick = onEdit) {
+//                Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(20.dp))
 //            }
             Spacer(modifier = Modifier.width(8.dp))
+            IconButton(onClick = onDelete) {
+                Icon(Icons.Default.Delete, contentDescription = "Delete", modifier = Modifier.size(20.dp))
+            }
+            Spacer(modifier = Modifier.width(12.dp))
             Switch(
                 checked = nyalaGak,
-                onCheckedChange = { nyalaGak = !nyalaGak }
+                onCheckedChange = {
+                    nyalaGak = it
+                    onActive(reminder, it)
+                }
             )
         }
     }
@@ -380,7 +421,7 @@ fun RecordReminder(reminderTitle: String, onSave: (Reminder) -> Unit) { // Fungs
                 Reminder(
                     title = reminderTitle,
                     time = "${selectedTime.hour}:${selectedTime.minute.toString().padStart(2, '0')}",
-                    days = selectedDays.joinToString(", "),
+                    days = selectedDays,
                     isActive = true
                 )
             )

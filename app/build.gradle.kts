@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-
+    id("kotlin-kapt")
     id("com.google.gms.google-services")
 }
 
@@ -44,6 +44,8 @@ android {
 
 dependencies {
     implementation(libs.androidx.foundation)
+    implementation(libs.androidx.room.common.jvm)
+    implementation(libs.androidx.room.ktx)
     // Navigation Dependencies
     val navVersion = "2.7.3"
     implementation(platform("androidx.compose:compose-bom:$navVersion"))
@@ -61,9 +63,10 @@ dependencies {
     // Desugar Depedencies
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 
-    // Datastore
-    implementation("androidx.datastore:datastore-preferences:1.1.1")
-    implementation("com.google.code.gson:gson:2.10.1")
+    // Room Shambles
+    implementation("androidx.room:room-runtime:2.8.2")
+    implementation("androidx.room:room-ktx:2.8.2")
+    kapt("androidx.room:room-compiler:2.8.2")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
