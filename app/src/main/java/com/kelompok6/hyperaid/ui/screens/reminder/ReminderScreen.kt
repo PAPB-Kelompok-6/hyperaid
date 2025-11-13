@@ -21,19 +21,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -89,7 +77,6 @@ fun ReminderScreen(navController: NavHostController) {
     var showCards by remember { mutableStateOf(false) }
     var selectedReminder by remember { mutableStateOf<String?>(null) }
     var editingReminder by remember { mutableStateOf<Reminder?>(null) }
-
     val reminders by viewModel.reminders.collectAsState(initial = emptyList())
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -166,6 +153,7 @@ fun ReminderScreen(navController: NavHostController) {
             )
             Text("Remind Me to Record", fontWeight = FontWeight.Bold, fontSize = 18.sp)
             Spacer(Modifier.height(20.dp))
+
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier
@@ -206,30 +194,6 @@ fun ReminderScreen(navController: NavHostController) {
             }
         }
 
-        var editingReminder by remember { mutableStateOf<Reminder?>(null) }
-
-// ...
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(reminders) { reminder ->
-                ReminderList(
-                    reminder = reminder,
-                    onEdit = { editingReminder = reminder }, // ✅ saat klik edit
-                    onDelete = { viewModel.deleteReminder(reminder) },
-                    onActive = { rem, isActive ->
-                        viewModel.updateReminder(rem.copy(isActive = isActive))
-                    }
-                )
-            }
-        }
-
-// ...
-
-        // Bottom sheet untuk edit reminder
         DraggableBottomSheet(
             visible = editingReminder != null,
             onDismiss = { editingReminder = null }
@@ -244,7 +208,7 @@ fun ReminderScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(20.dp))
 
             editingReminder?.let { reminderToEdit ->
-                RecordReminder(
+                EdithReminder(
                     reminderTitle = reminderToEdit.title,
                     existingReminder = reminderToEdit, // ✅ kirim data lama
                     onSave = { updated ->
@@ -254,7 +218,6 @@ fun ReminderScreen(navController: NavHostController) {
                 )
             }
         }
-
     }
 }
 
@@ -262,7 +225,8 @@ fun ReminderScreen(navController: NavHostController) {
 //fun ScreenAwal
 
 @Composable
-fun ReminderCard(title: String, imageRes: Int, onClick: (String) -> Unit) { // Fungsi buat nampilin pilihan reminder
+fun ReminderCard(title: String, imageRes: Int, onClick: (String) -> Unit) {
+    // Fungsi buat nampilin pilihan reminder
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -294,8 +258,10 @@ fun ReminderList(
     reminder: Reminder,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
-    onActive: (Reminder, Boolean) -> Unit) { // Fungsi buat namppilin list reminder (kalau ada) //
-    var nyalaGak by remember { mutableStateOf(reminder.isActive) }
+    onActive: (Reminder, Boolean) -> Unit
+) {
+    // Fungsi buat namppilin list reminder (kalau ada)
+     var nyalaGak by remember { mutableStateOf(reminder.isActive) }
 
     Card(
         modifier = Modifier
@@ -307,20 +273,20 @@ fun ReminderList(
         Row(
             modifier = Modifier
                 .padding(16.dp)
-//                .clickable { onCheckedChange(reminder.isActive)}
+                // .clickable { onCheckedChange(reminder.isActive)}
                 .fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
-//            horizontalArrangement = Arrangement.SpaceBetween
+            // horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column(Modifier.weight(1f)) {
                 Text(reminder.title, fontWeight = FontWeight.Bold)
                 Text(reminder.time, fontSize = 20.sp)
                 Text(reminder.days.joinToString(", "), fontSize = 12.sp)
             }
-            Spacer(modifier = Modifier.width(12.dp))
-            IconButton(onClick = onEdit) {
-                Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(20.dp))
-            }
+             Spacer(modifier = Modifier.width(12.dp))
+             IconButton(onClick = onEdit) {
+                 Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(20.dp))
+             }
             Spacer(modifier = Modifier.width(8.dp))
             IconButton(onClick = onDelete) {
                 Icon(Icons.Default.Delete, contentDescription = "Delete", modifier = Modifier.size(20.dp))
@@ -338,23 +304,21 @@ fun ReminderList(
 }
 
 @Composable
-fun DraggableBottomSheet( // Fungsi buat munculin surface
+fun DraggableBottomSheet(
+    // Fungsi buat munculin surface
     visible: Boolean,
     onDismiss: () -> Unit,
     content: @Composable ColumnScope.() -> Unit
 ) {
     if (!visible) return
+
     var offsetY by remember { mutableFloatStateOf(0f) }
     val coroutineScope = rememberCoroutineScope()
 
     // Biar bisa balik tanpa scroll
     BackHandler(
         enabled = true,
-        onBack = {
-            coroutineScope.launch {
-                onDismiss()
-            }
-        }
+        onBack = { coroutineScope.launch { onDismiss() } }
     )
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -364,7 +328,6 @@ fun DraggableBottomSheet( // Fungsi buat munculin surface
             exit = slideOutVertically(targetOffsetY = { it / 2 }) + fadeOut(),
             modifier = Modifier.align(Alignment.BottomCenter)
         ) {
-
             Surface(
                 shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
                 shadowElevation = 10.dp,
@@ -372,29 +335,29 @@ fun DraggableBottomSheet( // Fungsi buat munculin surface
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(390.dp)
-                        .offset { IntOffset(0, offsetY.toInt()) } // Balik dengan scroll
-                        .draggable(
-                            orientation = Orientation.Vertical,
-                            state = rememberDraggableState { delta ->
-                                offsetY = (offsetY + delta).coerceAtLeast(0f)
-                            },
-                            onDragStopped = {
-                                if (offsetY > 200f) {
-                                    coroutineScope.launch {
-                                        offsetY = 0f
-                                        onDismiss()
-                                    }
-                                } else {
-                                    coroutineScope.launch { offsetY = 0f }
+                    .offset { IntOffset(0, offsetY.toInt()) }
+                    // Balik dengan scroll
+                    .draggable(
+                        orientation = Orientation.Vertical,
+                        state = rememberDraggableState { delta ->
+                            offsetY = (offsetY + delta).coerceAtLeast(0f)
+                        },
+                        onDragStopped = {
+                            if (offsetY > 200f) {
+                                coroutineScope.launch {
+                                    offsetY = 0f
+                                    onDismiss()
                                 }
+                            } else {
+                                coroutineScope.launch { offsetY = 0f }
                             }
-                        )
+                        }
+                    )
             ) {
                 Column(
                     content = content,
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(20.dp)
-
                 )
             }
         }
@@ -402,7 +365,102 @@ fun DraggableBottomSheet( // Fungsi buat munculin surface
 }
 
 @Composable
-fun RecordReminder(
+fun RecordReminder(reminderTitle: String, onSave: (Reminder) -> Unit) {
+    // Fungsi buat set hari dan tanggal reminder
+    val context = LocalContext.current
+    var selectedTime by remember { mutableStateOf(LocalTime.now()) }
+    val selectedDays = remember { mutableStateListOf<String>() }
+    var showTimePicker by remember { mutableStateOf(false) }
+
+    Text("Reminder for $reminderTitle", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+    Spacer(Modifier.height(30.dp))
+
+    Box(
+        modifier = Modifier
+            .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
+            .padding(12.dp)
+            .clickable { showTimePicker = true }
+    ) {
+        Text(
+            "${selectedTime.hour.toString().padStart(2, '0')}:${selectedTime.minute.toString().padStart(2, '0')}",
+            fontSize = 22.sp
+        )
+    }
+
+    if (showTimePicker) {
+        // Ini digunakan buat milih jam reminder
+        val timePicker = TimePickerDialog(
+            context,
+            { _, hour, minute ->
+                selectedTime = LocalTime.of(hour, minute)
+                showTimePicker = false
+            },
+            selectedTime.hour,
+            selectedTime.minute,
+            true
+        )
+        timePicker.show()
+    }
+
+    Spacer(Modifier.height(30.dp))
+    Text("Repeat", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+    Spacer(Modifier.height(20.dp))
+
+    val days = listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
+
+    // Pilih hari reminder
+    Row(
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        days.forEach { day ->
+            val selected = selectedDays.contains(day)
+            Surface(
+                shape = RoundedCornerShape(10.dp),
+                color = if (selected) Color(0xFFF6C9CB) else Color(0xFFF2F2F2),
+                modifier = Modifier
+                    .size(40.dp)
+                    .clickable {
+                        if (selected) selectedDays.remove(day)
+                        else selectedDays.add(day)
+                    }
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(day, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                }
+            }
+        }
+    }
+
+    Spacer(Modifier.height(30.dp))
+
+    Button(
+        // Tombol simpan reminder
+        onClick = {
+            onSave(
+                Reminder(
+                    title = reminderTitle,
+                    time = "${selectedTime.hour}:${selectedTime.minute.toString().padStart(2, '0')}",
+                    days = selectedDays,
+                    isActive = true
+                )
+            )
+            Toast.makeText(
+                context,
+                "Reminder $reminderTitle diset pada ${selectedDays.joinToString()} jam ${selectedTime.hour}:${selectedTime.minute}",
+                Toast.LENGTH_LONG
+            ).show()
+        },
+        enabled = selectedDays.isNotEmpty(),
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+        modifier = Modifier.fillMaxWidth().height(50.dp)
+    ) {
+        Text("SAVE", color = Color.White, fontWeight = FontWeight.Bold)
+    }
+}
+
+@Composable
+fun EdithReminder(
     reminderTitle: String,
     existingReminder: Reminder? = null, // ✅ opsional
     onSave: (Reminder) -> Unit
@@ -513,3 +571,4 @@ fun RecordReminder(
         )
     }
 }
+
