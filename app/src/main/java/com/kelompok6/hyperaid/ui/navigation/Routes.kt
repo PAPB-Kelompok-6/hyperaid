@@ -10,4 +10,9 @@ object Routes {
     const val PROFILE = "Profile"
     const val LOGIN = "Login"
     const val REGISTER = "Register"
+    const val HEALTH_DISCLAIMER = "HealthDisclaimer"
+    const val ONBOARDING = "OnBoarding"
+    const val LANGUAGE = "Language"
+    const val ABOUT = "About"
+
 }

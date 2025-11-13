@@ -1,6 +1,8 @@
 package com.kelompok6.hyperaid.ui.screens.start
 
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,19 +34,29 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.credentials.CredentialManager
+import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialRequest
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.firebase.auth.GoogleAuthProvider
 import com.kelompok6.hyperaid.R
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(navController: NavHostController, viewModel: AuthViewModel = viewModel()) {
@@ -93,7 +105,7 @@ fun LoginScreen(navController: NavHostController, viewModel: AuthViewModel = vie
 
             LoginField(navController, viewModel)
             OrDivider()
-            LoginOAuth(navController)
+            LoginOAuth(navController, viewModel)
 
             Spacer(modifier = Modifier.padding(0.dp, 35.dp))
 
@@ -182,8 +194,8 @@ fun LoginField(navController: NavController, viewModel: AuthViewModel) {
 
         Button(
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
+                containerColor = Color(0xFF2B2B2B),
+                contentColor = Color(0xFFF6C9CB)
             ),
             shape = RoundedCornerShape(25f),
             onClick = {
@@ -205,23 +217,59 @@ fun LoginField(navController: NavController, viewModel: AuthViewModel) {
 }
 
 @Composable
-fun LoginOAuth(navController: NavController) {
+fun LoginOAuth(navController: NavController, viewModel: AuthViewModel) {
     Column(
         modifier = Modifier.padding(10.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
+
+        val context = LocalContext.current
+
+        val credentialManager = CredentialManager.create(context)
+        val coroutineScope = rememberCoroutineScope()
+
         Button(
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary
+                containerColor = Color.White,
+                contentColor = Color.DarkGray
             ),
+            border = BorderStroke(1.dp, Color.DarkGray),
             shape = RoundedCornerShape(25f),
             onClick = {
-                // navController.navigate("Home")
+                coroutineScope.launch {
+                    try {
+                        val googleIdOption =
+                            GetSignInWithGoogleOption.Builder(context.getString(R.string.default_web_client_id))
+                                .build()
+
+                        val request = GetCredentialRequest.Builder()
+                            .addCredentialOption(googleIdOption)
+                            .build()
+
+                        val result = credentialManager.getCredential(
+                            context = context,
+                            request = request
+                        )
+
+                        val credential = result.credential
+                        if (credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                            val googleIdTokenCredential =
+                                GoogleIdTokenCredential.createFrom(credential.data)
+                            val firebaseCredential = GoogleAuthProvider.getCredential(
+                                googleIdTokenCredential.idToken,
+                                null
+                            )
+
+                            viewModel.loginWithGoogle(firebaseCredential);
+                        }
+                    } catch (e: Exception) {
+                        Log.e("Login", "Google Sign-In failed", e)
+                        viewModel.showAuthError("Failed to login using Google OAuth")
+                    }
+                }
             },
             modifier = Modifier.fillMaxWidth(),
-
-            ) {
+        ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -237,9 +285,10 @@ fun LoginOAuth(navController: NavController) {
 
         Button(
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary
+                containerColor = Color.White,
+                contentColor = Color.DarkGray
             ),
+            border = BorderStroke(1.dp, Color.DarkGray),
             shape = RoundedCornerShape(25f),
             onClick = {
                 // navController.navigate("Home")
@@ -257,6 +306,14 @@ fun LoginOAuth(navController: NavController) {
                     modifier = Modifier.size(20.dp)
                 )
                 Label("Login with Facebook")
+            }
+        }
+
+        if (viewModel.oAuthState is OAuthState.Success) {
+            LaunchedEffect(Unit) {
+                navController.navigate("Home") {
+                    popUpTo("Login") { inclusive = true }
+                }
             }
         }
     }

@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.kelompok6.hyperaid.R
@@ -85,7 +86,7 @@ fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel = 
 
             RegisterField(navController, viewModel, snackbarHostState)
             OrDivider()
-            LoginOAuth(navController)
+            LoginOAuth(navController, viewModel)
 
             Spacer(modifier = Modifier.height(25.dp))
 
@@ -182,9 +183,9 @@ fun RegisterField(navController: NavController, viewModel: AuthViewModel, snackb
             shape = RoundedCornerShape(25f),
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            )
+                containerColor = Color(0xFF2B2B2B),
+                contentColor = Color(0xFFF6C9CB)
+            ),
         ) {
             Label("REGISTER")
         }
