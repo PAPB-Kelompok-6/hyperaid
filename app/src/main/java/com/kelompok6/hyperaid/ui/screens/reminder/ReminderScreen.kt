@@ -230,7 +230,7 @@ fun ReminderCard(title: String, imageRes: Int, onClick: (String) -> Unit) {
             .height(130.dp)
             .clickable { onClick(title) },
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
+//        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
     ) {
         Column(
             modifier = Modifier
@@ -327,7 +327,7 @@ fun DraggableBottomSheet(
         ) {
             Surface(
                 shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-                shadowElevation = 10.dp,
+//                shadowElevation = 10.dp,
                 color = Color.White,
                 modifier = Modifier
                     .fillMaxWidth()
