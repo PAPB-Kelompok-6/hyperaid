@@ -25,11 +25,14 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.kelompok6.hyperaid.ui.helper.AuthHelper
 
 //@Composable
 //fun HomeScreen(navController: NavHostController) {
@@ -41,6 +44,10 @@ import androidx.navigation.NavController
 @Preview(showBackground = true)
 @Composable
 fun HomeScreen(navController: NavController? = null) {
+    val displayName by produceState(initialValue = "Loading...") {
+        value = AuthHelper.getDisplayName()
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -50,7 +57,7 @@ fun HomeScreen(navController: NavController? = null) {
     ) {
         item {
             Text(
-                text = "Good Morning, Ritsuki!",
+                text = "Good Morning, ${displayName}!",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
