@@ -227,6 +227,7 @@ fun ReminderCard(title: String, imageRes: Int, onClick: (String) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(4.dp)
             .height(130.dp)
             .clickable { onClick(title) },
         shape = RoundedCornerShape(16.dp),
