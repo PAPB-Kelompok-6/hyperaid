@@ -210,7 +210,7 @@ fun ReminderScreen(navController: NavHostController) {
             editingReminder?.let { reminderToEdit ->
                 EdithReminder(
                     reminderTitle = reminderToEdit.title,
-                    existingReminder = reminderToEdit, // ✅ kirim data lama
+                    existingReminder = reminderToEdit, // kirim data lama
                     onSave = { updated ->
                         viewModel.updateReminder(updated)
                         editingReminder = null
