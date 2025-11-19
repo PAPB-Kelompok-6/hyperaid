@@ -192,56 +192,53 @@ fun HeightSelector(height: Int, onHeightChange: (Int) -> Unit) {
         ) {
             Text(
                 text = "Height (in cm)",
-                fontSize = 14.sp,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
                 color = Color.Black,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            // Ruler with markings
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(60.dp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom
+                IconButton(
+                    onClick = { onHeightChange((height - 1).coerceAtLeast(0)) },
+                    modifier = Modifier
+                        .border(1.dp, Color.Gray, CircleShape)
+                        .size(30.dp)
+                        .clip(CircleShape)
                 ) {
-                    for (i in 130..170 step 10) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = i.toString(),
-                                fontSize = 12.sp,
-                                color = if (i == 150) Color.Black else Color.Gray
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .width(2.dp)
-                                    .height(if (i % 20 == 0) 40.dp else 30.dp)
-                                    .background(Color.Gray)
-                            )
-                        }
-                    }
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        contentDescription = "Decrease height",
+                        tint = Color.Black
+                    )
                 }
 
-                // Center indicator
-                Box(
-                    modifier = Modifier
-                        .width(3.dp)
-                        .height(50.dp)
-                        .background(Color.Black)
-                        .align(Alignment.BottomCenter)
+                Text(
+                    text = height.toString(),
+                    fontSize = 36.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    modifier = Modifier.padding(horizontal = 64.dp)
                 )
-            }
 
-            Text(
-                text = height.toString(),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                modifier = Modifier.padding(top = 8.dp)
-            )
+                IconButton(
+                    onClick = { onHeightChange(height + 1) },
+                    modifier = Modifier
+                        .border(1.dp, Color.Gray, CircleShape)
+                        .size(30.dp)
+                        .clip(CircleShape)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowRight,
+                        contentDescription = "Increase height",
+                        tint = Color.Black
+                    )
+                }
+            }
         }
     }
 }
@@ -260,48 +257,53 @@ fun WeightSelector(weight: Int, onWeightChange: (Int) -> Unit, modifier: Modifie
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Weight (in kg)",
+                text = "Weight (in Kg)",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
-                modifier = Modifier.padding(bottom = 4.dp)
-            )
-
-            Icon(
-                imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = "Increase",
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.padding(bottom = 16.dp)
             )
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxSize()
             ) {
-                Text(
-                    text = (weight - 1).toString(),
-                    fontSize = 16.sp,
-                    color = Color.Gray,
-                    modifier = Modifier.padding(horizontal = 12.dp)
-                )
+                IconButton(
+                    onClick = { onWeightChange(weight - 1) },
+                    modifier = Modifier
+                        .border(1.dp, Color.Gray, CircleShape)
+                        .size(25.dp)
+                        .clip(CircleShape)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        contentDescription = "Decrease",
+                        tint = Color.Black
+                    )
+                }
+
                 Text(
                     text = weight.toString(),
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
-                Text(
-                    text = (weight + 1).toString(),
-                    fontSize = 16.sp,
-                    color = Color.Gray,
-                    modifier = Modifier.padding(horizontal = 12.dp)
-                )
-            }
 
-//            Icon(
-//                imageVector = Icons.Default.ArrowDropDown,
-//                contentDescription = "Decrease",
-//                modifier = Modifier.size(32.dp)
-//            )
+                IconButton(
+                    onClick = { onWeightChange(weight + 1) },
+                    modifier = Modifier
+                        .border(1.dp, Color.Gray, CircleShape)
+                        .size(25.dp)
+                        .clip(CircleShape)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowRight,
+                        contentDescription = "Increase",
+                        tint = Color.Black
+                    )
+                }
+            }
         }
     }
 }
