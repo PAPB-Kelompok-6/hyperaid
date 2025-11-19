@@ -59,7 +59,7 @@ fun ProfileScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
+            .background(Color.White)
             .verticalScroll(rememberScrollState())
     ) {
         Card(
@@ -277,6 +277,7 @@ fun ProfileScreen(
                 }
             }
         }
+        Spacer(modifier = Modifier.padding(8.dp))
     }
 }
 
