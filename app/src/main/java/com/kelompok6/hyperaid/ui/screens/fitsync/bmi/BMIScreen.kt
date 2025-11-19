@@ -26,19 +26,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
+import com.kelompok6.hyperaid.ui.navigation.Routes
 
 
-//@Suppress("unused", "UNUSED_PARAMETER")
-//@Composable
-//fun BMIScreen(navController: NavHostController) {
-//    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-//        Text(text = "FitSync (BMI)", style = MaterialTheme.typography.headlineSmall)
-//    }
-//}
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @Composable
-fun BMIScreen(navController: NavHostController? = null) {
+fun BMIScreen(navController: NavHostController) {
     var selectedTab by remember { mutableStateOf("BMI") }
     var height by remember { mutableStateOf(150) }
     var weight by remember { mutableStateOf(39) }
@@ -53,7 +47,12 @@ fun BMIScreen(navController: NavHostController? = null) {
         item {
             TopTabSelector(
                 selectedTab = selectedTab,
-                onTabSelected = { selectedTab = it }
+                onTabSelected = { tab ->
+                    selectedTab = tab
+                    if (tab == "NutriTrack") {
+                        navController.navigate(Routes.NUTRITRACK)
+                    }
+                }
             )
         }
 
@@ -153,7 +152,7 @@ fun TopTabSelector(selectedTab: String, onTabSelected: (String) -> Unit) {
         TopTab(
             text = "NutriTrack",
             isSelected = selectedTab == "NutriTrack",
-            onClick = { /** navigateToNutriTrack(navController) **/ }
+            onClick = { onTabSelected("NutriTrack") }
         )
     }
 }
@@ -518,23 +517,6 @@ fun BMIHistoryCard() {
                                     fontWeight = FontWeight.Medium
                                 )
                             }
-                        }
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Text(
-                                text = "See Details",
-                                fontSize = 14.sp,
-                                color = Color.Black
-                            )
-                            Icon(
-                                imageVector = Icons.Default.ArrowForward,
-                                contentDescription = "Arrow",
-                                tint = Color.Black,
-                                modifier = Modifier.size(20.dp)
-                            )
                         }
                     }
                 }

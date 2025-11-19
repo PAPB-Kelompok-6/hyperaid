@@ -28,7 +28,7 @@ import androidx.navigation.NavController
 
 @Preview(showBackground = true)
 @Composable
-fun NutriTrackScreen(navController: NavController? = null) {
+fun NutriTrackScreen(navController: NavController) {
     var selectedTab by remember { mutableStateOf("NutriTrack") }
     var historyTab by remember { mutableStateOf("Recent") }
 
