@@ -36,7 +36,9 @@ import com.kelompok6.hyperaid.ui.screens.fitsync.bmi.BMIScreen
 import com.kelompok6.hyperaid.ui.screens.home.HomeScreen
 import com.kelompok6.hyperaid.ui.screens.profile.ProfileScreen
 import com.kelompok6.hyperaid.ui.screens.reminder.ReminderScreen
+import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncDetailHistoryScreen
 import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncScreen
+import okhttp3.Route
 
 @Composable
 fun MainScaffold() {
@@ -60,6 +62,7 @@ private fun MainNavHost(navController: NavHostController, modifier: Modifier = M
         composable(Routes.PROFILE) {
             ProfileScreen(navController /** profileViewModel **/) // NANTI DI-PASS PROFILE VIEW MODEL
         }
+        composable(Routes.VITALSYNC_HISTORY) { VitalsyncDetailHistoryScreen() }
     }
 }
 

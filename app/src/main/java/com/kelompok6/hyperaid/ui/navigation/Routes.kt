@@ -5,6 +5,7 @@ object Routes {
     const val HOME = "Home"
     const val FITSYNC = "BMI"
     const val VITALSYNC = "Vitalsync"
+    const val VITALSYNC_HISTORY = "vitalsync_history"
     const val REMINDER = "Reminder"
     const val PROFILE = "Profile"
     const val LOGIN = "Login"
