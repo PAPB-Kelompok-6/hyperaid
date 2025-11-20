@@ -7,6 +7,7 @@ object Routes {
     const val NUTRITRACK = "Nutritrack"
     const val VITALSYNC = "Vitalsync"
     const val VITALSYNC_HISTORY = "vitalsync_history"
+    const val VITALSYNC_ADDNOTES = "vitalsync_addnotes"
     const val REMINDER = "Reminder"
     const val PROFILE = "Profile"
     const val LOGIN = "Login"
