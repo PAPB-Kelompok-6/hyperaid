@@ -20,8 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
@@ -35,12 +34,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.kelompok6.hyperaid.R
 import com.kelompok6.hyperaid.ui.helper.AuthHelper
 
 // Main Profile Screen
@@ -160,14 +161,14 @@ fun ProfileScreen(
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 SettingCardContent(
                     {},
-                    Icons.Default.Lock,
+                    R.drawable.password,
                     "changePasswordIcon",
                     "Change Password",
                     "Change your password"
                 )
                 SettingCardContent(
                     {},
-                    Icons.Default.Delete,
+                    R.drawable.delete,
                     "deleteAccountIcon",
                     "Delete Account",
                     "Permanently delete your account"
@@ -180,14 +181,14 @@ fun ProfileScreen(
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 SettingCardContent(
                     {},
-                    Icons.Default.Clear,
+                    R.drawable.languages,
                     "globeIcon",
                     "Language",
                     "Change your language"
                 )
                 SettingCardContent(
                     {},
-                    Icons.Default.Notifications,
+                    R.drawable.notifications,
                     "notificationIcon",
                     "Notifications",
                     "Turn on/off notifications"
@@ -200,14 +201,14 @@ fun ProfileScreen(
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 SettingCardContent(
                     {},
-                    Icons.Default.Clear,
+                    R.drawable.devices,
                     "heartbeatIcon",
                     "Connected Device",
                     "View and manage connected health devices"
                 )
                 SettingCardContent(
                     {},
-                    Icons.Default.Clear,
+                    R.drawable.medical,
                     "historyIcon",
                     "Medical History",
                     "View your blood pressure history"
@@ -220,21 +221,21 @@ fun ProfileScreen(
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 SettingCardContent(
                     {},
-                    Icons.Default.Clear,
+                    R.drawable.faq,
                     "helpIcon",
                     "FAQ",
                     "View frequently asked questions"
                 )
                 SettingCardContent(
                     {},
-                    Icons.Default.Clear,
+                    R.drawable.privacypolicy,
                     "privacyIcon",
                     "Privacy Policy",
                     "Read our privacy policy"
                 )
                 SettingCardContent(
                     {},
-                    Icons.Default.Clear,
+                    R.drawable.termscondition,
                     "termsIcon",
                     "Terms of Service",
                     "Read our terms and conditions"
@@ -257,7 +258,7 @@ fun ProfileScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Clear,
+                        imageVector = Icons.Default.ExitToApp,
                         /** CHANGE THIS TO A RELEVANT ICON **/
                         contentDescription = "Logout",
                         tint = Color.Red,
@@ -316,7 +317,7 @@ fun ProfileSettingCard(
 @Composable
 fun SettingCardContent(
     onClickAction: () -> Unit,
-    icon: ImageVector,
+    icon: Int,
     iconContentDescription: String,
     title: String,
     description: String
@@ -333,7 +334,7 @@ fun SettingCardContent(
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                imageVector = icon,
+                painter = painterResource(id = icon),
                 /** CHANGE THIS TO A RELEVANT ICON **/
                 contentDescription = iconContentDescription,
                 tint = Color.LightGray,
