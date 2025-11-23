@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.kelompok6.hyperaid.data.model.User
@@ -16,6 +17,7 @@ class AuthViewModel(
 
     var loginState by mutableStateOf<LoginState>(LoginState.Idle)
     var registerState by mutableStateOf<RegisterState>(RegisterState.Idle)
+    var oAuthState by mutableStateOf<OAuthState>(OAuthState.Idle)
 
     fun login(email: String, password: String) {
         if (email.isBlank() || password.isBlank()) {
@@ -72,6 +74,18 @@ class AuthViewModel(
         registerState = RegisterState.Error(message)
         loginState = LoginState.Error(message)
     }
+
+    fun loginWithGoogle(credential: AuthCredential) {
+        oAuthState = OAuthState.Loading
+
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener { task ->
+                oAuthState =
+                    if (task.isSuccessful) OAuthState.Success(auth.currentUser) else OAuthState.Error(
+                        task.exception?.message ?: "Unknown error"
+                    )
+            }
+    }
 }
 
 sealed class LoginState {
@@ -86,4 +100,11 @@ sealed class RegisterState {
     object Loading : RegisterState()
     data class Success(val user: FirebaseUser?) : RegisterState()
     data class Error(val message: String) : RegisterState()
+}
+
+sealed class OAuthState {
+    object Idle : OAuthState()
+    object Loading : OAuthState()
+    data class Success(val user: FirebaseUser?) : OAuthState()
+    data class Error(val message: String) : OAuthState()
 }
