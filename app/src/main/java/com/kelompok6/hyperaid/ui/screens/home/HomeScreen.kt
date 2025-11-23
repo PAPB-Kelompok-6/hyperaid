@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -33,6 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kelompok6.hyperaid.ui.helper.AuthHelper
+import com.kelompok6.hyperaid.ui.navigation.Routes
+import androidx.navigation.compose.rememberNavController
 
 //@Composable
 //fun HomeScreen(navController: NavHostController) {
@@ -40,10 +43,8 @@ import com.kelompok6.hyperaid.ui.helper.AuthHelper
 //        Text(text = "Home", style = MaterialTheme.typography.headlineSmall)
 //    }
 //}
-
-@Preview(showBackground = true)
 @Composable
-fun HomeScreen(navController: NavController? = null) {
+fun HomeScreen(navController: NavController) {
     val displayName by produceState(initialValue = "Loading...") {
         value = AuthHelper.getDisplayName()
     }
@@ -65,11 +66,11 @@ fun HomeScreen(navController: NavController? = null) {
         }
 
         item {
-            HeartRateReminderCard()
+            HeartRateReminderCard(navController)
         }
 
         item {
-            HeartRateCard()
+            HeartRateCard(navController)
         }
 
         item {
@@ -86,38 +87,20 @@ fun HomeScreen(navController: NavController? = null) {
             )
         }
 
-        item {
-            NewsCard(
-                title = "Lifestyle Changes to Combat Hypertension...",
-                subtitle = "Hypertension, or high blood pressure, is a major health concern that could lead to...",
-                timeAgo = "17 hours ago"
-            )
-        }
-
-        item {
-            NewsCard(
-                title = "Hypertension and Heart Health: What You Need to Know..",
-                subtitle = "",
-                timeAgo = "Yesterday"
-            )
-        }
-
-        item {
-            NewsCard(
-                title = "Tech Solutions for Hypertension Management..",
-                subtitle = "",
-                timeAgo = "2 days ago"
-            )
-        }
+        item { NewsCard("Lifestyle Changes to Combat Hypertension...", "Hypertension, or high blood pressure, is a major health concern that could lead to...", "17 hours ago") }
+        item { NewsCard("Hypertension and Heart Health: What You Need to Know..", "", "Yesterday") }
+        item { NewsCard("Tech Solutions for Hypertension Management..", "", "2 days ago") }
     }
 }
 
+
 @Composable
-fun HeartRateReminderCard() {
+fun HeartRateReminderCard(navController: NavController?) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(60.dp),
+            .height(60.dp)
+            .clickable { navController?.navigate(Routes.MEASURE_INSTRUCTION) },
         colors = CardDefaults.cardColors(containerColor = Color(0xFF2C2C2C)),
         shape = RoundedCornerShape(16.dp)
     ) {
@@ -153,7 +136,7 @@ fun HeartRateReminderCard() {
 }
 
 @Composable
-fun HeartRateCard() {
+fun HeartRateCard(navController: NavController?) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -212,7 +195,7 @@ fun HeartRateCard() {
                     }
                     Spacer(modifier = Modifier.weight(1f))
                     Button(
-                        onClick = { },
+                        onClick = { navController?.navigate(Routes.MEASURE_INSTRUCTION) },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C2C2C)),
                         shape = RoundedCornerShape(12.dp)
                     ) {
@@ -415,4 +398,10 @@ fun NewsCard(title: String, subtitle: String, timeAgo: String) {
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenPreview() {
+    HomeScreen(navController = rememberNavController())
 }

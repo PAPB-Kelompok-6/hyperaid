@@ -16,5 +16,9 @@ object Routes {
     const val ONBOARDING = "OnBoarding"
     const val LANGUAGE = "Language"
     const val ABOUT = "About"
+    const val MEASURE_INSTRUCTION = "MeasureInstruction"
+    const val MEASURE_PROCESS = "measure_process"
+    const val MEASURE_RESULT = "measure_result"
+
 
 }

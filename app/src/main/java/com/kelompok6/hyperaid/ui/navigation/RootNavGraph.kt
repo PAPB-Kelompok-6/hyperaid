@@ -11,6 +11,10 @@ import com.kelompok6.hyperaid.ui.screens.start.HealthDisclaimerScreen
 import com.kelompok6.hyperaid.ui.screens.start.OnBoardingScreen
 import com.kelompok6.hyperaid.ui.screens.start.LanguageScreen
 import com.kelompok6.hyperaid.ui.screens.about.AboutScreen
+import com.kelompok6.hyperaid.ui.screens.measure.MeasureInstruction
+import com.kelompok6.hyperaid.ui.screens.measure.MeasureProcess
+import com.kelompok6.hyperaid.ui.screens.measure.MeasureResult
+
 
 @Composable
 fun RootNavGraph(navController: NavHostController) {
@@ -51,6 +55,18 @@ fun RootNavGraph(navController: NavHostController) {
 
         composable(Routes.LANGUAGE) {
             LanguageScreen(navController = navController, onContinue = {})
+        }
+
+        composable(Routes.MEASURE_INSTRUCTION) {
+            MeasureInstruction(navController)
+        }
+
+        composable(Routes.MEASURE_PROCESS) {
+            MeasureProcess(navController)
+        }
+
+        composable(Routes.MEASURE_RESULT) {
+            MeasureResult(navController)
         }
 
     }

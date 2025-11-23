@@ -40,7 +40,9 @@ import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncDetailHistoryScreen
 import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncScreen
 import com.kelompok6.hyperaid.ui.screens.fitsync.nutritrack.NutriTrackScreen
 import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncAddNotesScreen
-
+import com.kelompok6.hyperaid.ui.screens.measure.MeasureInstruction
+import com.kelompok6.hyperaid.ui.screens.measure.MeasureProcess
+import com.kelompok6.hyperaid.ui.screens.measure.MeasureResult
 import okhttp3.Route
 
 @Composable
@@ -68,6 +70,10 @@ private fun MainNavHost(navController: NavHostController, modifier: Modifier = M
             ProfileScreen(navController /** profileViewModel **/) // NANTI DI-PASS PROFILE VIEW MODEL
         }
         composable(Routes.NUTRITRACK) { NutriTrackScreen(navController) }
+        composable(Routes.MEASURE_INSTRUCTION) { MeasureInstruction(navController) }
+        composable(Routes.MEASURE_PROCESS) { MeasureProcess(navController) }
+        composable(Routes.MEASURE_RESULT) { MeasureResult(navController) }
+
     }
 }
 
