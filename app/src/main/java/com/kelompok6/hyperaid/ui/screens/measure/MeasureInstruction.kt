@@ -1,9 +1,7 @@
 package com.kelompok6.hyperaid.ui.screens.measure
 
+import android.Manifest
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,6 +10,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,24 +22,31 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.kelompok6.hyperaid.R
 import com.kelompok6.hyperaid.ui.navigation.Routes
 
-// Hapus import duplikat yang tidak perlu
-// import androidx.compose.foundation.background
-// import androidx.compose.foundation.layout.Box
-// import androidx.compose.foundation.shape.CircleShape
-// import androidx.compose.ui.draw.clip
-
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun MeasureInstruction(navController: NavController) {
+
+    var showPermissionPopup by remember { mutableStateOf(false) }
+    val cameraPermissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
+
+    LaunchedEffect(cameraPermissionState.status) {
+        if (cameraPermissionState.status.isGranted) {
+            showPermissionPopup = false // Tutup popup jika terbuka
+            navController.navigate(Routes.MEASURE_PROCESS)
+        }
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -90,7 +97,13 @@ fun MeasureInstruction(navController: NavController) {
         }
 
         Button(
-            onClick = { navController.navigate(Routes.MEASURE_PROCESS) },
+            onClick = {
+                if (cameraPermissionState.status.isGranted) {
+                    navController.navigate(Routes.MEASURE_PROCESS)
+                } else {
+                    showPermissionPopup = true
+                }
+            },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(24.dp)
@@ -101,27 +114,18 @@ fun MeasureInstruction(navController: NavController) {
         ) {
             Text("START", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
         }
-    }
-}
 
-// ... (Fungsi HealthDisclaimerPopup, TipsItem, dan CameraPermissionPopup tidak perlu diubah)
-@Composable
-fun HealthDisclaimerPopup(onNext: () -> Unit, onDismiss: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Health Disclaimer") },
-        text = { Text("This measurement is not for medical purposes. Please consult a doctor for accurate health information.") },
-        confirmButton = {
-            Button(onClick = onNext) {
-                Text("Next")
-            }
-        },
-        dismissButton = {
-            Button(onClick = onDismiss) {
-                Text("Cancel")
-            }
+        if (showPermissionPopup) {
+            CameraPermissionPopup(
+                onAllow = {
+                    cameraPermissionState.launchPermissionRequest()
+                },
+                onDismiss = {
+                    showPermissionPopup = false
+                }
+            )
         }
-    )
+    }
 }
 
 @Composable
