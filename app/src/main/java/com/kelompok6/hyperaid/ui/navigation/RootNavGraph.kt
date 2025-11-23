@@ -11,6 +11,7 @@ import com.kelompok6.hyperaid.ui.screens.start.HealthDisclaimerScreen
 import com.kelompok6.hyperaid.ui.screens.start.OnBoardingScreen
 import com.kelompok6.hyperaid.ui.screens.start.LanguageScreen
 import com.kelompok6.hyperaid.ui.screens.about.AboutScreen
+import com.kelompok6.hyperaid.ui.screens.home.NotificationScreen
 import com.kelompok6.hyperaid.ui.screens.measure.MeasureInstruction
 import com.kelompok6.hyperaid.ui.screens.measure.MeasureProcess
 import com.kelompok6.hyperaid.ui.screens.measure.MeasureResult
@@ -68,6 +69,10 @@ fun RootNavGraph(navController: NavHostController) {
         composable(Routes.MEASURE_RESULT) {
             MeasureResult(navController)
         }
+        composable(Routes.NOTIFICATION) {
+            NotificationScreen(navController)
+        }
+
 
     }
 }

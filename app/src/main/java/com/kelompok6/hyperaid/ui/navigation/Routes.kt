@@ -19,6 +19,7 @@ object Routes {
     const val MEASURE_INSTRUCTION = "MeasureInstruction"
     const val MEASURE_PROCESS = "measure_process"
     const val MEASURE_RESULT = "measure_result"
+    const val NOTIFICATION = "notification"
 
 
 }

@@ -39,6 +39,7 @@ import com.kelompok6.hyperaid.ui.screens.reminder.ReminderScreen
 import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncDetailHistoryScreen
 import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncScreen
 import com.kelompok6.hyperaid.ui.screens.fitsync.nutritrack.NutriTrackScreen
+import com.kelompok6.hyperaid.ui.screens.home.NotificationScreen
 import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncAddNotesScreen
 import com.kelompok6.hyperaid.ui.screens.measure.MeasureInstruction
 import com.kelompok6.hyperaid.ui.screens.measure.MeasureProcess
@@ -73,6 +74,8 @@ private fun MainNavHost(navController: NavHostController, modifier: Modifier = M
         composable(Routes.MEASURE_INSTRUCTION) { MeasureInstruction(navController) }
         composable(Routes.MEASURE_PROCESS) { MeasureProcess(navController) }
         composable(Routes.MEASURE_RESULT) { MeasureResult(navController) }
+        composable(Routes.NOTIFICATION) { NotificationScreen(navController) }
+
 
     }
 }
