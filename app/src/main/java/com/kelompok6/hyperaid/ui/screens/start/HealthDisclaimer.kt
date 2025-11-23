@@ -196,11 +196,9 @@ fun HealthDisclaimerScreen(
                 FloatingActionButton(
                     onClick = {
                         if (navController != null) {
-                            navController.navigate(Routes.LANGUAGE) {
+                            navController.navigate(Routes.LOGIN) {
                                 launchSingleTop = true
                             }
-                        } else {
-                            onContinue()
                         }
                     },
                     containerColor = Color(0xFF222222),

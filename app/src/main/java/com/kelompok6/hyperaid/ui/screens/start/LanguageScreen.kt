@@ -39,6 +39,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.runtime.*
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kelompok6.hyperaid.ui.helper.AuthHelper
 
 
 data class Language(val label: String, val code: String)
@@ -62,10 +64,35 @@ private val languageItems = listOf(
 
 @Composable
 fun LanguageScreen(
-    navController: NavHostController? = null,
-    onContinue: () -> Unit
+    navController: NavHostController,
+    viewModel: OnboardingViewModel = viewModel()
 ) {
-    var languagePreference by remember { mutableStateOf("") }
+    var checking by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        val uid = AuthHelper.getCurrentUser()?.uid
+        if (uid != null) {
+            val missing = viewModel.checkIfLanguageMissing(uid)
+
+            if (!missing) {
+                navController.navigate(Routes.ABOUT) {
+                    popUpTo("Login") { inclusive = true }
+                }
+                return@LaunchedEffect
+            }
+        }
+        checking = false
+    }
+    if (checking) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+        )
+        return
+    }
+
+    val state by viewModel.state.collectAsState()
 
     Box(
         modifier = Modifier
@@ -111,7 +138,7 @@ fun LanguageScreen(
             ) {
 
                 items(languageItems) { lang ->
-                    val selected = lang.code == languagePreference
+                    val selected = lang.code == state.languagePreference
 
                     Card(
                         shape = MaterialTheme.shapes.medium,
@@ -119,7 +146,9 @@ fun LanguageScreen(
                         modifier = Modifier
                             .height(55.dp)
                             .fillMaxWidth()
-                            .clickable { languagePreference = lang.code }
+                            .clickable {
+                                viewModel.update { it.copy(languagePreference = lang.code) }
+                            }
                     ) {
                         Row(
                             modifier = Modifier
@@ -136,7 +165,9 @@ fun LanguageScreen(
 
                             RadioButton(
                                 selected = selected,
-                                onClick = { languagePreference = lang.code }
+                                onClick = {
+                                    viewModel.update { it.copy(languagePreference = lang.code) }
+                                }
                             )
                         }
                     }
@@ -145,15 +176,16 @@ fun LanguageScreen(
         }
         FloatingActionButton(
             onClick = {
-                if (navController != null) {
-                    // navigate to AboutScreen when Continue is pressed
-                    navController.navigate(Routes.ABOUT) {
-                        popUpTo(Routes.LANGUAGE) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                } else {
-                    onContinue()
+                // save to firestore
+                val uid = AuthHelper.getCurrentUser()?.uid
+                if (uid != null) viewModel.saveAll(uid)
+
+                // navigate to AboutScreen when Continue is pressed
+                navController.navigate(Routes.ABOUT) {
+                    popUpTo(Routes.LANGUAGE) { inclusive = true }
+                    launchSingleTop = true
                 }
+
             },
             containerColor = Color(0xFF222222),
             contentColor = Color.White,
@@ -176,5 +208,5 @@ fun LanguageScreen(
 @Preview(showBackground = true)
 @Composable
 private fun PreviewLanguage() {
-    LanguageScreen(onContinue = {})
+//    LanguageScreen(onContinue = {})
 }

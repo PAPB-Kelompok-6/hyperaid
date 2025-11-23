@@ -4,11 +4,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.kelompok6.hyperaid.data.model.User
 import com.kelompok6.hyperaid.data.repository.UserRepository
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 class AuthViewModel(
     private val userRepository: UserRepository = UserRepository()
@@ -52,7 +55,11 @@ class AuthViewModel(
                         gender = null,
                         age = null,
                         avatar = null,
-                        address = null
+                        address = null,
+                        height = null,
+                        weight = null,
+                        isAlcoholic = null,
+                        isSmoking = null,
                     )
 
                     userRepository.saveUser(user) { result ->

@@ -13,7 +13,7 @@ class ProfileViewModel : ViewModel() {
     val avatar: String = ""
     val name: String = ""
     val address: String = ""
-    val languagePreference: String = "id_en"
+    val languagePreference: String = ""
 
     fun editAccount(id: String) {
 
