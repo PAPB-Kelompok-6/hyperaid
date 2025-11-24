@@ -1,6 +1,7 @@
 package com.kelompok6.hyperaid.ui.screens.about
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -25,7 +26,9 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
 import com.kelompok6.hyperaid.data.enum.Gender
 import com.kelompok6.hyperaid.ui.helper.AuthHelper
 import com.kelompok6.hyperaid.ui.navigation.Routes
@@ -33,7 +36,7 @@ import com.kelompok6.hyperaid.ui.screens.start.OnboardingViewModel
 
 @Composable
 fun AboutScreen(
-    navController: NavHostController,
+    navController: NavHostController? = null,
     viewModel: OnboardingViewModel = viewModel()
 ) {
     var checking by remember { mutableStateOf(true) }
@@ -43,7 +46,7 @@ fun AboutScreen(
         if (uid != null) {
             val missing = viewModel.checkIfAboutIsMissing(uid)
 
-            if (!missing) {
+            if (!missing && navController != null) {
                 navController.navigate(Routes.HOME) {
                     popUpTo(Routes.LANGUAGE) { inclusive = true }
                 }
@@ -87,12 +90,19 @@ fun AboutScreen(
             )
 
             GenderSelector(
-                selectedGender = state.gender,
+                selectedGender = state.gender ?: Gender.MALE,
                 onSelected = { g -> viewModel.update { it.copy(gender = g) } }
             )
 
-            HeightSlider()
-            WeightSlider()
+            HeightSlider(
+                value = state.height ?: 150.0,
+                onValueChange = { h -> viewModel.update { it.copy(height = h) } }
+            )
+
+            WeightSlider(
+                value = state.weight ?: 50.0,
+                onValueChange = { w -> viewModel.update { it.copy(weight = w) } }
+            )
 
             Row {
                 IsSmokingButton()
@@ -188,14 +198,206 @@ fun GenderCard(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HeightSlider() {
+fun HeightSlider(
+    value: Double,
+    onValueChange: (Double) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val min = 50.0
+    val max = 300.0
 
+    val interaction =
+        remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Height",
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Left
+        )
+
+        Spacer(Modifier.height(24.dp))
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = "Short",
+                tint = Color.Gray,
+                modifier = Modifier
+                    .size(32.dp)
+                    .weight(0.1f)
+            )
+
+            Slider(
+                value = value.toFloat(),
+                onValueChange = { onValueChange(it.toDouble()) },
+                valueRange = min.toFloat()..max.toFloat(),
+                modifier = Modifier.weight(0.8f),
+                interactionSource = interaction,
+                colors = SliderDefaults.colors(
+                    thumbColor = Color.Gray,
+                    activeTrackColor = Color.Gray,
+                    inactiveTrackColor = Color.LightGray
+                ),
+                thumb = {
+                    Box(
+                        modifier = Modifier
+                            .size(22.dp)
+                            .border(
+                                width = 6.dp,
+                                color = Color.Gray,
+                                shape = CircleShape
+                            )
+                    )
+                }
+            )
+
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = "Tall",
+                tint = Color.Gray,
+                modifier = Modifier
+                    .size(48.dp)
+                    .weight(0.1f)
+            )
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "${min.toInt()} cm",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray
+            )
+            Text(
+                text = String.format("%.2f cm", value),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "${max.toInt()} cm",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray
+            )
+        }
+    }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WeightSlider() {
+fun WeightSlider(
+    value: Double,
+    onValueChange: (Double) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val min = 20.0
+    val max = 200.0
 
+    val interaction =
+        remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Weight",
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Left
+        )
+
+        Spacer(Modifier.height(24.dp))
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = "Small",
+                tint = Color.Gray,
+                modifier = Modifier
+                    .size(32.dp)
+                    .weight(0.1f)
+            )
+
+            Slider(
+                value = value.toFloat(),
+                onValueChange = { onValueChange(it.toDouble()) },
+                valueRange = min.toFloat()..max.toFloat(),
+                modifier = Modifier.weight(0.8f),
+                interactionSource = interaction,
+                colors = SliderDefaults.colors(
+                    thumbColor = Color.Gray,
+                    activeTrackColor = Color.Gray,
+                    inactiveTrackColor = Color.LightGray
+                ),
+                thumb = {
+                    Box(
+                        modifier = Modifier
+                            .size(22.dp)
+                            .border(
+                                width = 6.dp,
+                                color = Color.Gray,
+                                shape = CircleShape
+                            )
+                    )
+                }
+            )
+
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = "Big",
+                tint = Color.Gray,
+                modifier = Modifier
+                    .size(48.dp)
+                    .weight(0.1f)
+            )
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "${min.toInt()} kg",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray
+            )
+            Text(
+                text = String.format("%.2f kg", value),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "${max.toInt()} kg",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray
+            )
+        }
+    }
 }
 
 @Composable
@@ -207,8 +409,3 @@ fun IsAlcoholicButton() {
 
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun PreviewAbout() {
-//    AboutScreen()
-}
