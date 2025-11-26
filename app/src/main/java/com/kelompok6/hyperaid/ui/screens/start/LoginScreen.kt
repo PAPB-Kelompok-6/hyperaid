@@ -56,6 +56,8 @@ import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.GoogleAuthProvider
 import com.kelompok6.hyperaid.R
+import com.kelompok6.hyperaid.ui.helper.AuthHelper
+import com.kelompok6.hyperaid.ui.navigation.Routes
 import kotlinx.coroutines.launch
 
 @Composable
@@ -207,10 +209,8 @@ fun LoginField(navController: NavController, viewModel: AuthViewModel) {
         }
 
         if (viewModel.loginState is LoginState.Success) {
-            LaunchedEffect(Unit) {
-                navController.navigate("Home") {
-                    popUpTo("Login") { inclusive = true }
-                }
+            navController.navigate(Routes.LANGUAGE) {
+                popUpTo("Login") { inclusive = true }
             }
         }
     }
@@ -310,10 +310,8 @@ fun LoginOAuth(navController: NavController, viewModel: AuthViewModel) {
         }
 
         if (viewModel.oAuthState is OAuthState.Success) {
-            LaunchedEffect(Unit) {
-                navController.navigate("Home") {
-                    popUpTo("Login") { inclusive = true }
-                }
+            navController.navigate(Routes.LANGUAGE) {
+                popUpTo("Login") { inclusive = true }
             }
         }
     }

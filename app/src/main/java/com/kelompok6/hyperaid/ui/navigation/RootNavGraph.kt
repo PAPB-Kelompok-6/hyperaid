@@ -39,9 +39,8 @@ fun RootNavGraph(navController: NavHostController) {
         }
 
         composable(Routes.ABOUT) {
-            AboutScreen(navController = navController, onContinue = {})
+            AboutScreen(navController = navController)
         }
-
 
         composable(Routes.LOGIN) {
             LoginScreen(navController)
@@ -55,7 +54,7 @@ fun RootNavGraph(navController: NavHostController) {
         }
 
         composable(Routes.LANGUAGE) {
-            LanguageScreen(navController = navController, onContinue = {})
+            LanguageScreen(navController = navController)
         }
 
         composable(Routes.MEASURE_INSTRUCTION) {

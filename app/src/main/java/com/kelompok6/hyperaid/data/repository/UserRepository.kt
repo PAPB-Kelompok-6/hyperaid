@@ -5,6 +5,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import com.kelompok6.hyperaid.data.model.User
 import com.kelompok6.hyperaid.utils.FirestoreCollections
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 class UserRepository(
     private val firestore: FirebaseFirestore = Firebase.firestore
@@ -36,5 +37,17 @@ class UserRepository(
             .addOnFailureListener { e ->
                 onResult(Result.failure(e))
             }
+    }
+
+    suspend fun isLanguageMissing(userId: String): Boolean {
+        return suspendCancellableCoroutine { cont ->
+            getUser(userId) { result ->
+                result.onSuccess { user ->
+                    cont.resume(user.languagePreference.isNullOrEmpty()) { cause, _, _ -> }
+                }.onFailure {
+                    cont.resume(true) { cause, _, _ -> } // missing or error = need language
+                }
+            }
+        }
     }
 }
