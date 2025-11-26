@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.kelompok6.hyperaid.ui.helper.AuthHelper
 import com.kelompok6.hyperaid.ui.screens.SplashScreen
 import com.kelompok6.hyperaid.ui.screens.start.LoginScreen
 import com.kelompok6.hyperaid.ui.screens.start.RegisterScreen
@@ -23,9 +24,16 @@ fun RootNavGraph(navController: NavHostController) {
         composable(Routes.SPLASH) {
             SplashScreen(onFinished = {
                 // after splash, go to onboarding (or login/home depending on session)
-                navController.navigate(Routes.ONBOARDING) {
-                    popUpTo(Routes.SPLASH) { inclusive = true }
-                    launchSingleTop = true
+                if (AuthHelper.isLoggedIn()) {
+                    navController.navigate(Routes.LANGUAGE) {
+                        popUpTo(Routes.SPLASH) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                } else {
+                    navController.navigate(Routes.ONBOARDING) {
+                        popUpTo(Routes.SPLASH) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 }
             })
         }
@@ -35,7 +43,14 @@ fun RootNavGraph(navController: NavHostController) {
         }
 
         composable(Routes.HOME) {
-            MainScaffold()
+            MainScaffold(
+                onLogout = {
+                    AuthHelper.logout()
+                    navController.navigate(Routes.LOGIN) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
         }
 
         composable(Routes.ABOUT) {

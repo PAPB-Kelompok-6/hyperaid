@@ -42,13 +42,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kelompok6.hyperaid.ui.helper.AuthHelper
+import com.kelompok6.hyperaid.ui.navigation.Routes
 
 // Main Profile Screen
-@Preview(showBackground = true)
 @Composable
 fun ProfileScreen(
+    onLogout: () -> Unit,
     navController: NavController? = null,
-    profileViewModel: ProfileViewModel? = null
+    profileViewModel: ProfileViewModel? = null,
 ) {
 //    val profileData by profileViewModel.profileData.collectAsState()
 
@@ -248,7 +249,10 @@ fun ProfileScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { /** onClick() **/ },
+                    .clickable {
+                        AuthHelper.logout()
+                        onLogout()
+                    },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(

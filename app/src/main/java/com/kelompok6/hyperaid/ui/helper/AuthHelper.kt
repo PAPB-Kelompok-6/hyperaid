@@ -21,6 +21,14 @@ object AuthHelper {
         return auth.currentUser != null
     }
 
+    fun logout() {
+        try {
+            auth.signOut()
+        } catch (e: Exception) {
+
+        }
+    }
+
     suspend fun getDisplayName(): String {
         val user = auth.currentUser ?: return "Not Logged In"
 

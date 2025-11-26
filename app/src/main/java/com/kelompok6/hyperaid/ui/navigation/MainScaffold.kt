@@ -47,18 +47,28 @@ import com.kelompok6.hyperaid.ui.screens.measure.MeasureResult
 import okhttp3.Route
 
 @Composable
-fun MainScaffold() {
+fun MainScaffold(
+    onLogout: () -> Unit
+) {
     val navController = rememberNavController()
 
     Scaffold(
         bottomBar = { MainBottomBar(navController) }
     ) { innerPadding ->
-        MainNavHost(navController, Modifier.padding(innerPadding))
+        MainNavHost(
+            navController,
+            Modifier.padding(innerPadding),
+            onLogout = onLogout
+        )
     }
 }
 
 @Composable
-private fun MainNavHost(navController: NavHostController, modifier: Modifier = Modifier) {
+private fun MainNavHost(
+    navController: NavHostController,
+    modifier: Modifier = Modifier,
+    onLogout: () -> Unit
+) {
 
     NavHost(navController, startDestination = Routes.HOME, modifier = modifier) {
         composable(Routes.HOME) { HomeScreen(navController) }
@@ -68,7 +78,11 @@ private fun MainNavHost(navController: NavHostController, modifier: Modifier = M
         composable(Routes.VITALSYNC_ADDNOTES) { VitalsyncAddNotesScreen() }
         composable(Routes.REMINDER) { ReminderScreen(navController) }
         composable(Routes.PROFILE) {
-            ProfileScreen(navController /** profileViewModel **/) // NANTI DI-PASS PROFILE VIEW MODEL
+            ProfileScreen(
+                navController = navController,
+                onLogout = onLogout
+                /** profileViewModel **/
+            ) // NANTI DI-PASS PROFILE VIEW MODEL
         }
         composable(Routes.NUTRITRACK) { NutriTrackScreen(navController) }
         composable(Routes.MEASURE_INSTRUCTION) { MeasureInstruction(navController) }
@@ -89,7 +103,12 @@ fun MainBottomBar(navController: NavHostController, modifier: Modifier = Modifie
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 0.dp, vertical = 0.dp),
-        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp, bottomStart = 0.dp, bottomEnd = 0.dp),
+        shape = RoundedCornerShape(
+            topStart = 24.dp,
+            topEnd = 24.dp,
+            bottomStart = 0.dp,
+            bottomEnd = 0.dp
+        ),
         color = Color(0xFFF2F2F2),
         tonalElevation = 4.dp
     ) {
@@ -126,7 +145,9 @@ fun MainBottomBar(navController: NavHostController, modifier: Modifier = Modifie
                         .clickable {
                             if (!isSelected) {
                                 navController.navigate(item.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
                                     launchSingleTop = true
                                     restoreState = true
                                 }
