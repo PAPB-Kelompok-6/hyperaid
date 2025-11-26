@@ -1,5 +1,6 @@
 package com.kelompok6.hyperaid.ui.screens.fitsync.bmi
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
@@ -22,22 +23,44 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.fontResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.kelompok6.hyperaid.data.model.BMI
+import com.kelompok6.hyperaid.data.model.Reminder
+import com.kelompok6.hyperaid.data.repository.BMIRepository
 import androidx.compose.foundation.clickable
 import com.kelompok6.hyperaid.ui.navigation.Routes
 import java.util.Locale
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BMIScreen(navController: NavHostController) {
+    val context = LocalContext.current
+
     var selectedTab by remember { mutableStateOf("BMI") }
     var height by remember { mutableStateOf(150) }
     var weight by remember { mutableStateOf(39) }
     var age by remember { mutableStateOf(39) }
     var historyTab by remember { mutableStateOf("Recent") }
+
+    val firestore = FirebaseFirestore.getInstance()
+    val auth = FirebaseAuth.getInstance()
+    val bmiRepository = remember {
+        BMIRepository(db = firestore, auth = auth)
+    }
+    val factory = remember {
+        BMIViewModelFactory(repository = bmiRepository)
+    }
+    val viewModel: BMIViewModel = viewModel(factory = factory)
 
     // New state to show the result bottom sheet and store last computed values
     var showResultSheet by remember { mutableStateOf(false) }
@@ -105,29 +128,27 @@ fun BMIScreen(navController: NavHostController) {
         item {
             Button(
                 onClick = {
-                    // Compute BMI and prepare sheet content
-                    val hMeters = height / 100f
-                    val bmi = if (hMeters > 0f) weight / (hMeters * hMeters) else 0f
-                    lastBmi = bmi
+                    val currentUserId = auth.currentUser?.uid
 
-                    lastCategory = when {
-                        bmi <= 0f -> "N/A"
-                        bmi < 18.5f -> "Underweight"
-                        bmi < 25f -> "Normal"
-                        bmi < 30f -> "Overweight"
-                        else -> "Obese"
+                    if (currentUserId != null) {
+                        val newBmiData = BMI(
+                            userId = currentUserId,
+                            date = Date(),
+                            height = height,
+                            weight = weight,
+                            age = age
+                        )
+
+                        viewModel.addBMI(newBmiData)
+
+                        Toast.makeText(
+                            context,
+                            "Data BMI berhasil disimpan!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(context, "Error: Pengguna belum login.", Toast.LENGTH_LONG).show()
                     }
-
-                    // Use bmi ranges directly to derive the message (avoid comparing lastCategory)
-                    lastMessage = when {
-                        bmi <= 0f -> "Enter valid height and weight to calculate BMI."
-                        bmi < 18.5f -> "In 60% of cases, poor dietary habits can pose a risk of diabetes."
-                        bmi < 25f -> "Great job — your BMI is within a healthy range. Keep maintaining a balanced lifestyle."
-                        bmi < 30f -> "Consider reviewing your diet and activity levels to reduce health risks."
-                        else -> "It's recommended to consult with a healthcare professional for personalized advice."
-                    }
-
-                    showResultSheet = true
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -152,7 +173,12 @@ fun BMIScreen(navController: NavHostController) {
         item {
             HistoryTabSelector(
                 selectedTab = historyTab,
-                onTabSelected = { historyTab = it }
+                onTabSelected = { tab ->
+                    selectedTab = tab
+                    if (tab == "History") {
+                        navController.navigate(Routes.FITSYNC_HISTORY)
+                    }
+                }
             )
         }
 

@@ -39,6 +39,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
 }
 
@@ -47,6 +48,7 @@ dependencies {
     implementation(libs.androidx.room.common.jvm)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.foundation.layout)
+    implementation(libs.room.ktx)
     implementation(libs.androidx.compose.ui)
     implementation(libs.foundation)
 
@@ -74,6 +76,9 @@ dependencies {
     implementation("androidx.room:room-runtime:2.8.2")
     implementation("androidx.room:room-ktx:2.8.2")
     kapt("androidx.room:room-compiler:2.8.2")
+
+    // MPA Chart
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
