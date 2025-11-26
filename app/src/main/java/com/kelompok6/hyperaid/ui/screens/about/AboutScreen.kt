@@ -3,7 +3,9 @@ package com.kelompok6.hyperaid.ui.screens.about
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.*
@@ -17,8 +19,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.LocalDrink
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.SmokingRooms
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,6 +31,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
@@ -73,7 +79,10 @@ fun AboutScreen(
     ) {
         // konten utama
         Column(
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(top = 60.dp, bottom = 175.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -104,9 +113,18 @@ fun AboutScreen(
                 onValueChange = { w -> viewModel.update { it.copy(weight = w) } }
             )
 
-            Row {
-                IsSmokingButton()
-                IsAlcoholicButton()
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.padding(top = 32.dp, bottom = 24.dp)
+            ) {
+                IsSmokingButton(
+                    isSmoking = state.isSmoking ?: false,
+                    onSelected = { s -> viewModel.update { it.copy(isSmoking = s) } }
+                )
+                IsAlcoholicButton(
+                    isAlcoholic = state.isAlcoholic ?: false,
+                    onSelected = { a -> viewModel.update { it.copy(isAlcoholic = a) } }
+                )
             }
         }
 
@@ -130,7 +148,7 @@ fun AboutScreen(
             shape = CircleShape,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 100.dp)
+                .padding(bottom = 75.dp)
                 .size(48.dp)
         ) {
             Icon(
@@ -166,13 +184,12 @@ fun GenderSelector(selectedGender: Gender?, onSelected: (Gender) -> Unit) {
 @Composable
 fun GenderCard(
     label: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     selected: Boolean,
     onClick: () -> Unit
 ) {
     val bgColor = if (selected) Color(0xFF444444) else Color(0xFFDDDDDD)
     val contentColor = if (selected) Color.White else Color.Black
-
 
     Card(
         modifier = Modifier
@@ -209,7 +226,7 @@ fun HeightSlider(
     val max = 300.0
 
     val interaction =
-        remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+        remember { MutableInteractionSource() }
 
     Column(
         modifier = modifier
@@ -310,7 +327,7 @@ fun WeightSlider(
     val max = 200.0
 
     val interaction =
-        remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+        remember { MutableInteractionSource() }
 
     Column(
         modifier = modifier
@@ -401,11 +418,21 @@ fun WeightSlider(
 }
 
 @Composable
-fun IsSmokingButton() {
-
+fun IsSmokingButton(isSmoking: Boolean?, onSelected: (Boolean) -> Unit) {
+    GenderCard(
+        label = "Smoking",
+        icon = Icons.Filled.SmokingRooms,
+        selected = isSmoking == true,
+        onClick = { onSelected(!isSmoking!!) }
+    )
 }
 
-fun IsAlcoholicButton() {
-
+@Composable
+fun IsAlcoholicButton(isAlcoholic: Boolean?, onSelected: (Boolean) -> Unit) {
+    GenderCard(
+        label = "Drinking",
+        icon = Icons.Filled.LocalDrink,
+        selected = isAlcoholic == true,
+        onClick = { onSelected(!isAlcoholic!!) }
+    )
 }
-

@@ -40,6 +40,16 @@ class OnboardingViewModel(
     private val _saveState = MutableStateFlow<SaveUserState>(SaveUserState.Idle)
     val saveState = _saveState.asStateFlow()
 
+    init {
+        _state.value = OnboardingState(
+            gender = Gender.MALE,
+            height = 150.0,
+            weight = 50.0,
+            isSmoking = false,
+            isAlcoholic = false
+        )
+    }
+
     fun update(block: (OnboardingState) -> OnboardingState) {
         _state.value = block(_state.value)
     }

@@ -98,6 +98,8 @@ dependencies {
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
     //Material3 & Lazy grid
-    implementation("androidx.compose.material3:material3:<versi>")
-    implementation("androidx.compose.foundation:foundation:<versi>")
+    implementation("androidx.compose.material:material-icons-core")
+    implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.compose.material3:material3:1.2.0")
+    implementation("androidx.compose.foundation:foundation:1.7.5")
 }
