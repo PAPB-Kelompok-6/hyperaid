@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.kelompok6.hyperaid.R
+import com.kelompok6.hyperaid.ui.navigation.Routes
 
 @Composable
 fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel = viewModel()) {
@@ -192,7 +193,7 @@ fun RegisterField(navController: NavController, viewModel: AuthViewModel, snackb
 
         if (viewModel.registerState is RegisterState.Success) {
             LaunchedEffect(Unit) {
-                navController.navigate("Home") {
+                navController.navigate(Routes.LANGUAGE) {
                     popUpTo("Register") { inclusive = true }
                 }
             }

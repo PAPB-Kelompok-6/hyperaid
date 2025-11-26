@@ -71,6 +71,9 @@ fun AboutScreen(
     }
 
     val state by viewModel.state.collectAsState()
+    LaunchedEffect(Unit) {
+        viewModel.setAboutDefaultValues()
+    }
 
     Box(
         modifier = Modifier

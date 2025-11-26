@@ -40,8 +40,14 @@ class OnboardingViewModel(
     private val _saveState = MutableStateFlow<SaveUserState>(SaveUserState.Idle)
     val saveState = _saveState.asStateFlow()
 
-    init {
-        _state.value = OnboardingState(
+    fun setLangDefaultValues() {
+        _state.value = _state.value.copy(
+            languagePreference = "en"
+        )
+    }
+
+    fun setAboutDefaultValues() {
+        _state.value = _state.value.copy(
             gender = Gender.MALE,
             height = 150.0,
             weight = 50.0,

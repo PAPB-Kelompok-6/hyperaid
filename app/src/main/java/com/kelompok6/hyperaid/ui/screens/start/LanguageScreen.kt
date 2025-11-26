@@ -93,6 +93,9 @@ fun LanguageScreen(
     }
 
     val state by viewModel.state.collectAsState()
+    LaunchedEffect(Unit) {
+        viewModel.setLangDefaultValues()
+    }
 
     Box(
         modifier = Modifier
