@@ -16,6 +16,8 @@ import com.kelompok6.hyperaid.ui.screens.home.NotificationScreen
 import com.kelompok6.hyperaid.ui.screens.measure.MeasureInstruction
 import com.kelompok6.hyperaid.ui.screens.measure.MeasureProcess
 import com.kelompok6.hyperaid.ui.screens.measure.MeasureResult
+import com.kelompok6.hyperaid.ui.screens.vitalsync.SfigmomanometerScreen
+import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncScreen
 
 
 @Composable
@@ -51,6 +53,15 @@ fun RootNavGraph(navController: NavHostController) {
                     }
                 }
             )
+        }
+
+        // Vitalsync screens
+        composable(Routes.VITALSYNC) {
+            VitalsyncScreen(navController = navController)
+        }
+
+        composable(Routes.VITALSYNC_SFIGMOMANOMETER) {
+            SfigmomanometerScreen(navController = navController)
         }
 
         composable(Routes.ABOUT) {

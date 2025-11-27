@@ -21,5 +21,7 @@ object Routes {
     const val MEASURE_RESULT = "measure_result"
     const val NOTIFICATION = "notification"
 
+    // Route for sfigmomanometer measurement screen
+    const val VITALSYNC_SFIGMOMANOMETER = "vitalsync_sfigmomanometer"
 
 }

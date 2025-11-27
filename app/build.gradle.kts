@@ -48,6 +48,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.foundation.layout)
     implementation(libs.androidx.compose.ui)
+    implementation(libs.foundation)
 
     // Navigation Dependencies
     val navVersion = "2.7.3"
