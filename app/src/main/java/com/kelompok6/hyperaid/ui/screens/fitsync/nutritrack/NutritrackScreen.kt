@@ -3,6 +3,7 @@ package com.kelompok6.hyperaid.ui.screens.fitsync.nutritrack
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -103,50 +104,71 @@ fun NutriTrackScreen(navController: NavController) {
 
 @Composable
 fun TopTabSelector(selectedTab: String, navController: NavController, onTabSelected: (String) -> Unit) {
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
+        contentAlignment = Alignment.Center
     ) {
-        TopTab(
-            text = "BMI",
-            isSelected = selectedTab == "BMI",
-            onClick = {
-                onTabSelected("BMI")
-                // navigate back to the FitSync/BMI route without stacking NutriTrack
-                navController.navigate(Routes.FITSYNC) {
-                    popUpTo(Routes.NUTRITRACK) { inclusive = true }
-                    launchSingleTop = true
+        // Outer pill
+        val outerShape = RoundedCornerShape(28.dp)
+        Box(
+            modifier = Modifier
+                .widthIn(min = 260.dp)
+                .height(44.dp)
+                .clip(outerShape)
+                .background(Color.White)
+                .border(1.dp, Color(0xFFECECEC), outerShape)
+        ) {
+            Row(modifier = Modifier.fillMaxSize()) {
+                // BMI segment
+                val isBMI = selectedTab == "BMI"
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(4.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(if (isBMI) Color(0xFFD85C5C) else Color.Transparent)
+                        .clickable {
+                            onTabSelected("BMI")
+                            // navigate back to the FitSync/BMI route without stacking NutriTrack
+                            navController.navigate(Routes.FITSYNC) {
+                                popUpTo(Routes.NUTRITRACK) { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "BMI",
+                        color = if (isBMI) Color.White else Color.Black,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+
+                // NutriTrack segment
+                val isNutri = selectedTab == "NutriTrack"
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(4.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(if (isNutri) Color(0xFFD85C5C) else Color.Transparent)
+                        .clickable { onTabSelected("NutriTrack") },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "NutriTrack",
+                        color = if (isNutri) Color.White else Color.Black,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             }
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        TopTab(
-            text = "NutriTrack",
-            isSelected = selectedTab == "NutriTrack",
-            onClick = { onTabSelected("NutriTrack") }
-        )
-    }
-}
-
-@Composable
-fun TopTab(text: String, isSelected: Boolean, onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) Color(0xFFD85C5C) else Color.White
-        ),
-        shape = RoundedCornerShape(20.dp),
-        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
-    ) {
-        Text(
-            text = text,
-            color = if (isSelected) Color.White else Color.Black,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium
-        )
+        }
     }
 }
 

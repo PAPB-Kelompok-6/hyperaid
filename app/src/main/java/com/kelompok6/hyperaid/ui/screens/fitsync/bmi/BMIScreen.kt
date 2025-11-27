@@ -2,7 +2,6 @@ package com.kelompok6.hyperaid.ui.screens.fitsync.bmi
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,12 +22,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.fontResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.foundation.clickable
 import com.kelompok6.hyperaid.ui.navigation.Routes
 
 
@@ -147,41 +145,58 @@ fun TopTabSelector(selectedTab: String, onTabSelected: (String) -> Unit) {
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
-        Row(
-            // Row will be centered by the Box
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+        // Outer pill
+        val outerShape = RoundedCornerShape(28.dp)
+        Box(
+            modifier = Modifier
+                .widthIn(min = 260.dp)
+                .height(44.dp)
+                .clip(outerShape)
+                .background(Color.White)
+                .border(1.dp, Color(0xFFECECEC), outerShape)
         ) {
-            TopTab(
-                text = "BMI",
-                isSelected = selectedTab == "BMI",
-                onClick = { onTabSelected("BMI") }
-            )
-            TopTab(
-                text = "NutriTrack",
-                isSelected = selectedTab == "NutriTrack",
-                onClick = { onTabSelected("NutriTrack") }
-            )
-        }
-    }
-}
+            Row(modifier = Modifier.fillMaxSize()) {
+                // BMI segment
+                val isBMI = selectedTab == "BMI"
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(4.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(if (isBMI) Color(0xFFD85C5C) else Color.Transparent)
+                        .clickable { onTabSelected("BMI") },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "BMI",
+                        color = if (isBMI) Color.White else Color.Black,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
 
-@Composable
-fun TopTab(text: String, isSelected: Boolean, onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) Color(0xFFD85C5C) else Color.White
-        ),
-        shape = RoundedCornerShape(20.dp),
-        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
-    ) {
-        Text(
-            text = text,
-            color = if (isSelected) Color.White else Color.Black,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium
-        )
+                // NutriTrack segment
+                val isNutri = selectedTab == "NutriTrack"
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(4.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(if (isNutri) Color(0xFFD85C5C) else Color.Transparent)
+                        .clickable { onTabSelected("NutriTrack") },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "NutriTrack",
+                        color = if (isNutri) Color.White else Color.Black,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+        }
     }
 }
 
