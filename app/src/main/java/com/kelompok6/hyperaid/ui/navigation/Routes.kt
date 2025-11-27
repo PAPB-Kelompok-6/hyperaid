@@ -20,6 +20,6 @@ object Routes {
     const val MEASURE_PROCESS = "measure_process"
     const val MEASURE_RESULT = "measure_result"
     const val NOTIFICATION = "notification"
-
+    const val VITALSYNC_SFIGMOMANOMETER = "vitalsync_sfigmomanometer"
 
 }

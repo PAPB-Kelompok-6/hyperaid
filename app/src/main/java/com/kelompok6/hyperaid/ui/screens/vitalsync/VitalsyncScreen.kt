@@ -1,5 +1,6 @@
 package com.kelompok6.hyperaid.ui.screens.vitalsync
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,17 +18,22 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
+import androidx.compose.ui.window.Dialog
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,17 +42,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.kelompok6.hyperaid.R
 import com.kelompok6.hyperaid.ui.navigation.Routes
+import kotlinx.coroutines.delay
 
 
 //@Preview(showBackground = true)
 @Composable
 fun VitalsyncScreen(navController: NavController) {
     var selectedTab by remember { mutableStateOf("Recent") }
+    var isSfigConnected by remember { mutableStateOf(false) }
 
     LazyColumn(
         modifier = Modifier
@@ -57,8 +68,19 @@ fun VitalsyncScreen(navController: NavController) {
             PulseMeasureCard()
         }
 
+        // Show pairing card when not connected
         item {
-            BloodPressureReadingCard()
+            if (!isSfigConnected) {
+                // pass navController so dialog can navigate directly
+                PairSfigmoCard(
+                    onConnect = { isSfigConnected = true },
+                    navController = navController
+                )
+            }
+        }
+
+        item {
+            BloodPressureReadingCard(connected = isSfigConnected)
         }
 
         item {
@@ -86,6 +108,157 @@ fun VitalsyncScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
+
+    // Observe nav back stack to detect when SfigmomanometerScreen signals completion
+    LaunchedEffect(navController) {
+        navController.currentBackStackEntryFlow.collect { backStackEntry ->
+            val completed = backStackEntry.savedStateHandle.get<Boolean>("sfig_connected")
+            if (completed == true) {
+                isSfigConnected = true
+                backStackEntry.savedStateHandle.remove<Boolean>("sfig_connected")
+            }
+        }
+    }
+}
+
+@Composable
+fun PairSfigmoCard(
+    onConnect: () -> Unit,
+    navController: NavController
+) {
+    var showDialog by remember { mutableStateOf(false) }
+    var navigateNow by remember { mutableStateOf(false) }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF6D6D6)),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Pair with Sfigmomanometer",
+                    color = Color(0xFF2C2C2C),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = "Ensure accuracy by linking to your blood pressure device.",
+                    color = Color(0xFF2C2C2C),
+                    fontSize = 14.sp
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Button(
+                    onClick = { showDialog = true },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C2C2C)),
+                    shape = RoundedCornerShape(20.dp)
+                ) {
+                    Text("Connect Now", color = Color.White)
+                }
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Image(
+                painter = painterResource(id = R.drawable.sfigmomanometer),
+                contentDescription = "Sfigmomanometer",
+                modifier = Modifier
+                    .size(100.dp)
+            )
+        }
+    }
+
+    if (showDialog) {
+        Dialog(onDismissRequest = { showDialog = false }) {
+            Surface(
+                shape = RoundedCornerShape(24.dp),
+                color = Color(0xFFF7EEF0),
+            ) {
+                Column(
+                    modifier = Modifier
+                        .width(320.dp)
+                        .padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        IconButton(
+                            onClick = { onConnect(); showDialog = false },
+                            modifier = Modifier.align(Alignment.TopEnd)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Close",
+                                tint = Color(0xFF2C2C2C)
+                            )
+                        }
+                    }
+
+                    Text(
+                        text = "Connect Sphygmomanometer",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF2C2C2C),
+                        modifier = Modifier.padding(top = 4.dp, bottom = 12.dp),
+                        textAlign = TextAlign.Center
+                    )
+
+                    Image(
+                        painter = painterResource(id = R.drawable.checked),
+                        contentDescription = "Connected",
+                        modifier = Modifier.size(72.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = "The Sphygmomanometer has been successfully connected!",
+                        fontSize = 15.sp,
+                        textAlign = TextAlign.Center,
+                        color = Color(0xFF2C2C2C),
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Button(
+                        onClick = {
+                            // close dialog then set navigate flag; navigation happens in LaunchedEffect below
+                            showDialog = false
+                            navigateNow = true
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD85C5C)),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                    ) {
+                        Text(text = "Start Measurement", color = Color.White)
+                    }
+                }
+            }
+        }
+    }
+
+    // navigate after dialog has been dismissed to avoid timing issues
+    LaunchedEffect(navigateNow) {
+        if (navigateNow) {
+            try {
+                delay(120L)
+                navController.navigate(Routes.VITALSYNC_SFIGMOMANOMETER) { launchSingleTop = true }
+            } catch (_: Exception) {
+            }
+            navigateNow = false
+        }
+    }
 }
 
 @Composable
@@ -108,12 +281,14 @@ fun PulseMeasureCard() {
                 Text(
                     text = "Measure your pulse using your",
                     color = Color(0xFF2C2C2C),
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
                 )
                 Text(
                     text = "camera!",
                     color = Color(0xFF2C2C2C),
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 Button(
@@ -135,7 +310,7 @@ fun PulseMeasureCard() {
 }
 
 @Composable
-fun BloodPressureReadingCard() {
+fun BloodPressureReadingCard(connected: Boolean = true) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         Text(
             text = "Blood Pressure Reading",
@@ -176,10 +351,10 @@ fun BloodPressureReadingCard() {
                             modifier = Modifier
                                 .size(10.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xFF4CAF50))
+                                .background(if (connected) Color(0xFF4CAF50) else Color(0xFFF44336))
                         )
                         Text(
-                            text = "Connected to Sfigmomanometer",
+                            text = if (connected) "Connected to Sfigmomanometer" else "Not connected to Sfigmomanometer",
                             fontSize = 14.sp,
                             color = Color.White
                         )
@@ -278,14 +453,14 @@ fun TabSelector(selectedTab: String, onTabSelected: (String) -> Unit) {
     ) {
         TabButton(
             text = "Recent",
-            icon = Icons.Default.List,
+            icon = Icons.AutoMirrored.Filled.List,
             isSelected = selectedTab == "Recent",
             onClick = { onTabSelected("Recent") },
             modifier = Modifier.weight(1f)
         )
         TabButton(
             text = "History",
-            icon = Icons.Default.DateRange,
+            icon = Icons.Filled.DateRange,
             isSelected = selectedTab == "History",
             onClick = { onTabSelected("History") },
             modifier = Modifier.weight(1f)
