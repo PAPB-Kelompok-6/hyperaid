@@ -1,6 +1,5 @@
 package com.kelompok6.hyperaid.ui.screens.vitalsync
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -184,14 +183,12 @@ fun PairSfigmoCard(
                 shape = RoundedCornerShape(24.dp),
                 color = Color(0xFFF7EEF0),
             ) {
-                // make dialog compact and more square-like: fixed width, wrap content height
                 Column(
                     modifier = Modifier
                         .width(320.dp)
                         .padding(20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Close X in top-right
                     Box(modifier = Modifier.fillMaxWidth()) {
                         IconButton(
                             onClick = { onConnect(); showDialog = false },
@@ -234,8 +231,7 @@ fun PairSfigmoCard(
 
                     Button(
                         onClick = {
-                            // close dialog and request navigation directly
-                            Log.d("PairSfig", "Start Measurement pressed in dialog (will navigate)")
+                            // close dialog then set navigate flag; navigation happens in LaunchedEffect below
                             showDialog = false
                             navigateNow = true
                         },
@@ -252,15 +248,13 @@ fun PairSfigmoCard(
         }
     }
 
-    // perform navigation from inside the dialog composable to avoid parent timing issues
+    // navigate after dialog has been dismissed to avoid timing issues
     LaunchedEffect(navigateNow) {
         if (navigateNow) {
             try {
-                delay(150L)
-                Log.d("PairSfig", "Dialog navigating to SfigmomanometerScreen")
+                delay(120L)
                 navController.navigate(Routes.VITALSYNC_SFIGMOMANOMETER) { launchSingleTop = true }
-            } catch (e: Exception) {
-                Log.e("PairSfig", "Navigation failed from dialog", e)
+            } catch (_: Exception) {
             }
             navigateNow = false
         }

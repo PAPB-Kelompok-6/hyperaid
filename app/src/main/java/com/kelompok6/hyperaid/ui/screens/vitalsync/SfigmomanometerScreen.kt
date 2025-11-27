@@ -28,7 +28,7 @@ fun SfigmomanometerScreen(navController: NavController) {
     // Simple placeholder screen for starting measurement
     LaunchedEffect(Unit) {
         // wait a few seconds then return to previous (Vitalsync) screen
-        delay(3000L)
+        delay(5000L)
         // signal previous back stack entry that measurement completed and device is connected
         navController.previousBackStackEntry?.savedStateHandle?.set("sfig_connected", true)
         navController.popBackStack()

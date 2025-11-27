@@ -38,6 +38,7 @@ import com.kelompok6.hyperaid.ui.screens.profile.ProfileScreen
 import com.kelompok6.hyperaid.ui.screens.reminder.ReminderScreen
 import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncDetailHistoryScreen
 import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncScreen
+import com.kelompok6.hyperaid.ui.screens.vitalsync.SfigmomanometerScreen
 import com.kelompok6.hyperaid.ui.screens.fitsync.nutritrack.NutriTrackScreen
 import com.kelompok6.hyperaid.ui.screens.home.NotificationScreen
 import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncAddNotesScreen
@@ -59,7 +60,8 @@ fun MainScaffold(
     val hideBottomBarRoutes = listOf(
         Routes.MEASURE_INSTRUCTION,
         Routes.MEASURE_PROCESS,
-        Routes.MEASURE_RESULT
+        Routes.MEASURE_RESULT,
+        Routes.VITALSYNC_SFIGMOMANOMETER // hide nav bar on sfigmomanometer measurement screen
     )
 
     Scaffold(
@@ -90,6 +92,8 @@ private fun MainNavHost(
         composable(Routes.VITALSYNC) { VitalsyncScreen(navController) }
         composable(Routes.VITALSYNC_HISTORY) { VitalsyncDetailHistoryScreen() }
         composable(Routes.VITALSYNC_ADDNOTES) { VitalsyncAddNotesScreen() }
+        // Added Sfigmomanometer route here so VitalsyncScreen's NavController can navigate to it
+        composable(Routes.VITALSYNC_SFIGMOMANOMETER) { SfigmomanometerScreen(navController) }
         composable(Routes.REMINDER) { ReminderScreen(navController) }
         composable(Routes.PROFILE) {
             ProfileScreen(
