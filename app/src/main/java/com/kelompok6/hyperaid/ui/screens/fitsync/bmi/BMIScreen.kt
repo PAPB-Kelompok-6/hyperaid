@@ -28,10 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.clickable
 import com.kelompok6.hyperaid.ui.navigation.Routes
+import java.util.Locale
 
-
-
-//@Preview(showBackground = true)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BMIScreen(navController: NavHostController) {
     var selectedTab by remember { mutableStateOf("BMI") }
@@ -39,6 +38,12 @@ fun BMIScreen(navController: NavHostController) {
     var weight by remember { mutableStateOf(39) }
     var age by remember { mutableStateOf(39) }
     var historyTab by remember { mutableStateOf("Recent") }
+
+    // New state to show the result bottom sheet and store last computed values
+    var showResultSheet by remember { mutableStateOf(false) }
+    var lastBmi by remember { mutableStateOf(0f) }
+    var lastCategory by remember { mutableStateOf("") }
+    var lastMessage by remember { mutableStateOf("") }
 
     LazyColumn(
         modifier = Modifier
@@ -99,7 +104,31 @@ fun BMIScreen(navController: NavHostController) {
 
         item {
             Button(
-                onClick = { },
+                onClick = {
+                    // Compute BMI and prepare sheet content
+                    val hMeters = height / 100f
+                    val bmi = if (hMeters > 0f) weight / (hMeters * hMeters) else 0f
+                    lastBmi = bmi
+
+                    lastCategory = when {
+                        bmi <= 0f -> "N/A"
+                        bmi < 18.5f -> "Underweight"
+                        bmi < 25f -> "Normal"
+                        bmi < 30f -> "Overweight"
+                        else -> "Obese"
+                    }
+
+                    // Use bmi ranges directly to derive the message (avoid comparing lastCategory)
+                    lastMessage = when {
+                        bmi <= 0f -> "Enter valid height and weight to calculate BMI."
+                        bmi < 18.5f -> "In 60% of cases, poor dietary habits can pose a risk of diabetes."
+                        bmi < 25f -> "Great job — your BMI is within a healthy range. Keep maintaining a balanced lifestyle."
+                        bmi < 30f -> "Consider reviewing your diet and activity levels to reduce health risks."
+                        else -> "It's recommended to consult with a healthcare professional for personalized advice."
+                    }
+
+                    showResultSheet = true
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
@@ -133,6 +162,77 @@ fun BMIScreen(navController: NavHostController) {
 
         item {
             Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+
+    // Bottom sheet showing computed BMI result
+    if (showResultSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showResultSheet = false },
+            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+            tonalElevation = 8.dp
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Title
+                Text(
+                    text = "Your BMI today",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.Black
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // BMI value formatted with one decimal and comma separator
+                val bmiText = String.format(Locale.getDefault(), "%.1f", lastBmi).replace('.', ',')
+                Text(
+                    text = bmiText,
+                    fontSize = 48.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFFD85C5C)
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Message
+                Text(
+                    text = lastMessage,
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Category
+                Text(
+                    text = "(${lastCategory})",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = if (lastCategory == "Underweight") Color(0xFFD85C5C) else Color(0xFF2C2C2C)
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Button(
+                    onClick = { showResultSheet = false },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C2C2C)),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(text = "Check BMI History", color = Color.White, fontSize = 16.sp)
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+            }
         }
     }
 }
