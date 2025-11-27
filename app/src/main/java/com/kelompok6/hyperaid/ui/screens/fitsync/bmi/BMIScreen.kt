@@ -2,7 +2,6 @@ package com.kelompok6.hyperaid.ui.screens.fitsync.bmi
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,17 +14,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.fontResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.foundation.clickable
 import com.kelompok6.hyperaid.ui.navigation.Routes
 
 
@@ -138,41 +139,64 @@ fun BMIScreen(navController: NavHostController) {
 
 @Composable
 fun TopTabSelector(selectedTab: String, onTabSelected: (String) -> Unit) {
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        contentAlignment = Alignment.Center
     ) {
-        TopTab(
-            text = "BMI",
-            isSelected = selectedTab == "BMI",
-            onClick = { onTabSelected("BMI") }
-        )
-        TopTab(
-            text = "NutriTrack",
-            isSelected = selectedTab == "NutriTrack",
-            onClick = { onTabSelected("NutriTrack") }
-        )
-    }
-}
+        // Outer pill
+        val outerShape = RoundedCornerShape(28.dp)
+        Box(
+            modifier = Modifier
+                .widthIn(min = 260.dp)
+                .height(44.dp)
+                .clip(outerShape)
+                .background(Color.White)
+                .border(1.dp, Color(0xFFECECEC), outerShape)
+        ) {
+            Row(modifier = Modifier.fillMaxSize()) {
+                // BMI segment
+                val isBMI = selectedTab == "BMI"
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(4.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(if (isBMI) Color(0xFFD85C5C) else Color.Transparent)
+                        .clickable { onTabSelected("BMI") },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "BMI",
+                        color = if (isBMI) Color.White else Color.Black,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
 
-@Composable
-fun TopTab(text: String, isSelected: Boolean, onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) Color(0xFFD85C5C) else Color.White
-        ),
-        shape = RoundedCornerShape(20.dp),
-        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
-    ) {
-        Text(
-            text = text,
-            color = if (isSelected) Color.White else Color.Black,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium
-        )
+                // NutriTrack segment
+                val isNutri = selectedTab == "NutriTrack"
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(4.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(if (isNutri) Color(0xFFD85C5C) else Color.Transparent)
+                        .clickable { onTabSelected("NutriTrack") },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "NutriTrack",
+                        color = if (isNutri) Color.White else Color.Black,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -210,7 +234,7 @@ fun HeightSelector(height: Int, onHeightChange: (Int) -> Unit) {
                         .clip(CircleShape)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                         contentDescription = "Decrease height",
                         tint = Color.Black
                     )
@@ -232,7 +256,7 @@ fun HeightSelector(height: Int, onHeightChange: (Int) -> Unit) {
                         .clip(CircleShape)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowRight,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = "Increase height",
                         tint = Color.Black
                     )
@@ -276,7 +300,7 @@ fun WeightSelector(weight: Int, onWeightChange: (Int) -> Unit, modifier: Modifie
                         .clip(CircleShape)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                         contentDescription = "Decrease",
                         tint = Color.Black
                     )
@@ -297,7 +321,7 @@ fun WeightSelector(weight: Int, onWeightChange: (Int) -> Unit, modifier: Modifie
                         .clip(CircleShape)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowRight,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = "Increase",
                         tint = Color.Black
                     )
@@ -341,7 +365,7 @@ fun AgeSelector(age: Int, onAgeChange: (Int) -> Unit, modifier: Modifier = Modif
                         .clip(CircleShape)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                         contentDescription = "Decrease",
                         tint = Color.Black
                     )
@@ -362,7 +386,7 @@ fun AgeSelector(age: Int, onAgeChange: (Int) -> Unit, modifier: Modifier = Modif
                         .clip(CircleShape)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowRight,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = "Increase",
                         tint = Color.Black
                     )
@@ -382,7 +406,7 @@ fun HistoryTabSelector(selectedTab: String, onTabSelected: (String) -> Unit) {
     ) {
         HistoryTab(
             text = "Recent",
-            icon = Icons.Default.List,
+            icon = Icons.AutoMirrored.Filled.List,
             isSelected = selectedTab == "Recent",
             onClick = { onTabSelected("Recent") },
             modifier = Modifier.weight(1f)

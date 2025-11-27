@@ -44,7 +44,6 @@ import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncAddNotesScreen
 import com.kelompok6.hyperaid.ui.screens.measure.MeasureInstruction
 import com.kelompok6.hyperaid.ui.screens.measure.MeasureProcess
 import com.kelompok6.hyperaid.ui.screens.measure.MeasureResult
-import okhttp3.Route
 
 @Composable
 fun MainScaffold(
@@ -52,8 +51,23 @@ fun MainScaffold(
 ) {
     val navController = rememberNavController()
 
+    // observe current route so we can conditionally show bottom bar
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = backStackEntry?.destination?.route
+
+    // routes where bottom bar should be hidden
+    val hideBottomBarRoutes = listOf(
+        Routes.MEASURE_INSTRUCTION,
+        Routes.MEASURE_PROCESS,
+        Routes.MEASURE_RESULT
+    )
+
     Scaffold(
-        bottomBar = { MainBottomBar(navController) }
+        bottomBar = {
+            if (currentRoute == null || !hideBottomBarRoutes.contains(currentRoute)) {
+                MainBottomBar(navController)
+            }
+        }
     ) { innerPadding ->
         MainNavHost(
             navController,
@@ -126,7 +140,9 @@ fun MainBottomBar(navController: NavHostController, modifier: Modifier = Modifie
             verticalAlignment = Alignment.CenterVertically
         ) {
             bottomItems.forEach { item ->
-                val isSelected = currentRoute == item.route
+                // Treat NutriTrack as part of FitSync for bottom nav highlighting
+                val isSelected = currentRoute == item.route ||
+                        (item.route == Routes.FITSYNC && currentRoute == Routes.NUTRITRACK)
 
                 val scale by animateFloatAsState(
                     targetValue = if (isSelected) 1f else 1f,

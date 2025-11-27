@@ -3,13 +3,16 @@ package com.kelompok6.hyperaid.ui.screens.fitsync.nutritrack
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,10 +24,10 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.kelompok6.hyperaid.ui.navigation.Routes
 
 //@Preview(showBackground = true)
 @Composable
@@ -40,6 +43,7 @@ fun NutriTrackScreen(navController: NavController) {
         item {
             TopTabSelector(
                 selectedTab = selectedTab,
+                navController = navController,
                 onTabSelected = { selectedTab = it }
             )
         }
@@ -99,42 +103,72 @@ fun NutriTrackScreen(navController: NavController) {
 }
 
 @Composable
-fun TopTabSelector(selectedTab: String, onTabSelected: (String) -> Unit) {
-    Row(
+fun TopTabSelector(selectedTab: String, navController: NavController, onTabSelected: (String) -> Unit) {
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        contentAlignment = Alignment.Center
     ) {
-        TopTab(
-            text = "BMI",
-            isSelected = selectedTab == "BMI",
-            onClick = { onTabSelected("BMI") }
-        )
-        TopTab(
-            text = "NutriTrack",
-            isSelected = selectedTab == "NutriTrack",
-            onClick = { onTabSelected("NutriTrack") }
-        )
-    }
-}
+        // Outer pill
+        val outerShape = RoundedCornerShape(28.dp)
+        Box(
+            modifier = Modifier
+                .widthIn(min = 260.dp)
+                .height(44.dp)
+                .clip(outerShape)
+                .background(Color.White)
+                .border(1.dp, Color(0xFFECECEC), outerShape)
+        ) {
+            Row(modifier = Modifier.fillMaxSize()) {
+                // BMI segment
+                val isBMI = selectedTab == "BMI"
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(4.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(if (isBMI) Color(0xFFD85C5C) else Color.Transparent)
+                        .clickable {
+                            onTabSelected("BMI")
+                            // navigate back to the FitSync/BMI route without stacking NutriTrack
+                            navController.navigate(Routes.FITSYNC) {
+                                popUpTo(Routes.NUTRITRACK) { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "BMI",
+                        color = if (isBMI) Color.White else Color.Black,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
 
-@Composable
-fun TopTab(text: String, isSelected: Boolean, onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) Color(0xFFD85C5C) else Color.White
-        ),
-        shape = RoundedCornerShape(20.dp),
-        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
-    ) {
-        Text(
-            text = text,
-            color = if (isSelected) Color.White else Color.Black,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium
-        )
+                // NutriTrack segment
+                val isNutri = selectedTab == "NutriTrack"
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(4.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(if (isNutri) Color(0xFFD85C5C) else Color.Transparent)
+                        .clickable { onTabSelected("NutriTrack") },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "NutriTrack",
+                        color = if (isNutri) Color.White else Color.Black,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -405,7 +439,7 @@ fun HistoryTabSelector(selectedTab: String, onTabSelected: (String) -> Unit) {
     ) {
         HistoryTab(
             text = "Recent",
-            icon = Icons.Default.List,
+            icon = Icons.AutoMirrored.Filled.List,
             isSelected = selectedTab == "Recent",
             onClick = { onTabSelected("Recent") },
             modifier = Modifier.weight(1f)

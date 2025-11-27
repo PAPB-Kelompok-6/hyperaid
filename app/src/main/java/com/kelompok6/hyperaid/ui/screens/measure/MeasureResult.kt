@@ -8,7 +8,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,9 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,14 +61,23 @@ fun MeasureResult(navController: NavController) {
             ) {
 
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
                     tint = Color.Black,
                     modifier = Modifier
                         .size(36.dp)
                         .background(Color(0xFFF4F4F4), RoundedCornerShape(12.dp))
                         .padding(8.dp)
-                        .clickable { navController.popBackStack() }
+                        .clickable {
+                            // navigate to Home directly instead of popping back to MeasureProcess
+                            navController.navigate(com.kelompok6.hyperaid.ui.navigation.Routes.HOME) {
+                                // clear intermediate destinations so Home becomes top
+                                popUpTo(com.kelompok6.hyperaid.ui.navigation.Routes.HOME) {
+                                    inclusive = true
+                                }
+                                launchSingleTop = true
+                            }
+                        }
                 )
 
                 Spacer(Modifier.width(12.dp))
