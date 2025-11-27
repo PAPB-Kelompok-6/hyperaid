@@ -58,6 +58,7 @@ import kotlinx.coroutines.delay
 fun VitalsyncScreen(navController: NavController) {
     var selectedTab by remember { mutableStateOf("Recent") }
     var isSfigConnected by remember { mutableStateOf(false) }
+    var lastNotes by remember { mutableStateOf<Map<String, String>?>(null) }
 
     LazyColumn(
         modifier = Modifier
@@ -109,13 +110,20 @@ fun VitalsyncScreen(navController: NavController) {
         }
     }
 
-    // Observe nav back stack to detect when SfigmomanometerScreen signals completion
+    // Observe nav back stack to detect when SfigmomanometerScreen signals completion or when notes are returned
     LaunchedEffect(navController) {
         navController.currentBackStackEntryFlow.collect { backStackEntry ->
             val completed = backStackEntry.savedStateHandle.get<Boolean>("sfig_connected")
             if (completed == true) {
                 isSfigConnected = true
                 backStackEntry.savedStateHandle.remove<Boolean>("sfig_connected")
+            }
+
+            val notes = backStackEntry.savedStateHandle.get<Map<String, String>>("vitalsync_notes")
+            if (notes != null) {
+                lastNotes = notes
+                // remove after consuming
+                backStackEntry.savedStateHandle.remove<Map<String, String>>("vitalsync_notes")
             }
         }
     }
