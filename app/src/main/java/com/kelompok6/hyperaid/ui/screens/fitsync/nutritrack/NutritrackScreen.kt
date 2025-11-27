@@ -9,7 +9,9 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,10 +23,10 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.kelompok6.hyperaid.ui.navigation.Routes
 
 //@Preview(showBackground = true)
 @Composable
@@ -40,6 +42,7 @@ fun NutriTrackScreen(navController: NavController) {
         item {
             TopTabSelector(
                 selectedTab = selectedTab,
+                navController = navController,
                 onTabSelected = { selectedTab = it }
             )
         }
@@ -99,18 +102,27 @@ fun NutriTrackScreen(navController: NavController) {
 }
 
 @Composable
-fun TopTabSelector(selectedTab: String, onTabSelected: (String) -> Unit) {
+fun TopTabSelector(selectedTab: String, navController: NavController, onTabSelected: (String) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         TopTab(
             text = "BMI",
             isSelected = selectedTab == "BMI",
-            onClick = { onTabSelected("BMI") }
+            onClick = {
+                onTabSelected("BMI")
+                // navigate back to the FitSync/BMI route without stacking NutriTrack
+                navController.navigate(Routes.FITSYNC) {
+                    popUpTo(Routes.NUTRITRACK) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
         )
+        Spacer(modifier = Modifier.width(12.dp))
         TopTab(
             text = "NutriTrack",
             isSelected = selectedTab == "NutriTrack",
@@ -405,7 +417,7 @@ fun HistoryTabSelector(selectedTab: String, onTabSelected: (String) -> Unit) {
     ) {
         HistoryTab(
             text = "Recent",
-            icon = Icons.Default.List,
+            icon = Icons.AutoMirrored.Filled.List,
             isSelected = selectedTab == "Recent",
             onClick = { onTabSelected("Recent") },
             modifier = Modifier.weight(1f)

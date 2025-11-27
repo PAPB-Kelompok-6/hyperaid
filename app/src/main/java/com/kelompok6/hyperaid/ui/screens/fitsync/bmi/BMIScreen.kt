@@ -15,6 +15,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -138,22 +141,28 @@ fun BMIScreen(navController: NavHostController) {
 
 @Composable
 fun TopTabSelector(selectedTab: String, onTabSelected: (String) -> Unit) {
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        contentAlignment = Alignment.Center
     ) {
-        TopTab(
-            text = "BMI",
-            isSelected = selectedTab == "BMI",
-            onClick = { onTabSelected("BMI") }
-        )
-        TopTab(
-            text = "NutriTrack",
-            isSelected = selectedTab == "NutriTrack",
-            onClick = { onTabSelected("NutriTrack") }
-        )
+        Row(
+            // Row will be centered by the Box
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            TopTab(
+                text = "BMI",
+                isSelected = selectedTab == "BMI",
+                onClick = { onTabSelected("BMI") }
+            )
+            TopTab(
+                text = "NutriTrack",
+                isSelected = selectedTab == "NutriTrack",
+                onClick = { onTabSelected("NutriTrack") }
+            )
+        }
     }
 }
 
@@ -210,7 +219,7 @@ fun HeightSelector(height: Int, onHeightChange: (Int) -> Unit) {
                         .clip(CircleShape)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                         contentDescription = "Decrease height",
                         tint = Color.Black
                     )
@@ -232,7 +241,7 @@ fun HeightSelector(height: Int, onHeightChange: (Int) -> Unit) {
                         .clip(CircleShape)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowRight,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = "Increase height",
                         tint = Color.Black
                     )
@@ -276,7 +285,7 @@ fun WeightSelector(weight: Int, onWeightChange: (Int) -> Unit, modifier: Modifie
                         .clip(CircleShape)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                         contentDescription = "Decrease",
                         tint = Color.Black
                     )
@@ -297,7 +306,7 @@ fun WeightSelector(weight: Int, onWeightChange: (Int) -> Unit, modifier: Modifie
                         .clip(CircleShape)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowRight,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = "Increase",
                         tint = Color.Black
                     )
@@ -341,7 +350,7 @@ fun AgeSelector(age: Int, onAgeChange: (Int) -> Unit, modifier: Modifier = Modif
                         .clip(CircleShape)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                         contentDescription = "Decrease",
                         tint = Color.Black
                     )
@@ -362,7 +371,7 @@ fun AgeSelector(age: Int, onAgeChange: (Int) -> Unit, modifier: Modifier = Modif
                         .clip(CircleShape)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowRight,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = "Increase",
                         tint = Color.Black
                     )
@@ -382,7 +391,7 @@ fun HistoryTabSelector(selectedTab: String, onTabSelected: (String) -> Unit) {
     ) {
         HistoryTab(
             text = "Recent",
-            icon = Icons.Default.List,
+            icon = Icons.AutoMirrored.Filled.List,
             isSelected = selectedTab == "Recent",
             onClick = { onTabSelected("Recent") },
             modifier = Modifier.weight(1f)
