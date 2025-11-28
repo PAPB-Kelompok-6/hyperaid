@@ -3,11 +3,9 @@ package com.kelompok6.hyperaid.ui.screens.fitsync.nutritrack
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -27,7 +25,36 @@ import com.kelompok6.hyperaid.R
 
 @Preview(showBackground = true)
 @Composable
-fun NutritrackResultsScreen() {
+fun NutritrackResultsScreen(viewModel: NutritrackViewModel = hiltViewModel()) {
+    val nutritionData by viewModel.nutritionData.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+
+    // Load data when screen opens
+    LaunchedEffect(nutritionId) {
+        viewModel.loadNutritionData(nutritionId)
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center)
+            )
+        } else {
+            nutritionData?.let { data ->
+                NutritionResultContent(data = data)
+            } ?: run {
+                // Show empty state
+                Text(
+                    text = "No nutrition data available",
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun NutritrackResultsContent(data: NutritionData) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -52,20 +79,29 @@ fun NutritrackResultsScreen() {
         }
 
         item {
-            DateTimeCard()
+            DateTimeCard(
+                date = data.date,
+                time = data.time
+            )
         }
 
         item {
-            NutritionSummaryCard()
+            NutritionSummaryCard(
+                totalGrams = data.totalGrams,
+                carbohydrate = data.carbohydrate,
+                protein = data.protein,
+                fiber = data.fiber,
+                fat = data.fat
+            )
         }
 
-        item {
-            MealDetailsCard()
+        items(data.meals) { meal ->
+            MealDetailsCard(meal = meal)
         }
 
         item {
             Button(
-                onClick = { },
+                onClick = { /* Navigate to history */ },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -129,7 +165,7 @@ fun NutritrackResultsLoadingScreen() {
 }
 
 @Composable
-fun DateTimeCard() {
+fun DateTimeCard(date: String, time: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -143,13 +179,13 @@ fun DateTimeCard() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Tuesday",
+                text = date,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
                 color = Color.Black
             )
             Text(
-                text = "26/09/23 14:25:58",
+                text = time,
                 fontSize = 14.sp,
                 color = Color.Gray
             )
@@ -158,7 +194,13 @@ fun DateTimeCard() {
 }
 
 @Composable
-fun NutritionSummaryCard() {
+fun NutritionSummaryCard(
+    totalGrams: Int,
+    carbohydrate: NutrientInfo,
+    protein: NutrientInfo,
+    fiber: NutrientInfo,
+    fat: NutrientInfo
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -175,12 +217,17 @@ fun NutritionSummaryCard() {
                 modifier = Modifier.size(120.dp),
                 contentAlignment = Alignment.Center
             ) {
-                NutritionCircularProgress()
+                NutritionCircularProgress(
+                    carbohydrate = carbohydrate.percentage,
+                    protein = protein.percentage,
+                    fiber = fiber.percentage,
+                    fat = fat.percentage
+                )
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "40",
+                        text = totalGrams.toString(),
                         fontSize = 32.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
@@ -198,17 +245,88 @@ fun NutritionSummaryCard() {
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                NutritionBar("Carbohydrate", 50f, "10/190 gr", Color(0xFF5C6BC0))
-                NutritionBar("Protein", 75f, "10/190 gr", Color(0xFFD85C5C))
-                NutritionBar("Fiber", 25f, "10/190 gr", Color(0xFFE0E0E0))
-                NutritionBar("Fat", 65f, "10/190 gr", Color(0xFF5C6BC0))
+                NutritionBar(
+                    "Carbohydrate",
+                    carbohydrate.percentage,
+                    "${carbohydrate.current}/${carbohydrate.target} gr",
+                    Color(0xFF5C6BC0)
+                )
+                NutritionBar(
+                    "Protein",
+                    protein.percentage,
+                    "${protein.current}/${protein.target} gr",
+                    Color(0xFFD85C5C)
+                )
+                NutritionBar(
+                    "Fiber",
+                    fiber.percentage,
+                    "${fiber.current}/${fiber.target} gr",
+                    Color(0xFFE0E0E0)
+                )
+                NutritionBar(
+                    "Fat",
+                    fat.percentage,
+                    "${fat.current}/${fat.target} gr",
+                    Color(0xFF5C6BC0)
+                )
             }
         }
     }
+//    Card(
+//        modifier = Modifier.fillMaxWidth(),
+//        colors = CardDefaults.cardColors(containerColor = Color.White),
+//        shape = RoundedCornerShape(16.dp)
+//    ) {
+//        Row(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(20.dp),
+//            horizontalArrangement = Arrangement.spacedBy(24.dp)
+//        ) {
+//            // Circular progress
+//            Box(
+//                modifier = Modifier.size(120.dp),
+//                contentAlignment = Alignment.Center
+//            ) {
+//                NutritionCircularProgress()
+//                Column(
+//                    horizontalAlignment = Alignment.CenterHorizontally
+//                ) {
+//                    Text(
+//                        text = "40",
+//                        fontSize = 32.sp,
+//                        fontWeight = FontWeight.Bold,
+//                        color = Color.Black
+//                    )
+//                    Text(
+//                        text = "gr/day",
+//                        fontSize = 14.sp,
+//                        color = Color.Gray
+//                    )
+//                }
+//            }
+//
+//            // Nutrition bars
+//            Column(
+//                modifier = Modifier.weight(1f),
+//                verticalArrangement = Arrangement.spacedBy(12.dp)
+//            ) {
+//                NutritionBar("Carbohydrate", 50f, "10/190 gr", Color(0xFF5C6BC0))
+//                NutritionBar("Protein", 75f, "10/190 gr", Color(0xFFD85C5C))
+//                NutritionBar("Fiber", 25f, "10/190 gr", Color(0xFFE0E0E0))
+//                NutritionBar("Fat", 65f, "10/190 gr", Color(0xFF5C6BC0))
+//            }
+//        }
+//    }
 }
 
 @Composable
-fun NutritionCircularProgress() {
+fun NutritionCircularProgress(
+    carbohydrate: Float,
+    protein: Float,
+    fiber: Float,
+    fat: Float
+) {
     Canvas(modifier = Modifier.size(120.dp)) {
         val strokeWidth = 14.dp.toPx()
         val radius = (size.minDimension - strokeWidth) / 2
@@ -220,22 +338,27 @@ fun NutritionCircularProgress() {
             style = Stroke(width = strokeWidth)
         )
 
-        // Purple arc
+        var startAngle = -90f
+
+        // Carbohydrate arc
+        val carbSweep = (carbohydrate / 100f) * 360f
         drawArc(
             color = Color(0xFF5C6BC0),
-            startAngle = -90f,
-            sweepAngle = 120f,
+            startAngle = startAngle,
+            sweepAngle = carbSweep,
             useCenter = false,
             style = Stroke(width = strokeWidth, cap = StrokeCap.Round),
             topLeft = androidx.compose.ui.geometry.Offset(strokeWidth / 2, strokeWidth / 2),
             size = androidx.compose.ui.geometry.Size(size.width - strokeWidth, size.height - strokeWidth)
         )
+        startAngle += carbSweep
 
-        // Red arc
+        // Protein arc
+        val proteinSweep = (protein / 100f) * 360f
         drawArc(
             color = Color(0xFFD85C5C),
-            startAngle = 30f,
-            sweepAngle = 90f,
+            startAngle = startAngle,
+            sweepAngle = proteinSweep,
             useCenter = false,
             style = Stroke(width = strokeWidth, cap = StrokeCap.Round),
             topLeft = androidx.compose.ui.geometry.Offset(strokeWidth / 2, strokeWidth / 2),
@@ -287,7 +410,7 @@ fun NutritionBar(label: String, percentage: Float, amount: String, color: Color)
 }
 
 @Composable
-fun MealDetailsCard() {
+fun MealDetailsCard(meal: MealDetail) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -308,7 +431,7 @@ fun MealDetailsCard() {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Baked Sweet Potato : 2",
+                    text = "${meal.name} : ${meal.portion}",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.Black
@@ -318,22 +441,22 @@ fun MealDetailsCard() {
 
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(
-                        text = "Karbohidrat : 10gr",
+                        text = "Karbohidrat : ${meal.carbohydrate}gr",
                         fontSize = 14.sp,
                         color = Color.Gray
                     )
                     Text(
-                        text = "Lemak : 10gr",
+                        text = "Lemak : ${meal.fat}gr",
                         fontSize = 14.sp,
                         color = Color.Gray
                     )
                     Text(
-                        text = "Serat : 10gr",
+                        text = "Serat : ${meal.fiber}gr",
                         fontSize = 14.sp,
                         color = Color.Gray
                     )
                     Text(
-                        text = "Protein : 10gr",
+                        text = "Protein : ${meal.protein}gr",
                         fontSize = 14.sp,
                         color = Color.Gray
                     )
