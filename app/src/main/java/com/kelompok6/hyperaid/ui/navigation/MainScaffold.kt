@@ -61,7 +61,8 @@ fun MainScaffold(
         Routes.MEASURE_INSTRUCTION,
         Routes.MEASURE_PROCESS,
         Routes.MEASURE_RESULT,
-        Routes.VITALSYNC_SFIGMOMANOMETER // hide nav bar on sfigmomanometer measurement screen
+        Routes.VITALSYNC_SFIGMOMANOMETER, // hide nav bar on sfigmomanometer measurement screen
+        Routes.VITALSYNC_ADDNOTES // hide nav bar on add notes screen
     )
 
     Scaffold(
@@ -91,7 +92,7 @@ private fun MainNavHost(
         composable(Routes.FITSYNC) { BMIScreen(navController) }
         composable(Routes.VITALSYNC) { VitalsyncScreen(navController) }
         composable(Routes.VITALSYNC_HISTORY) { VitalsyncDetailHistoryScreen() }
-        composable(Routes.VITALSYNC_ADDNOTES) { VitalsyncAddNotesScreen() }
+        composable(Routes.VITALSYNC_ADDNOTES) { VitalsyncAddNotesScreen(navController) }
         // Added Sfigmomanometer route here so VitalsyncScreen's NavController can navigate to it
         composable(Routes.VITALSYNC_SFIGMOMANOMETER) { SfigmomanometerScreen(navController) }
         composable(Routes.REMINDER) { ReminderScreen(navController) }
