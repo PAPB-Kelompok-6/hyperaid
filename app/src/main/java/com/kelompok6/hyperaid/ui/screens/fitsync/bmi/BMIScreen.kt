@@ -2,7 +2,6 @@ package com.kelompok6.hyperaid.ui.screens.fitsync.bmi
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,22 +14,23 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.fontResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.foundation.clickable
 import com.kelompok6.hyperaid.ui.navigation.Routes
+import java.util.Locale
 
-
-
-//@Preview(showBackground = true)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BMIScreen(navController: NavHostController) {
     var selectedTab by remember { mutableStateOf("BMI") }
@@ -38,6 +38,12 @@ fun BMIScreen(navController: NavHostController) {
     var weight by remember { mutableStateOf(39) }
     var age by remember { mutableStateOf(39) }
     var historyTab by remember { mutableStateOf("Recent") }
+
+    // New state to show the result bottom sheet and store last computed values
+    var showResultSheet by remember { mutableStateOf(false) }
+    var lastBmi by remember { mutableStateOf(0f) }
+    var lastCategory by remember { mutableStateOf("") }
+    var lastMessage by remember { mutableStateOf("") }
 
     LazyColumn(
         modifier = Modifier
@@ -98,7 +104,31 @@ fun BMIScreen(navController: NavHostController) {
 
         item {
             Button(
-                onClick = { },
+                onClick = {
+                    // Compute BMI and prepare sheet content
+                    val hMeters = height / 100f
+                    val bmi = if (hMeters > 0f) weight / (hMeters * hMeters) else 0f
+                    lastBmi = bmi
+
+                    lastCategory = when {
+                        bmi <= 0f -> "N/A"
+                        bmi < 18.5f -> "Underweight"
+                        bmi < 25f -> "Normal"
+                        bmi < 30f -> "Overweight"
+                        else -> "Obese"
+                    }
+
+                    // Use bmi ranges directly to derive the message (avoid comparing lastCategory)
+                    lastMessage = when {
+                        bmi <= 0f -> "Enter valid height and weight to calculate BMI."
+                        bmi < 18.5f -> "In 60% of cases, poor dietary habits can pose a risk of diabetes."
+                        bmi < 25f -> "Great job — your BMI is within a healthy range. Keep maintaining a balanced lifestyle."
+                        bmi < 30f -> "Consider reviewing your diet and activity levels to reduce health risks."
+                        else -> "It's recommended to consult with a healthcare professional for personalized advice."
+                    }
+
+                    showResultSheet = true
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
@@ -134,45 +164,139 @@ fun BMIScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
-}
 
-@Composable
-fun TopTabSelector(selectedTab: String, onTabSelected: (String) -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        TopTab(
-            text = "BMI",
-            isSelected = selectedTab == "BMI",
-            onClick = { onTabSelected("BMI") }
-        )
-        TopTab(
-            text = "NutriTrack",
-            isSelected = selectedTab == "NutriTrack",
-            onClick = { onTabSelected("NutriTrack") }
-        )
+    // Bottom sheet showing computed BMI result
+    if (showResultSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showResultSheet = false },
+            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+            tonalElevation = 8.dp
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Title
+                Text(
+                    text = "Your BMI today",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.Black
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // BMI value formatted with one decimal and comma separator
+                val bmiText = String.format(Locale.getDefault(), "%.1f", lastBmi).replace('.', ',')
+                Text(
+                    text = bmiText,
+                    fontSize = 48.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFFD85C5C)
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Message
+                Text(
+                    text = lastMessage,
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Category
+                Text(
+                    text = "(${lastCategory})",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = if (lastCategory == "Underweight") Color(0xFFD85C5C) else Color(0xFF2C2C2C)
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Button(
+                    onClick = { showResultSheet = false },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C2C2C)),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(text = "Check BMI History", color = Color.White, fontSize = 16.sp)
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
     }
 }
 
 @Composable
-fun TopTab(text: String, isSelected: Boolean, onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) Color(0xFFD85C5C) else Color.White
-        ),
-        shape = RoundedCornerShape(20.dp),
-        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 8.dp)
+fun TopTabSelector(selectedTab: String, onTabSelected: (String) -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = text,
-            color = if (isSelected) Color.White else Color.Black,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium
-        )
+        // Outer pill
+        val outerShape = RoundedCornerShape(28.dp)
+        Box(
+            modifier = Modifier
+                .widthIn(min = 260.dp)
+                .height(44.dp)
+                .clip(outerShape)
+                .background(Color.White)
+                .border(1.dp, Color(0xFFECECEC), outerShape)
+        ) {
+            Row(modifier = Modifier.fillMaxSize()) {
+                // BMI segment
+                val isBMI = selectedTab == "BMI"
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(4.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(if (isBMI) Color(0xFFD85C5C) else Color.Transparent)
+                        .clickable { onTabSelected("BMI") },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "BMI",
+                        color = if (isBMI) Color.White else Color.Black,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+
+                // NutriTrack segment
+                val isNutri = selectedTab == "NutriTrack"
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .padding(4.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(if (isNutri) Color(0xFFD85C5C) else Color.Transparent)
+                        .clickable { onTabSelected("NutriTrack") },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "NutriTrack",
+                        color = if (isNutri) Color.White else Color.Black,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -210,7 +334,7 @@ fun HeightSelector(height: Int, onHeightChange: (Int) -> Unit) {
                         .clip(CircleShape)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                         contentDescription = "Decrease height",
                         tint = Color.Black
                     )
@@ -232,7 +356,7 @@ fun HeightSelector(height: Int, onHeightChange: (Int) -> Unit) {
                         .clip(CircleShape)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowRight,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = "Increase height",
                         tint = Color.Black
                     )
@@ -276,7 +400,7 @@ fun WeightSelector(weight: Int, onWeightChange: (Int) -> Unit, modifier: Modifie
                         .clip(CircleShape)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                         contentDescription = "Decrease",
                         tint = Color.Black
                     )
@@ -297,7 +421,7 @@ fun WeightSelector(weight: Int, onWeightChange: (Int) -> Unit, modifier: Modifie
                         .clip(CircleShape)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowRight,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = "Increase",
                         tint = Color.Black
                     )
@@ -341,7 +465,7 @@ fun AgeSelector(age: Int, onAgeChange: (Int) -> Unit, modifier: Modifier = Modif
                         .clip(CircleShape)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowLeft,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                         contentDescription = "Decrease",
                         tint = Color.Black
                     )
@@ -362,7 +486,7 @@ fun AgeSelector(age: Int, onAgeChange: (Int) -> Unit, modifier: Modifier = Modif
                         .clip(CircleShape)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.KeyboardArrowRight,
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                         contentDescription = "Increase",
                         tint = Color.Black
                     )
@@ -382,7 +506,7 @@ fun HistoryTabSelector(selectedTab: String, onTabSelected: (String) -> Unit) {
     ) {
         HistoryTab(
             text = "Recent",
-            icon = Icons.Default.List,
+            icon = Icons.AutoMirrored.Filled.List,
             isSelected = selectedTab == "Recent",
             onClick = { onTabSelected("Recent") },
             modifier = Modifier.weight(1f)

@@ -48,6 +48,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.foundation.layout)
     implementation(libs.androidx.compose.ui)
+    implementation(libs.foundation)
 
     // Hilt ViewModel
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")

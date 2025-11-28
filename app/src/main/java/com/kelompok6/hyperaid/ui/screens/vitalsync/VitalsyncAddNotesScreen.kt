@@ -16,11 +16,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,9 +37,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
 @Composable
-fun VitalsyncAddNotesScreen() {
+fun VitalsyncAddNotesScreen(navController: NavController) {
     var selectedSymptom by remember { mutableStateOf("") }
     var selectedSymptomDuration by remember { mutableStateOf("") }
     var selectedSeverity by remember { mutableStateOf("") }
@@ -53,6 +56,20 @@ fun VitalsyncAddNotesScreen() {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
+        // Top app bar: back arrow + title
+        item {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+                }
+                Spacer(modifier = Modifier.padding(4.dp))
+                Text(text = "Add Notes", fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+            }
+        }
+
         item {
             SectionHeader("Symptoms")
         }
@@ -143,7 +160,20 @@ fun VitalsyncAddNotesScreen() {
 
         item {
             Button(
-                onClick = { /* Handle save button click */ },
+                onClick = {
+                    // collect values and save to previous back stack entry via savedStateHandle
+                    val notesMap = mapOf(
+                        "symptom" to selectedSymptom,
+                        "symptomDuration" to selectedSymptomDuration,
+                        "severity" to selectedSeverity,
+                        "frequency" to selectedFrequency,
+                        "activity" to selectedActivity,
+                        "activityDuration" to selectedActivityDuration,
+                        "intensity" to selectedIntensity
+                    )
+                    navController.previousBackStackEntry?.savedStateHandle?.set("vitalsync_notes", notesMap)
+                    navController.popBackStack()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 4.dp)
@@ -152,7 +182,7 @@ fun VitalsyncAddNotesScreen() {
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Text(
-                    text = "SAVE",
+                    text = "Save Notes",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color.White
@@ -267,6 +297,7 @@ fun DropdownField(
 @Composable
 fun DropdownFieldPreview() {
     MaterialTheme {
-        VitalsyncAddNotesScreen()
+        // For preview use a dummy NavController; can't provide easily here so leave as-is
+        // VitalsyncAddNotesScreen()
     }
 }

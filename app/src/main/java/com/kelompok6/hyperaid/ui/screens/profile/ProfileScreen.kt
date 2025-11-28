@@ -1,5 +1,6 @@
 package com.kelompok6.hyperaid.ui.screens.profile
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,9 +21,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -34,15 +32,14 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kelompok6.hyperaid.ui.helper.AuthHelper
-import com.kelompok6.hyperaid.ui.navigation.Routes
+import com.kelompok6.hyperaid.R
 
 // Main Profile Screen
 @Composable
@@ -106,10 +103,10 @@ fun ProfileScreen(
                             .clickable { /** onEditClick() **/ },
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Clear,
+                        // use camera drawable if you want colored edit icon
+                        Image(
+                            painter = painterResource(id = R.drawable.camera),
                             contentDescription = "Edit",
-                            tint = Color.White,
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -160,18 +157,28 @@ fun ProfileScreen(
         ProfileSettingCard("Account Settings") {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 SettingCardContent(
-                    {},
-                    Icons.Default.Lock,
-                    "changePasswordIcon",
-                    "Change Password",
-                    "Change your password"
+                    onClickAction = {},
+                    iconContent = {
+                        Image(
+                            painter = painterResource(id = R.drawable.changepassword),
+                            contentDescription = "changePassword",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    },
+                    title = "Change Password",
+                    description = "Change your password"
                 )
                 SettingCardContent(
-                    {},
-                    Icons.Default.Delete,
-                    "deleteAccountIcon",
-                    "Delete Account",
-                    "Permanently delete your account"
+                    onClickAction = {},
+                    iconContent = {
+                        Image(
+                            painter = painterResource(id = R.drawable.deleteaccount),
+                            contentDescription = "deleteAccount",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    },
+                    title = "Delete Account",
+                    description = "Permanently delete your account"
                 )
             }
         }
@@ -180,18 +187,28 @@ fun ProfileScreen(
         ProfileSettingCard("App Preferences") {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 SettingCardContent(
-                    {},
-                    Icons.Default.Clear,
-                    "globeIcon",
-                    "Language",
-                    "Change your language"
+                    onClickAction = {},
+                    iconContent = {
+                        Image(
+                            painter = painterResource(id = R.drawable.language),
+                            contentDescription = "language",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    },
+                    title = "Language",
+                    description = "Change your language"
                 )
                 SettingCardContent(
-                    {},
-                    Icons.Default.Notifications,
-                    "notificationIcon",
-                    "Notifications",
-                    "Turn on/off notifications"
+                    onClickAction = {},
+                    iconContent = {
+                        Image(
+                            painter = painterResource(id = R.drawable.notifications),
+                            contentDescription = "notifications",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    },
+                    title = "Notifications",
+                    description = "Turn on/off notifications"
                 )
             }
         }
@@ -200,18 +217,28 @@ fun ProfileScreen(
         ProfileSettingCard("Health Information") {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 SettingCardContent(
-                    {},
-                    Icons.Default.Clear,
-                    "heartbeatIcon",
-                    "Connected Device",
-                    "View and manage connected health devices"
+                    onClickAction = {},
+                    iconContent = {
+                        Image(
+                            painter = painterResource(id = R.drawable.connecteddevice),
+                            contentDescription = "connectedDevice",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    },
+                    title = "Connected Device",
+                    description = "View and manage connected health devices"
                 )
                 SettingCardContent(
-                    {},
-                    Icons.Default.Clear,
-                    "historyIcon",
-                    "Medical History",
-                    "View your blood pressure history"
+                    onClickAction = {},
+                    iconContent = {
+                        Image(
+                            painter = painterResource(id = R.drawable.medicalhistory),
+                            contentDescription = "medicalHistory",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    },
+                    title = "Medical History",
+                    description = "View your blood pressure history"
                 )
             }
         }
@@ -220,25 +247,40 @@ fun ProfileScreen(
         ProfileSettingCard("Support") {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 SettingCardContent(
-                    {},
-                    Icons.Default.Clear,
-                    "helpIcon",
-                    "FAQ",
-                    "View frequently asked questions"
+                    onClickAction = {},
+                    iconContent = {
+                        Image(
+                            painter = painterResource(id = R.drawable.faq),
+                            contentDescription = "faq",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    },
+                    title = "FAQ",
+                    description = "View frequently asked questions"
                 )
                 SettingCardContent(
-                    {},
-                    Icons.Default.Clear,
-                    "privacyIcon",
-                    "Privacy Policy",
-                    "Read our privacy policy"
+                    onClickAction = {},
+                    iconContent = {
+                        Image(
+                            painter = painterResource(id = R.drawable.privacypolicy),
+                            contentDescription = "privacyPolicy",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    },
+                    title = "Privacy Policy",
+                    description = "Read our privacy policy"
                 )
                 SettingCardContent(
-                    {},
-                    Icons.Default.Clear,
-                    "termsIcon",
-                    "Terms of Service",
-                    "Read our terms and conditions"
+                    onClickAction = {},
+                    iconContent = {
+                        Image(
+                            painter = painterResource(id = R.drawable.termsofservice),
+                            contentDescription = "termsOfService",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    },
+                    title = "Terms of Service",
+                    description = "Read our terms and conditions"
                 )
             }
         }
@@ -260,11 +302,9 @@ fun ProfileScreen(
                         .size(40.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Clear,
-                        /** CHANGE THIS TO A RELEVANT ICON **/
+                    Image(
+                        painter = painterResource(id = R.drawable.logout),
                         contentDescription = "Logout",
-                        tint = Color.Red,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -320,15 +360,14 @@ fun ProfileSettingCard(
 @Composable
 fun SettingCardContent(
     onClickAction: () -> Unit,
-    icon: ImageVector,
-    iconContentDescription: String,
+    iconContent: @Composable () -> Unit,
     title: String,
     description: String
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { /** onClick() **/ },
+            .clickable { onClickAction() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
@@ -336,13 +375,8 @@ fun SettingCardContent(
                 .size(40.dp),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = icon,
-                /** CHANGE THIS TO A RELEVANT ICON **/
-                contentDescription = iconContentDescription,
-                tint = Color.LightGray,
-                modifier = Modifier.size(24.dp)
-            )
+            // Render the provided icon composable (could be an Icon with painterResource)
+            iconContent()
         }
 
         Spacer(modifier = Modifier.width(12.dp))

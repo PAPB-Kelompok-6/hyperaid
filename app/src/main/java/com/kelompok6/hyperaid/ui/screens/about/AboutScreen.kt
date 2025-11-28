@@ -1,44 +1,39 @@
 package com.kelompok6.hyperaid.ui.screens.about
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.LocalDrink
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.SmokingRooms
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavHostController
+import com.kelompok6.hyperaid.R
 import com.kelompok6.hyperaid.data.enum.Gender
 import com.kelompok6.hyperaid.ui.helper.AuthHelper
 import com.kelompok6.hyperaid.ui.navigation.Routes
 import com.kelompok6.hyperaid.ui.screens.start.OnboardingViewModel
+import java.util.Locale
 
 @Composable
 fun AboutScreen(
@@ -47,11 +42,15 @@ fun AboutScreen(
 ) {
     var checking by remember { mutableStateOf(true) }
 
+    // define the colors requested by user
+    val selectedColor = Color(0xFFF6C9CB) // replaces dark purple
+    val unselectedBg = Color.White // user asked white or lighter pink
+    val selectedContentColor = Color(0xFF222222) // dark content on pink
+
     LaunchedEffect(Unit) {
         val uid = AuthHelper.getCurrentUser()?.uid
         if (uid != null) {
             val missing = viewModel.checkIfAboutIsMissing(uid)
-
             if (!missing && navController != null) {
                 navController.navigate(Routes.HOME) {
                     popUpTo(Routes.LANGUAGE) { inclusive = true }
@@ -65,78 +64,158 @@ fun AboutScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.background)
         )
         return
     }
 
     val state by viewModel.state.collectAsState()
-    LaunchedEffect(Unit) {
-        viewModel.setAboutDefaultValues()
-    }
+    LaunchedEffect(Unit) { viewModel.setAboutDefaultValues() }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 24.dp)
     ) {
-        // konten utama
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(top = 60.dp, bottom = 175.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .padding(top = 40.dp, bottom = 120.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(Modifier.height(80.dp))
             Text(
-                text = "About You",
-                style = MaterialTheme.typography.headlineSmall,
+                text = "About you",
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
                 textAlign = TextAlign.Center
             )
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(8.dp))
             Text(
                 text = "Please provide some basic information about yourself to start using the app",
                 style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 12.dp)
             )
 
-            GenderSelector(
-                selectedGender = state.gender ?: Gender.MALE,
-                onSelected = { g -> viewModel.update { it.copy(gender = g) } }
-            )
+            Spacer(Modifier.height(28.dp))
 
-            HeightSlider(
-                value = state.height ?: 150.0,
-                onValueChange = { h -> viewModel.update { it.copy(height = h) } }
-            )
-
-            WeightSlider(
-                value = state.weight ?: 50.0,
-                onValueChange = { w -> viewModel.update { it.copy(weight = w) } }
-            )
-
+            // Gender selection row
             Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.padding(top = 32.dp, bottom = 24.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                IsSmokingButton(
-                    isSmoking = state.isSmoking ?: false,
-                    onSelected = { s -> viewModel.update { it.copy(isSmoking = s) } }
-                )
-                IsAlcoholicButton(
-                    isAlcoholic = state.isAlcoholic ?: false,
-                    onSelected = { a -> viewModel.update { it.copy(isAlcoholic = a) } }
-                )
+                Box(modifier = Modifier.weight(1f)) {
+                    SelectCard(
+                        label = "Male",
+                        // using drawable pngs for active/inactive
+                        painterResActive = R.drawable.male_inactive,
+                        painterResInactive = R.drawable.male_inactive,
+                        selected = state.gender == Gender.MALE,
+                        onClick = { viewModel.update { it.copy(gender = Gender.MALE) } },
+                        selectedColor = selectedColor,
+                        unselectedBg = unselectedBg,
+                        selectedContentColor = selectedContentColor
+                    )
+                }
+                Box(modifier = Modifier.weight(1f)) {
+                    SelectCard(
+                        label = "Female",
+                        painterResActive = R.drawable.female_inactive,
+                        painterResInactive = R.drawable.female_inactive,
+                        selected = state.gender == Gender.FEMALE,
+                        onClick = { viewModel.update { it.copy(gender = Gender.FEMALE) } },
+                        selectedColor = selectedColor,
+                        unselectedBg = unselectedBg,
+                        selectedContentColor = selectedContentColor
+                    )
+                }
             }
+
+            Spacer(Modifier.height(28.dp))
+
+            // Height
+            LabeledSlider(
+                title = "Height",
+                value = state.height ?: 150.0,
+                min = 50.0,
+                max = 300.0,
+                leadingRes = R.drawable.height_big,
+                trailingRes = R.drawable.height_big,
+                unit = "cm",
+                onValueChange = { h -> viewModel.update { it.copy(height = h) } },
+                activeColor = selectedColor,
+                inactiveTrack = selectedColor.copy(alpha = 0.18f)
+            )
+
+            Spacer(Modifier.height(20.dp))
+
+            // Weight
+            LabeledSlider(
+                title = "Weight",
+                value = state.weight ?: 50.0,
+                min = 20.0,
+                max = 200.0,
+                leadingRes = R.drawable.weight_mini,
+                trailingRes = R.drawable.weight_big,
+                unit = "kg",
+                onValueChange = { w -> viewModel.update { it.copy(weight = w) } },
+                activeColor = selectedColor,
+                inactiveTrack = selectedColor.copy(alpha = 0.18f)
+            )
+
+            Spacer(Modifier.height(28.dp))
+
+            // Smoking & Drinking
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Box(modifier = Modifier.weight(1f)) {
+                    SelectCard(
+                        label = "Smoking",
+                        painterResActive = null,
+                        painterResInactive = null,
+                        icon = Icons.Filled.SmokingRooms,
+                        selected = state.isSmoking == true,
+                        onClick = {
+                            val current = state.isSmoking == true
+                            viewModel.update { it.copy(isSmoking = !current) }
+                        },
+                        selectedColor = selectedColor,
+                        unselectedBg = unselectedBg,
+                        selectedContentColor = selectedContentColor
+                    )
+                }
+                Box(modifier = Modifier.weight(1f)) {
+                    SelectCard(
+                        label = "Drinking",
+                        painterResActive = null,
+                        painterResInactive = null,
+                        icon = Icons.Filled.LocalDrink,
+                        selected = state.isAlcoholic == true,
+                        onClick = {
+                            val current = state.isAlcoholic == true
+                            viewModel.update { it.copy(isAlcoholic = !current) }
+                        },
+                        selectedColor = selectedColor,
+                        unselectedBg = unselectedBg,
+                        selectedContentColor = selectedContentColor
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(32.dp))
         }
 
-        // FAB di bawah tengah, naik 100.dp dari bawah
+        // Continue FAB centered bottom - match HealthDisclaimer
         FloatingActionButton(
             onClick = {
                 if (navController != null) {
-                    // TODO: chain to next preferences screen (if any)
-                    // currently moved on to home
                     val uid = AuthHelper.getCurrentUser()?.uid
                     if (uid != null) viewModel.saveAll(uid)
 
@@ -151,7 +230,7 @@ fun AboutScreen(
             shape = CircleShape,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 75.dp)
+                .padding(bottom = 70.dp)
                 .size(48.dp)
         ) {
             Icon(
@@ -164,278 +243,201 @@ fun AboutScreen(
 }
 
 @Composable
-fun GenderSelector(selectedGender: Gender?, onSelected: (Gender) -> Unit) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier.padding(top = 32.dp, bottom = 24.dp)
-    ) {
-        GenderCard(
-            label = "Male",
-            icon = Icons.Default.Person,
-            selected = selectedGender == Gender.MALE,
-            onClick = { onSelected(Gender.MALE) }
-        )
-        GenderCard(
-            label = "Female",
-            icon = Icons.Default.Face,
-            selected = selectedGender == Gender.FEMALE,
-            onClick = { onSelected(Gender.FEMALE) }
-        )
-    }
-}
-
-@Composable
-fun GenderCard(
+private fun SelectCard(
     label: String,
-    icon: ImageVector,
+    icon: ImageVector? = null,
+    // optional drawable resource ids for active/inactive PNGs
+    painterResActive: Int? = null,
+    painterResInactive: Int? = null,
     selected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    // color overrides
+    selectedColor: Color = MaterialTheme.colorScheme.primary,
+    unselectedBg: Color = MaterialTheme.colorScheme.surface,
+    selectedContentColor: Color = MaterialTheme.colorScheme.onPrimary
 ) {
-    val bgColor = if (selected) Color(0xFF444444) else Color(0xFFDDDDDD)
-    val contentColor = if (selected) Color.White else Color.Black
+    val bg = if (selected) selectedColor else unselectedBg
+    val content = if (selected) selectedContentColor else MaterialTheme.colorScheme.onSurface
+    val border = if (selected) BorderStroke(0.dp, Color.Transparent) else BorderStroke(1.dp, Color(0xFFE6E6E6))
 
     Card(
         modifier = Modifier
-            .size(120.dp, 140.dp)
-            .clickable { onClick() },
-        colors = CardDefaults.cardColors(containerColor = bgColor),
-        shape = RoundedCornerShape(16.dp)
+            .fillMaxWidth()
+            .aspectRatio(1f)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) { onClick() },
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = bg),
+        border = border,
+        elevation = CardDefaults.cardElevation(defaultElevation = if (selected) 6.dp else 0.dp)
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                icon,
-                contentDescription = label,
-                tint = contentColor,
-                modifier = Modifier.size(48.dp)
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(label, color = contentColor)
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // if drawable resource is provided, use it (active vs inactive), else fallback to vector icon
+                if (painterResActive != null && painterResInactive != null) {
+                    val res = if (selected) painterResActive else painterResInactive
+                    Image(
+                        painter = painterResource(id = res),
+                        contentDescription = label,
+                        modifier = Modifier.size(56.dp)
+                    )
+                } else if (icon != null) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = label,
+                        tint = content,
+                        modifier = Modifier.size(48.dp)
+                    )
+                }
+
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    text = label,
+                    color = content,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium)
+                )
+            }
+
+            if (selected) {
+                // small check badge top-right with white ring
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                        .size(28.dp),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(color = Color.White, shape = CircleShape)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(3.dp)
+                            .background(color = Color(0xFFD9534F), shape = CircleShape)
+                    )
+
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "Selected",
+                        tint = Color.White,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .size(14.dp)
+                    )
+                }
+            }
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HeightSlider(
+private fun LabeledSlider(
+    title: String,
     value: Double,
+    min: Double,
+    max: Double,
+    leadingIcon: ImageVector? = null,
+    trailingIcon: ImageVector? = null,
+    leadingRes: Int? = null,
+    trailingRes: Int? = null,
+    unit: String,
     onValueChange: (Double) -> Unit,
-    modifier: Modifier = Modifier
+    activeColor: Color = MaterialTheme.colorScheme.primary,
+    inactiveTrack: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
 ) {
-    val min = 50.0
-    val max = 300.0
+    // icon size + spacer to compute alignment so the track lines up with the title
+    val iconSize = 14.dp
+    val spacer = 12.dp
+    val trackStartPadding = iconSize + spacer
 
-    val interaction =
-        remember { MutableInteractionSource() }
-
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    Column(modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp)) {
         Text(
-            text = "Height",
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Left
+            text = title,
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier.padding(bottom = 8.dp)
         )
-
-        Spacer(Modifier.height(24.dp))
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
+            // leading icon: prefer drawable resource if provided, else ImageVector
+            if (leadingRes != null) {
+                Image(
+                    painter = painterResource(id = leadingRes),
+                    contentDescription = null,
+                    modifier = Modifier.size(iconSize)
+                )
+            } else if (leadingIcon != null) {
+                Icon(
+                    imageVector = leadingIcon,
+                    contentDescription = null,
+                    tint = Color(0xFF444B5A),
+                    modifier = Modifier.size(iconSize)
+                )
+            }
 
-            Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = "Short",
-                tint = Color.Gray,
-                modifier = Modifier
-                    .size(32.dp)
-                    .weight(0.1f)
-            )
-
-            Slider(
-                value = value.toFloat(),
-                onValueChange = { onValueChange(it.toDouble()) },
-                valueRange = min.toFloat()..max.toFloat(),
-                modifier = Modifier.weight(0.8f),
-                interactionSource = interaction,
-                colors = SliderDefaults.colors(
-                    thumbColor = Color.Gray,
-                    activeTrackColor = Color.Gray,
-                    inactiveTrackColor = Color.LightGray
-                ),
-                thumb = {
-                    Box(
-                        modifier = Modifier
-                            .size(22.dp)
-                            .border(
-                                width = 6.dp,
-                                color = Color.Gray,
-                                shape = CircleShape
-                            )
-                    )
-                }
-            )
-
-            Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = "Tall",
-                tint = Color.Gray,
-                modifier = Modifier
-                    .size(48.dp)
-                    .weight(0.1f)
-            )
-        }
-
-        Spacer(Modifier.height(8.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = "${min.toInt()} cm",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray
-            )
-            Text(
-                text = String.format("%.2f cm", value),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = "${max.toInt()} cm",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun WeightSlider(
-    value: Double,
-    onValueChange: (Double) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val min = 20.0
-    val max = 200.0
-
-    val interaction =
-        remember { MutableInteractionSource() }
-
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Weight",
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Left
-        )
-
-        Spacer(Modifier.height(24.dp))
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-
-            Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = "Small",
-                tint = Color.Gray,
-                modifier = Modifier
-                    .size(32.dp)
-                    .weight(0.1f)
-            )
+            Spacer(Modifier.width(spacer))
 
             Slider(
                 value = value.toFloat(),
                 onValueChange = { onValueChange(it.toDouble()) },
                 valueRange = min.toFloat()..max.toFloat(),
-                modifier = Modifier.weight(0.8f),
-                interactionSource = interaction,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(12.dp),
                 colors = SliderDefaults.colors(
-                    thumbColor = Color.Gray,
-                    activeTrackColor = Color.Gray,
-                    inactiveTrackColor = Color.LightGray
+                    thumbColor = activeColor,
+                    activeTrackColor = activeColor,
+                    inactiveTrackColor = inactiveTrack
                 ),
-                thumb = {
-                    Box(
-                        modifier = Modifier
-                            .size(22.dp)
-                            .border(
-                                width = 6.dp,
-                                color = Color.Gray,
-                                shape = CircleShape
-                            )
-                    )
-                }
+                interactionSource = remember { MutableInteractionSource() }
             )
 
-            Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = "Big",
-                tint = Color.Gray,
-                modifier = Modifier
-                    .size(48.dp)
-                    .weight(0.1f)
-            )
+            Spacer(Modifier.width(spacer))
+
+            // trailing icon: prefer drawable resource if provided, else ImageVector
+            if (trailingRes != null) {
+                Image(
+                    painter = painterResource(id = trailingRes),
+                    contentDescription = null,
+                    modifier = Modifier.size(iconSize)
+                )
+            } else if (trailingIcon != null) {
+                Icon(
+                    imageVector = trailingIcon,
+                    contentDescription = null,
+                    tint = Color(0xFF444B5A),
+                    modifier = Modifier.size(iconSize)
+                )
+            }
         }
 
         Spacer(Modifier.height(8.dp))
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier.fillMaxWidth().padding(start = trackStartPadding, end = trackStartPadding),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            // smaller min/max labels
+            Text(text = "${min.toInt()}$unit", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
             Text(
-                text = "${min.toInt()} kg",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray
+                text = String.format(Locale.getDefault(), "%.0f %s", value, unit),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
             )
-            Text(
-                text = String.format("%.2f kg", value),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = "${max.toInt()} kg",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray
-            )
+            Text(text = "${max.toInt()}$unit", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
         }
     }
-}
-
-@Composable
-fun IsSmokingButton(isSmoking: Boolean?, onSelected: (Boolean) -> Unit) {
-    GenderCard(
-        label = "Smoking",
-        icon = Icons.Filled.SmokingRooms,
-        selected = isSmoking == true,
-        onClick = { onSelected(!isSmoking!!) }
-    )
-}
-
-@Composable
-fun IsAlcoholicButton(isAlcoholic: Boolean?, onSelected: (Boolean) -> Unit) {
-    GenderCard(
-        label = "Drinking",
-        icon = Icons.Filled.LocalDrink,
-        selected = isAlcoholic == true,
-        onClick = { onSelected(!isAlcoholic!!) }
-    )
 }

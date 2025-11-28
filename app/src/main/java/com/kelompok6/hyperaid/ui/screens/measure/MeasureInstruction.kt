@@ -38,7 +38,8 @@ fun MeasureInstruction(navController: NavController) {
     LaunchedEffect(cameraPermissionState.status) {
         if (cameraPermissionState.status.isGranted) {
             showPermissionPopup = false // Tutup popup jika terbuka
-            navController.navigate(Routes.MEASURE_PROCESS)
+            // navController.navigate(Routes.MEASURE_PROCESS) // Do NOT auto-navigate to MEASURE_PROCESS here — keep user on the instruction screen
+            // so they can read instructions and explicitly press START to begin measuring.
         }
     }
 

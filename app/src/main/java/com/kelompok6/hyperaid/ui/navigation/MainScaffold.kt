@@ -38,13 +38,13 @@ import com.kelompok6.hyperaid.ui.screens.profile.ProfileScreen
 import com.kelompok6.hyperaid.ui.screens.reminder.ReminderScreen
 import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncDetailHistoryScreen
 import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncScreen
+import com.kelompok6.hyperaid.ui.screens.vitalsync.SfigmomanometerScreen
 import com.kelompok6.hyperaid.ui.screens.fitsync.nutritrack.NutriTrackScreen
 import com.kelompok6.hyperaid.ui.screens.home.NotificationScreen
 import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncAddNotesScreen
 import com.kelompok6.hyperaid.ui.screens.measure.MeasureInstruction
 import com.kelompok6.hyperaid.ui.screens.measure.MeasureProcess
 import com.kelompok6.hyperaid.ui.screens.measure.MeasureResult
-import okhttp3.Route
 
 @Composable
 fun MainScaffold(
@@ -52,8 +52,25 @@ fun MainScaffold(
 ) {
     val navController = rememberNavController()
 
+    // observe current route so we can conditionally show bottom bar
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = backStackEntry?.destination?.route
+
+    // routes where bottom bar should be hidden
+    val hideBottomBarRoutes = listOf(
+        Routes.MEASURE_INSTRUCTION,
+        Routes.MEASURE_PROCESS,
+        Routes.MEASURE_RESULT,
+        Routes.VITALSYNC_SFIGMOMANOMETER, // hide nav bar on sfigmomanometer measurement screen
+        Routes.VITALSYNC_ADDNOTES // hide nav bar on add notes screen
+    )
+
     Scaffold(
-        bottomBar = { MainBottomBar(navController) }
+        bottomBar = {
+            if (currentRoute == null || !hideBottomBarRoutes.contains(currentRoute)) {
+                MainBottomBar(navController)
+            }
+        }
     ) { innerPadding ->
         MainNavHost(
             navController,
@@ -75,7 +92,9 @@ private fun MainNavHost(
         composable(Routes.FITSYNC) { BMIScreen(navController) }
         composable(Routes.VITALSYNC) { VitalsyncScreen(navController) }
         composable(Routes.VITALSYNC_HISTORY) { VitalsyncDetailHistoryScreen() }
-        composable(Routes.VITALSYNC_ADDNOTES) { VitalsyncAddNotesScreen() }
+        composable(Routes.VITALSYNC_ADDNOTES) { VitalsyncAddNotesScreen(navController) }
+        // Added Sfigmomanometer route here so VitalsyncScreen's NavController can navigate to it
+        composable(Routes.VITALSYNC_SFIGMOMANOMETER) { SfigmomanometerScreen(navController) }
         composable(Routes.REMINDER) { ReminderScreen(navController) }
         composable(Routes.PROFILE) {
             ProfileScreen(
@@ -126,7 +145,9 @@ fun MainBottomBar(navController: NavHostController, modifier: Modifier = Modifie
             verticalAlignment = Alignment.CenterVertically
         ) {
             bottomItems.forEach { item ->
-                val isSelected = currentRoute == item.route
+                // Treat NutriTrack as part of FitSync for bottom nav highlighting
+                val isSelected = currentRoute == item.route ||
+                        (item.route == Routes.FITSYNC && currentRoute == Routes.NUTRITRACK)
 
                 val scale by animateFloatAsState(
                     targetValue = if (isSelected) 1f else 1f,
