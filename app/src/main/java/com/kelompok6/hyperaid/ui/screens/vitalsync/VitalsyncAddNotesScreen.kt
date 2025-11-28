@@ -239,8 +239,8 @@ fun DropdownField(
                     "Activity:" -> listOf("Walking", "Running", "Cycling", "Swimming", "Gym Workout")
                     "Duration of Activity:" -> listOf("Less than 15 min", "15-30 min", "30-60 min", "1-2 hours", "More than 2 hours")
                     "Intensity:" -> listOf("Light", "Moderate", "Vigorous", "Very Intense")
-                    "Food and Drink:" -> listOf("null", "null", "null", "null")
-                    "Stress:" -> listOf("null", "null", "null", "null", "null", "null")
+                    "Food and Drink:" -> listOf("Water", "Coffee", "Tea", "Juice", "Soda", "Alcohol", "Heavy Meal", "Light Meal", "Snacks", "Fast Foods")
+                    "Stress:" -> listOf("No Stress", "Mild", "Moderate", "Severe", "Extremely Severe")
                     else -> listOf()
                 }
 
