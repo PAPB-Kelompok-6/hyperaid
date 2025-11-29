@@ -111,14 +111,40 @@ fun BMIHistoryScreen(navController: NavController) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("BMI History") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
+            // Match header layout from MeasureResult.kt: top spacer, icon with background, and title size/weight
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)) {
+                Spacer(Modifier.height(30.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.Black,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(Color(0xFFF4F4F4), RoundedCornerShape(12.dp))
+                            .padding(8.dp)
+                            .clickable { navController.popBackStack() }
+                    )
+
+                    Spacer(Modifier.width(12.dp))
+
+                    Text(
+                        "BMI History",
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
-            )
+
+                Spacer(Modifier.height(26.dp))
+            }
         }
     ) { paddingValues ->
 
