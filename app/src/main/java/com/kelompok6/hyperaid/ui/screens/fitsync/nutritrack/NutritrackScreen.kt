@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kelompok6.hyperaid.ui.navigation.Routes
+import com.kelompok6.hyperaid.ui.screens.fitsync.bmi.TopTabSelector
+import com.kelompok6.hyperaid.ui.navigation.Routes
 
 //@Preview(showBackground = true)
 @Composable
@@ -371,7 +373,7 @@ fun MealTimeCard(icon: String, title: String, time: String, iconColor: Color) {
     Card(
         modifier = Modifier
             .width(140.dp)
-            .height(160.dp),
+            .height(200.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(16.dp)
     ) {

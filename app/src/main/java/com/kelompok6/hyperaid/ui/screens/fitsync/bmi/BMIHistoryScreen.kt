@@ -1,10 +1,13 @@
 package com.kelompok6.hyperaid.ui.screens.fitsync.bmi
 
+import android.widget.ImageButton
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,22 +22,28 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,201 +55,143 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.VerticalAlignmentLine
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import com.github.mikephil.charting.charts.LineChart
+import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.kelompok6.hyperaid.R
 import com.kelompok6.hyperaid.data.model.BMI
+import com.kelompok6.hyperaid.data.model.Reminder
+import com.kelompok6.hyperaid.data.repository.BMIRepository
+import com.kelompok6.hyperaid.ui.screens.reminder.ReminderList
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 //@Preview ()
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BMIHistoryScreen(navController: NavController) {
-//fun BMIHistoryScreen() {
-    var showDetails by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
-    LazyColumn (
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
-    ) {
-        item {
-            TopBar(
-                text = "BMI History",
-                onClick = { navController.popBackStack() }
-//                onClick = {}
-            )
-        }
+    val firestore = FirebaseFirestore.getInstance()
+    val auth = FirebaseAuth.getInstance()
+    val bmiRepository = remember {
+        BMIRepository(db = firestore, auth = auth)
+    }
+    val factory = remember {
+        BMIViewModelFactory(repository = bmiRepository)
+    }
+    val viewModel: BMIViewModel = viewModel(factory = factory)
+    val listBMI by viewModel.bmi.collectAsState()
 
-        item {
-            Spacer(Modifier.height(120.dp))
-//            BMIChartHistory()
-            Spacer(Modifier.height(120.dp))
-        }
-
-        item {
-            BMIHistoryCards()
-            BMIHistoryCards()
-        }
+    LaunchedEffect(Unit) {
+        viewModel.fetchBMI()
     }
 
+    var currImage by remember { mutableStateOf(R.drawable.chart) }
+    val chartImage by remember { mutableStateOf(R.drawable.chart) }
+    val bmi_1Image by remember { mutableStateOf(R.drawable.bmi_1) }
+    val bmi_2Image by remember { mutableStateOf(R.drawable.bmi_2) }
 
-}
 
-@Composable
-fun TopBar(text: String, onClick: () -> Unit) {
-    Row (
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("BMI History") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
 
-    ) {
-        Spacer(Modifier.width(12.dp))
-        IconButton(
-            onClick = onClick,
+        LazyColumn(
             modifier = Modifier
-                .size(30.dp)
-                .clip(CircleShape)
-        ) {
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = "Back button",
-                tint = Color.Black
-            )
-        }
+                .fillMaxSize()
+                .background(Color(0xFFF5F5F5))
+                .padding(paddingValues)
+        )   {
 
-        Spacer(Modifier.width(25.dp))
-        Text(
-            text = text,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black,
-        )
-    }
-
-}
-
-//@Composable
-//fun BMIChartHistory() {
-//    Row (Modifier.fillMaxSize(),
-//        horizontalArrangement = Arrangement.Center,
-//        verticalAlignment = Alignment.CenterVertically
-//    ) {
-//        Text("Anggep ada chart di sini" )
-//    }
-//}
-
-@Composable
-fun BMILineChart(
-    records: List<BMI>,
-    modifier: Modifier = Modifier
-        .fillMaxWidth()
-        .height(220.dp)
-        .padding(16.dp)
-) {
-    if (records.isEmpty()) return
-
-    val maxY = (records.maxOf { it.bmi } + 5).coerceAtLeast(40f)
-    val minY = (records.minOf { it.bmi } - 5).coerceAtMost(10f)
-
-    Canvas(modifier = modifier) {
-        val spacing = 60f
-        val height = size.height
-        val width = size.width
-        val spacePerPoint = (width - spacing) / (records.size - 1)
-
-        val points = records.mapIndexed { index, record ->
-            Offset(
-                spacing + index * spacePerPoint,
-                height - (record.bmi - minY) / (maxY - minY) * height
-            )
-        }
-
-        val path = Path().apply {
-            moveTo(points.first().x, points.first().y)
-            for (i in 1 until points.size) {
-                lineTo(points[i].x, points[i].y)
+            item {
+                Image(
+                    painter = painterResource(currImage),
+                    contentDescription = "Chart BMI",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(20.dp)
+                        .border(
+                            1.dp,
+                            color = Color.Gray,
+                            RoundedCornerShape(12.dp)
+                        )
+                        .clickable {
+                            if (currImage == chartImage) {
+                                currImage = bmi_1Image
+                            } else if (currImage == bmi_1Image) {
+                                currImage = bmi_2Image
+                            } else {
+                                currImage = chartImage
+                            }
+                        }
+                )
             }
-        }
 
-        // Draw line connecting the points
-        drawPath(
-            path,
-            brush = SolidColor(Color.Black),
-            style = Stroke(width = 4f)
-        )
+            if (listBMI.isEmpty()) {
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Text(
+                            text = "Kamu belum pernah cek BMI",
+                            textAlign = TextAlign.Center,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+            } else {
+                items(listBMI) { bmi ->
+                    BMIList(bmi = bmi)
+                }
+            }
 
-        // Draw points with BMI category color
-        points.forEachIndexed { index, point ->
-            drawCircle(
-                color = bmiColor(records[index].bmi),
-                radius = 10f,
-                center = point
-            )
-        }
-    }
-}
-
-//@Composable
-//fun BMIChartHistory() {
-//    val dummyRecords = listOf(
-//        BMI("01 Jan 2025", 0,0,0, 17.2f),
-//        BMI("05 Jan 2025", 0,0,0, 19.5f),
-//        BMI("10 Jan 2025", 0,0,0, 22.3f),
-//        BMI("15 Jan 2025", 0,0,0, 27.1f),
-//        BMI("20 Jan 2025", 0,0,0, 30.4f),
-//        BMI("25 Jan 2025", 0,0,0, 34.7f),
-//        BMI("30 Jan 2025", 0,0,0, 37.9f)
-//    )
-//
-//    BMILineChart(records = dummyRecords)
-//}
-
-fun bmiColor(bmi: Float): Color {
-    return when {
-        bmi < 18.5f -> Color(0xFF4FC3F7) // Biru - Underweight
-        bmi < 25f -> Color(0xFF81C784) // Hijau - Normal
-        bmi < 30f -> Color(0xFFFFF176) // Kuning - Overweight
-        bmi < 35f -> Color(0xFFFFB74D) // Oranye - Obesit2y 1
-        else -> Color(0xFFE57373) // Merah - Obesity 2/3
-    }
-}
-
-
-@Composable
-fun BMIHistoryCard(record: BMI) {
-    val status = when {
-        record.bmi < 18.5f -> "Underweight"
-        record.bmi < 25f -> "Normal"
-        record.bmi < 30f -> "Overweight"
-        record.bmi < 35f -> "Obesity I"
-        else -> "Obesity II/III"
-    }
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("Your BMI: ${record.bmi}", fontWeight = FontWeight.Bold)
-            Text("Status: $status", color = bmiColor(record.bmi))
-            Text("Date: ${record.weight}", fontSize = 12.sp, color = Color.Gray)
         }
     }
 }
 
 @Composable
-fun BMIHistoryCards() {
+fun BMIList(bmi: BMI) {
+    val results = BmiInfos(bmi.bmi)
+    val boxBorderColor = results.color
+
+    val statusTextColor = when (results.status) {
+        "Underweight" -> Color(0xFF2C6C76) // Darker Blue
+        "Normal" -> Color(0xFF2C763F)     // Darker Green
+        "Overweight" -> Color(0xFF76722C)  // Darker Yellow
+        else -> Color(0xFF762C2C)         // Darker Red
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -255,23 +206,21 @@ fun BMIHistoryCards() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Tuesday",
+                    text = bmi.date?.harih() ?: "N/A",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
                 Text(
-                    text = "26/09/23 14:25:58",
+                    text = "${bmi.date?.tanggalh() ?: "N/A"} ${bmi.date?.jamh() ?: "N/A"}",
                     fontSize = 14.sp,
                     color = Color.Gray
                 )
             }
-
             Spacer(modifier = Modifier.height(16.dp))
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(2.dp, Color(0xFFD85C5C), RoundedCornerShape(12.dp))
+                    .border(2.dp, statusTextColor, RoundedCornerShape(12.dp))
                     .padding(16.dp)
             ) {
                 Column {
@@ -282,24 +231,22 @@ fun BMIHistoryCards() {
                             color = Color.Black
                         )
                         Text(
-                            text = "17,8",
+                            text = String.format(Locale.US, "%.1f", bmi.bmi),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFFD85C5C)
+                            color = statusTextColor
                         )
                     }
-
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "In 60% of cases, poor dietary habits can pose a risk of diabetes.",
+                        text = results.description,
                         fontSize = 14.sp,
                         color = Color.Gray,
                         lineHeight = 20.sp
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
-
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -308,7 +255,7 @@ fun BMIHistoryCards() {
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(20.dp))
-                                .background(Color(0xFFFFE5E5))
+                                .background(results.color)
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                         ) {
                             Row(
@@ -319,12 +266,12 @@ fun BMIHistoryCards() {
                                     modifier = Modifier
                                         .size(8.dp)
                                         .clip(CircleShape)
-                                        .background(Color(0xFFD85C5C))
+                                        .background(statusTextColor)
                                 )
                                 Text(
-                                    text = "Underweight",
+                                    text = results.status,
                                     fontSize = 14.sp,
-                                    color = Color(0xFFD85C5C),
+                                    color = statusTextColor,
                                     fontWeight = FontWeight.Medium
                                 )
                             }
@@ -335,3 +282,51 @@ fun BMIHistoryCards() {
         }
     }
 }
+
+
+fun Timestamp.harih(): String {
+    val hari = SimpleDateFormat("EEEE", Locale("id", "ID"))
+    return hari.format(this.toDate())
+}
+
+fun Timestamp.tanggalh(): String {
+    val tanggal = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
+    return tanggal.format(this.toDate())
+}
+
+fun Timestamp.jamh(): String {
+    val jam = SimpleDateFormat("HH:mm", Locale.getDefault())
+    return jam.format(this.toDate())
+}
+
+// Fungsi utilitas untuk menentukan kategori BMI dan warnanya
+fun BmiInfos(bmi: Float): BmiResults {
+    return when {
+        bmi < 18.5f -> BmiResults(
+            status = "Underweight",
+            color = Color(0xFFA8E8F6), // Light Blue
+            description = "Dietary habits and physical activity may need review. Consult an expert."
+        )
+        bmi < 25f -> BmiResults(
+            status = "Normal",
+            color = Color(0xFFA8F6B9), // Light Green
+            description = "Congratulations! Your BMI is within the healthy range. Keep up the good work."
+        )
+        bmi < 30f -> BmiResults(
+            status = "Overweight",
+            color = Color(0xFFF4F6A8), // Light Yellow
+            description = "Increased risk for health problems. Focus on balanced diet and activity."
+        )
+        else -> BmiResults( // bmi >= 30
+            status = "Obese",
+            color = Color(0xFFE08686), // Light Red
+            description = "High risk of chronic diseases. Immediate lifestyle changes are recommended."
+        )
+    }
+}
+
+data class BmiResults(
+    val status: String,
+    val color: Color,
+    val description: String
+)

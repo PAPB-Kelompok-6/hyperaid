@@ -32,6 +32,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.kelompok6.hyperaid.ui.screens.fitsync.bmi.BMIHistoryScreen
 import com.kelompok6.hyperaid.ui.screens.fitsync.bmi.BMIScreen
 import com.kelompok6.hyperaid.ui.screens.home.HomeScreen
 import com.kelompok6.hyperaid.ui.screens.profile.ProfileScreen
@@ -90,6 +91,7 @@ private fun MainNavHost(
     NavHost(navController, startDestination = Routes.HOME, modifier = modifier) {
         composable(Routes.HOME) { HomeScreen(navController) }
         composable(Routes.FITSYNC) { BMIScreen(navController) }
+        composable(Routes.FITSYNC_HISTORY) { BMIHistoryScreen(navController) }
         composable(Routes.VITALSYNC) { VitalsyncScreen(navController) }
         composable(Routes.VITALSYNC_HISTORY) { VitalsyncDetailHistoryScreen() }
         composable(Routes.VITALSYNC_ADDNOTES) { VitalsyncAddNotesScreen(navController) }
