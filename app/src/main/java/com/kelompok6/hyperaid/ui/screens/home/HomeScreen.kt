@@ -39,7 +39,8 @@ import com.kelompok6.hyperaid.ui.navigation.Routes
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.ui.res.painterResource
 import com.kelompok6.hyperaid.R
-
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.foundation.BorderStroke
 
 
 //@Composable
@@ -122,9 +123,9 @@ fun HomeScreen(navController: NavController) {
             )
         }
 
-        item { NewsCard("Lifestyle Changes to Combat Hypertension...", "Hypertension, or high blood pressure, is a major health concern that could lead to...", "17 hours ago") }
-        item { NewsCard("Hypertension and Heart Health: What You Need to Know..", "", "Yesterday") }
-        item { NewsCard("Tech Solutions for Hypertension Management..", "", "2 days ago") }
+        item { NewsCard("Lifestyle Changes to Combat Hypertension...", "Hypertension, or high blood pressure, is a major health concern that could lead to...", "17 hours ago", imageRes = R.drawable.artikelsatu) }
+        item { NewsCard("Hypertension and Heart Health: What You Need to Know..", "", "Yesterday", imageRes = R.drawable.artikeldua) }
+        item { NewsCard("Tech Solutions for Hypertension Management..", "", "2 days ago", imageRes = R.drawable.artikeltiga) }
     }
 }
 
@@ -353,87 +354,101 @@ fun BloodPressureItem(value: String, label: String, unit: String, modifier: Modi
 }
 
 @Composable
-fun NewsCard(title: String, subtitle: String, timeAgo: String) {
+fun NewsCard(
+    title: String,
+    subtitle: String,
+    timeAgo: String,
+    imageRes: Int? = null
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 10.dp),
+        shape = RoundedCornerShape(22.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        shape = RoundedCornerShape(16.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        border = BorderStroke(0.8.dp, Color(0xFFE4E4E4))
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+
+            // LEFT SIDE — LOGO, TITLE, SUBTITLE, TIME
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFFFFEBEE)),
-                    contentAlignment = Alignment.Center
+
+                // LOGO + TEXT
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Favorite,
-                        contentDescription = "Hyperaid",
-                        tint = Color(0xFFD85C5C),
-                        modifier = Modifier.size(20.dp)
+                    Image(
+                        painter = painterResource(id = R.drawable.logo_newscard),
+                        contentDescription = "Hyperaid Logo",
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                    )
+                    Text(
+                        text = "Hyperaid",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color(0xFF222222)
                     )
                 }
+
+                // TITLE
                 Text(
-                    text = "Hyperaid",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
+                    text = title,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.Black,
+                    lineHeight = 22.sp,
+                    modifier = Modifier.padding(top = 6.dp)
                 )
-                Spacer(modifier = Modifier.weight(1f))
-                Box(
-                    modifier = Modifier
-                        .size(80.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0xFFE0E0E0))
-                )
-            }
 
-            Spacer(modifier = Modifier.height(12.dp))
+                // SUBTITLE
+                if (subtitle.isNotEmpty()) {
+                    Text(
+                        text = subtitle,
+                        fontSize = 14.sp,
+                        color = Color.Gray,
+                        lineHeight = 20.sp,
+                    )
+                }
 
-            Text(
-                text = title,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.Black
-            )
-
-            if (subtitle.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = subtitle,
-                    fontSize = 14.sp,
-                    color = Color.Gray,
-                    lineHeight = 20.sp
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+                // TIME AGO
                 Text(
                     text = timeAgo,
-                    fontSize = 12.sp,
-                    color = Color.Gray
+                    fontSize = 13.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(top = 6.dp)
                 )
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "More",
-                    tint = Color.Gray
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // RIGHT SIDE — BIGGER IMAGE
+            if (imageRes != null) {
+                Image(
+                    painter = painterResource(id = imageRes),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(95.dp)      // <<< PERBESAR LIKE IOS
+                        .clip(RoundedCornerShape(16.dp)),
+                    contentScale = ContentScale.Crop
                 )
             }
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
