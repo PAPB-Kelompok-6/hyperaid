@@ -1,5 +1,6 @@
 package com.kelompok6.hyperaid.ui.screens.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,6 +37,10 @@ import androidx.navigation.NavController
 import com.kelompok6.hyperaid.ui.helper.AuthHelper
 import com.kelompok6.hyperaid.ui.navigation.Routes
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.res.painterResource
+import com.kelompok6.hyperaid.R
+
+
 
 //@Composable
 //fun HomeScreen(navController: NavHostController) {
@@ -64,29 +69,29 @@ fun HomeScreen(navController: NavController) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Good Morning, ${displayName}!",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-
-                Box(
+                Image(
+                    painter = painterResource(id = R.drawable.hyperaid),
+                    contentDescription = "Hyperaid logo",
                     modifier = Modifier
-                        .size(40.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0xFFF4F4F4))
-                        .clickable { navController.navigate(Routes.NOTIFICATION) },
-                    contentAlignment = Alignment.Center
-                ) {
+                        .widthIn(max = 180.dp)
+                )
+                IconButton(onClick = { navController.navigate(Routes.NOTIFICATION) }) {
                     Icon(
                         imageVector = Icons.Default.Notifications,
                         contentDescription = "Notifications",
-                        modifier = Modifier
-                            .clickable { navController.navigate(Routes.NOTIFICATION) }
+                        tint = Color.Black
                     )
                 }
             }
+        }
+        item {
+            Text(
+                text = "Good Morning, ${displayName}!",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                modifier = Modifier.padding(top = 4.dp)
+            )
         }
 
         item {
