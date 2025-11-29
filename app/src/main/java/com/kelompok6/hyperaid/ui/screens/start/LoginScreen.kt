@@ -22,10 +22,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -147,6 +149,12 @@ fun LoginField(navController: NavController, viewModel: AuthViewModel) {
     var password by remember { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
 
+    // palette (from your screenshots)
+    val TerraCotta = Color(0xFFCD4746)
+    val PaleBlack = Color(0xFF2B2B2B)
+    val PalePink = Color(0xFFF6C9CB)
+    val MediumGray = Color(0xFF959595)
+
     Column(
         modifier = Modifier.padding(10.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -157,7 +165,18 @@ fun LoginField(navController: NavController, viewModel: AuthViewModel) {
             label = { Label("Email") },
             shape = RoundedCornerShape(25f),
             textStyle = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = PaleBlack,
+                unfocusedTextColor = PaleBlack,
+                focusedBorderColor = TerraCotta,
+                unfocusedBorderColor = MediumGray.copy(alpha = 0.6f),
+                focusedLabelColor = TerraCotta,
+                unfocusedLabelColor = MediumGray,
+                cursorColor = PaleBlack,
+                focusedPlaceholderColor = MediumGray,
+                unfocusedPlaceholderColor = MediumGray
+            )
         )
 
         OutlinedTextField(
@@ -167,7 +186,18 @@ fun LoginField(navController: NavController, viewModel: AuthViewModel) {
             visualTransformation = PasswordVisualTransformation(),
             shape = RoundedCornerShape(25f),
             textStyle = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = PaleBlack,
+                unfocusedTextColor = PaleBlack,
+                focusedBorderColor = TerraCotta,
+                unfocusedBorderColor = MediumGray.copy(alpha = 0.6f),
+                focusedLabelColor = TerraCotta,
+                unfocusedLabelColor = MediumGray,
+                cursorColor = PaleBlack,
+                focusedPlaceholderColor = MediumGray,
+                unfocusedPlaceholderColor = MediumGray
+            )
         )
 
         Row(
@@ -185,6 +215,11 @@ fun LoginField(navController: NavController, viewModel: AuthViewModel) {
                     modifier = Modifier.size(20.dp),
                     checked = rememberMe,
                     onCheckedChange = { rememberMe = it },
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = TerraCotta,
+                        uncheckedColor = MediumGray,
+                        checkmarkColor = Color.White
+                    )
                 )
                 Label("Remember Me", Modifier.padding(10.dp, 0.dp))
             }
@@ -196,8 +231,8 @@ fun LoginField(navController: NavController, viewModel: AuthViewModel) {
 
         Button(
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF2B2B2B),
-                contentColor = Color(0xFFF6C9CB)
+                containerColor = PaleBlack,
+                contentColor = PalePink
             ),
             shape = RoundedCornerShape(25f),
             onClick = {
@@ -277,7 +312,8 @@ fun LoginOAuth(navController: NavController, viewModel: AuthViewModel) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_social_google),
                     contentDescription = "Google icon",
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(20.dp),
+                    colorFilter = null
                 )
                 Label("Login with Google")
             }
@@ -303,7 +339,8 @@ fun LoginOAuth(navController: NavController, viewModel: AuthViewModel) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_social_facebook),
                     contentDescription = "Facebook icon",
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(20.dp),
+                    colorFilter = null
                 )
                 Label("Login with Facebook")
             }

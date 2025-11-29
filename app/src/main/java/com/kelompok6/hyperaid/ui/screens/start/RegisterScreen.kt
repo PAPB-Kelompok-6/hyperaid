@@ -23,6 +23,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -129,6 +130,12 @@ fun RegisterField(navController: NavController, viewModel: AuthViewModel, snackb
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
 
+    // palette — match LoginScreen
+    val TerraCotta = Color(0xFFCD4746)
+    val PaleBlack = Color(0xFF2B2B2B)
+    val PalePink = Color(0xFFF6C9CB)
+    val MediumGray = Color(0xFF959595)
+
     Column(
         modifier = Modifier.padding(10.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -139,7 +146,18 @@ fun RegisterField(navController: NavController, viewModel: AuthViewModel, snackb
             label = { Label("Full Name") },
             shape = RoundedCornerShape(25f),
             textStyle = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = PaleBlack,
+                unfocusedTextColor = PaleBlack,
+                focusedBorderColor = TerraCotta,
+                unfocusedBorderColor = MediumGray.copy(alpha = 0.6f),
+                focusedLabelColor = TerraCotta,
+                unfocusedLabelColor = MediumGray,
+                cursorColor = PaleBlack,
+                focusedPlaceholderColor = MediumGray,
+                unfocusedPlaceholderColor = MediumGray
+            )
         )
 
         OutlinedTextField(
@@ -148,7 +166,18 @@ fun RegisterField(navController: NavController, viewModel: AuthViewModel, snackb
             label = { Label("Email") },
             shape = RoundedCornerShape(25f),
             textStyle = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = PaleBlack,
+                unfocusedTextColor = PaleBlack,
+                focusedBorderColor = TerraCotta,
+                unfocusedBorderColor = MediumGray.copy(alpha = 0.6f),
+                focusedLabelColor = TerraCotta,
+                unfocusedLabelColor = MediumGray,
+                cursorColor = PaleBlack,
+                focusedPlaceholderColor = MediumGray,
+                unfocusedPlaceholderColor = MediumGray
+            )
         )
 
         OutlinedTextField(
@@ -158,7 +187,18 @@ fun RegisterField(navController: NavController, viewModel: AuthViewModel, snackb
             visualTransformation = PasswordVisualTransformation(),
             shape = RoundedCornerShape(25f),
             textStyle = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = PaleBlack,
+                unfocusedTextColor = PaleBlack,
+                focusedBorderColor = TerraCotta,
+                unfocusedBorderColor = MediumGray.copy(alpha = 0.6f),
+                focusedLabelColor = TerraCotta,
+                unfocusedLabelColor = MediumGray,
+                cursorColor = PaleBlack,
+                focusedPlaceholderColor = MediumGray,
+                unfocusedPlaceholderColor = MediumGray
+            )
         )
 
         OutlinedTextField(
@@ -168,7 +208,18 @@ fun RegisterField(navController: NavController, viewModel: AuthViewModel, snackb
             visualTransformation = PasswordVisualTransformation(),
             shape = RoundedCornerShape(25f),
             textStyle = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = PaleBlack,
+                unfocusedTextColor = PaleBlack,
+                focusedBorderColor = TerraCotta,
+                unfocusedBorderColor = MediumGray.copy(alpha = 0.6f),
+                focusedLabelColor = TerraCotta,
+                unfocusedLabelColor = MediumGray,
+                cursorColor = PaleBlack,
+                focusedPlaceholderColor = MediumGray,
+                unfocusedPlaceholderColor = MediumGray
+            )
         )
 
         Spacer(modifier = Modifier.height(10.dp))
