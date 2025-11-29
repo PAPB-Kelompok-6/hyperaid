@@ -62,7 +62,8 @@ fun MainScaffold(
         Routes.MEASURE_PROCESS,
         Routes.MEASURE_RESULT,
         Routes.VITALSYNC_SFIGMOMANOMETER, // hide nav bar on sfigmomanometer measurement screen
-        Routes.VITALSYNC_ADDNOTES // hide nav bar on add notes screen
+        Routes.VITALSYNC_ADDNOTES, // hide nav bar on add notes screen
+        Routes.NOTIFICATION // hide nav bar on notification screen
     )
 
     Scaffold(
