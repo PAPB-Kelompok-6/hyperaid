@@ -4,6 +4,7 @@ object Routes {
     const val SPLASH = "Splash"
     const val HOME = "Home"
     const val FITSYNC = "BMI"
+    const val FITSYNC_HISTORY = "BMI_History"
     const val NUTRITRACK = "Nutritrack"
     const val VITALSYNC = "Vitalsync"
     const val VITALSYNC_HISTORY = "vitalsync_history"

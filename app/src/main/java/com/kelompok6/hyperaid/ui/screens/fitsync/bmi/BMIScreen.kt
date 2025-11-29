@@ -1,5 +1,6 @@
 package com.kelompok6.hyperaid.ui.screens.fitsync.bmi
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
@@ -22,28 +23,52 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.fontResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.kelompok6.hyperaid.data.model.BMI
+import com.kelompok6.hyperaid.data.model.Reminder
+import com.kelompok6.hyperaid.data.repository.BMIRepository
 import androidx.compose.foundation.clickable
+import com.google.firebase.Timestamp
 import com.kelompok6.hyperaid.ui.navigation.Routes
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BMIScreen(navController: NavHostController) {
+    val context = LocalContext.current
+
     var selectedTab by remember { mutableStateOf("BMI") }
     var height by remember { mutableStateOf(150) }
     var weight by remember { mutableStateOf(39) }
     var age by remember { mutableStateOf(39) }
     var historyTab by remember { mutableStateOf("Recent") }
 
-    // New state to show the result bottom sheet and store last computed values
-    var showResultSheet by remember { mutableStateOf(false) }
-    var lastBmi by remember { mutableStateOf(0f) }
-    var lastCategory by remember { mutableStateOf("") }
-    var lastMessage by remember { mutableStateOf("") }
+    val firestore = FirebaseFirestore.getInstance()
+    val auth = FirebaseAuth.getInstance()
+    val bmiRepository = remember {
+        BMIRepository(db = firestore, auth = auth)
+    }
+    val factory = remember {
+        BMIViewModelFactory(repository = bmiRepository)
+    }
+    val viewModel: BMIViewModel = viewModel(factory = factory)
+    val latestBmiData by viewModel.latestBMI.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchLatestBMI()
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -105,29 +130,27 @@ fun BMIScreen(navController: NavHostController) {
         item {
             Button(
                 onClick = {
-                    // Compute BMI and prepare sheet content
-                    val hMeters = height / 100f
-                    val bmi = if (hMeters > 0f) weight / (hMeters * hMeters) else 0f
-                    lastBmi = bmi
+                    val currentUserId = auth.currentUser?.uid
 
-                    lastCategory = when {
-                        bmi <= 0f -> "N/A"
-                        bmi < 18.5f -> "Underweight"
-                        bmi < 25f -> "Normal"
-                        bmi < 30f -> "Overweight"
-                        else -> "Obese"
+                    if (currentUserId != null) {
+                        val newBmiData = BMI(
+                            userId = currentUserId,
+                            date = Timestamp.now(),
+                            height = height,
+                            weight = weight,
+                            age = age
+                        )
+
+                        viewModel.addBMI(newBmiData)
+
+                        Toast.makeText(
+                            context,
+                            "Data BMI berhasil disimpan!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(context, "Error: Pengguna belum login.", Toast.LENGTH_LONG).show()
                     }
-
-                    // Use bmi ranges directly to derive the message (avoid comparing lastCategory)
-                    lastMessage = when {
-                        bmi <= 0f -> "Enter valid height and weight to calculate BMI."
-                        bmi < 18.5f -> "In 60% of cases, poor dietary habits can pose a risk of diabetes."
-                        bmi < 25f -> "Great job — your BMI is within a healthy range. Keep maintaining a balanced lifestyle."
-                        bmi < 30f -> "Consider reviewing your diet and activity levels to reduce health risks."
-                        else -> "It's recommended to consult with a healthcare professional for personalized advice."
-                    }
-
-                    showResultSheet = true
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -152,87 +175,21 @@ fun BMIScreen(navController: NavHostController) {
         item {
             HistoryTabSelector(
                 selectedTab = historyTab,
-                onTabSelected = { historyTab = it }
+                onTabSelected = { tab ->
+                    selectedTab = tab
+                    if (tab == "History") {
+                        navController.navigate(Routes.FITSYNC_HISTORY)
+                    }
+                }
             )
         }
 
         item {
-            BMIHistoryCard()
+            BMIHistoryCard(latestBmiData)
         }
 
         item {
             Spacer(modifier = Modifier.height(16.dp))
-        }
-    }
-
-    // Bottom sheet showing computed BMI result
-    if (showResultSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showResultSheet = false },
-            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-            tonalElevation = 8.dp
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // Title
-                Text(
-                    text = "Your BMI today",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.Black
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // BMI value formatted with one decimal and comma separator
-                val bmiText = String.format(Locale.getDefault(), "%.1f", lastBmi).replace('.', ',')
-                Text(
-                    text = bmiText,
-                    fontSize = 48.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFFD85C5C)
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // Message
-                Text(
-                    text = lastMessage,
-                    fontSize = 14.sp,
-                    color = Color.Gray,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Category
-                Text(
-                    text = "(${lastCategory})",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = if (lastCategory == "Underweight") Color(0xFFD85C5C) else Color(0xFF2C2C2C)
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Button(
-                    onClick = { showResultSheet = false },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C2C2C)),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text(text = "Check BMI History", color = Color.White, fontSize = 16.sp)
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-            }
         }
     }
 }
@@ -553,93 +510,117 @@ fun HistoryTab(
 }
 
 @Composable
-fun BMIHistoryCard() {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Tuesday",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    text = "26/09/23 14:25:58",
-                    fontSize = 14.sp,
-                    color = Color.Gray
-                )
-            }
+fun BMIHistoryCard(latestBMI: BMI?) {
+    if (latestBMI == null) {
+        Card(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Text(
+                text = "Kamu belum pernah cek BMI",
+                textAlign = TextAlign.Center,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    } else {
+        val results = BmiInfo(latestBMI.bmi)
+        val boxBorderColor = results.color
 
-            Spacer(modifier = Modifier.height(16.dp))
+        val statusTextColor = when (results.status) {
+            "Underweight" -> Color(0xFF2C6C76)
+            "Normal" -> Color(0xFF2C763F)
+            "Overweight" -> Color(0xFF76722C)
+            else -> Color(0xFF762C2C)
+        }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(2.dp, Color(0xFFD85C5C), RoundedCornerShape(12.dp))
-                    .padding(16.dp)
-            ) {
-                Column {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "Your BMI today : ",
-                            fontSize = 16.sp,
-                            color = Color.Black
-                        )
-                        Text(
-                            text = "17,8",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFFD85C5C)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
-                        text = "In 60% of cases, poor dietary habits can pose a risk of diabetes.",
-                        fontSize = 14.sp,
-                        color = Color.Gray,
-                        lineHeight = 20.sp
+                        text = latestBMI.date?.hari() ?: "N/A",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium
                     )
+                    Text(
+                        text = "${latestBMI.date?.tanggal() ?: "N/A"} ${latestBMI.date?.jam() ?: "N/A"}",
+                        fontSize = 14.sp,
+                        color = Color.Gray
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(2.dp, statusTextColor, RoundedCornerShape(12.dp))
+                        .padding(16.dp)
+                ) {
+                    Column {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "Your BMI today : ",
+                                fontSize = 16.sp,
+                                color = Color.Black
+                            )
+                            Text(
+                                text = String.format(Locale.US, "%.1f", latestBMI.bmi),
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = statusTextColor
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = results.description,
+                            fontSize = 14.sp,
+                            color = Color.Gray,
+                            lineHeight = 20.sp
+                        )
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(20.dp))
-                                .background(Color(0xFFFFE5E5))
-                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .background(results.color)
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
                             ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(8.dp)
-                                        .clip(CircleShape)
-                                        .background(Color(0xFFD85C5C))
-                                )
-                                Text(
-                                    text = "Underweight",
-                                    fontSize = 14.sp,
-                                    color = Color(0xFFD85C5C),
-                                    fontWeight = FontWeight.Medium
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(8.dp)
+                                            .clip(CircleShape)
+                                            .background(statusTextColor)
+                                    )
+                                    Text(
+                                        // 6. Tampilkan status yang dinamis
+                                        text = results.status,
+                                        fontSize = 14.sp,
+                                        color = statusTextColor,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
                             }
                         }
                     }
@@ -648,3 +629,49 @@ fun BMIHistoryCard() {
         }
     }
 }
+
+fun Timestamp.hari(): String {
+    val hari = SimpleDateFormat("EEEE", Locale("id", "ID"))
+    return hari.format(this.toDate())
+}
+
+fun Timestamp.tanggal(): String {
+    val tanggal = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
+    return tanggal.format(this.toDate())
+}
+
+fun Timestamp.jam(): String {
+    val jam = SimpleDateFormat("HH:mm", Locale.getDefault())
+    return jam.format(this.toDate())
+}
+
+fun BmiInfo(bmi: Float): BmiResult {
+    return when {
+        bmi < 18.5f -> BmiResult(
+            status = "Underweight",
+            color = Color(0xFFA8E8F6), // Light Blue
+            description = "Dietary habits and physical activity may need review. Consult an expert."
+        )
+        bmi < 25f -> BmiResult(
+            status = "Normal",
+            color = Color(0xFFA8F6B9), // Light Green
+            description = "Congratulations! Your BMI is within the healthy range. Keep up the good work."
+        )
+        bmi < 30f -> BmiResult(
+            status = "Overweight",
+            color = Color(0xFFF4F6A8), // Light Yellow
+            description = "Increased risk for health problems. Focus on balanced diet and activity."
+        )
+        else -> BmiResult( // bmi >= 30
+            status = "Obese",
+            color = Color(0xFFE08686), // Light Red
+            description = "High risk of chronic diseases. Immediate lifestyle changes are recommended."
+        )
+    }
+}
+
+data class BmiResult(
+    val status: String,
+    val color: Color,
+    val description: String
+)
