@@ -38,9 +38,13 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.runtime.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kelompok6.hyperaid.ui.helper.AuthHelper
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 
 
 data class Language(val label: String, val code: String)
@@ -97,6 +101,11 @@ fun LanguageScreen(
         viewModel.setLangDefaultValues()
     }
 
+    // palette
+     val PaleBlack = Color(0xFF2B2B2B)
+     val PalePink = Color(0xFFF6C9CB)
+     val MediumGray = Color(0xFF959595)
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -115,7 +124,8 @@ fun LanguageScreen(
             Text(
                 text = "Setting Language",
                 style = MaterialTheme.typography.headlineSmall,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = PaleBlack
             )
 
             Spacer(Modifier.height(8.dp))
@@ -126,6 +136,7 @@ fun LanguageScreen(
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .padding(horizontal = 24.dp),
+                color = PaleBlack
             )
 
             Spacer(Modifier.height(32.dp))
@@ -145,13 +156,18 @@ fun LanguageScreen(
 
                     Card(
                         shape = MaterialTheme.shapes.medium,
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                        border = BorderStroke(1.dp, if (selected) PalePink else MediumGray.copy(alpha = 0.4f)),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (selected) PalePink.copy(alpha = 0.12f) else Color.White
+                        ),
                         modifier = Modifier
                             .height(55.dp)
                             .fillMaxWidth()
-                            .clickable {
-                                viewModel.update { it.copy(languagePreference = lang.code) }
-                            }
+                            .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) {
+                                 viewModel.update { it.copy(languagePreference = lang.code) }
+                             }
+                            .focusable(false)
                     ) {
                         Row(
                             modifier = Modifier
@@ -163,14 +179,21 @@ fun LanguageScreen(
                             Text(
                                 text = lang.label,
                                 style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Medium
+                                fontWeight = FontWeight.Medium,
+                                color = PaleBlack
                             )
 
                             RadioButton(
                                 selected = selected,
                                 onClick = {
                                     viewModel.update { it.copy(languagePreference = lang.code) }
-                                }
+                                },
+                                colors = RadioButtonDefaults.colors(
+                                    selectedColor = PalePink,
+                                    unselectedColor = MediumGray,
+                                    disabledSelectedColor = MediumGray.copy(alpha = 0.4f),
+                                    disabledUnselectedColor = MediumGray.copy(alpha = 0.4f)
+                                )
                             )
                         }
                     }
@@ -190,7 +213,7 @@ fun LanguageScreen(
                 }
 
             },
-            containerColor = Color(0xFF222222),
+            containerColor = PaleBlack,
             contentColor = Color.White,
             shape = androidx.compose.foundation.shape.CircleShape,
             modifier = Modifier
