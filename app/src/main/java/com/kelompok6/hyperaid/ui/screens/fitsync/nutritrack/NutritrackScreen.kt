@@ -371,7 +371,7 @@ fun MealTimeCard(icon: String, title: String, time: String, iconColor: Color) {
     Card(
         modifier = Modifier
             .width(140.dp)
-            .height(160.dp),
+            .height(200.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(16.dp)
     ) {
