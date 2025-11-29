@@ -123,9 +123,9 @@ fun HomeScreen(navController: NavController) {
             )
         }
 
-        item { NewsCard("Lifestyle Changes to Combat Hypertension...", "Hypertension, or high blood pressure, is a major health concern that could lead to...", "17 hours ago", imageRes = R.drawable.artikelsatu) }
-        item { NewsCard("Hypertension and Heart Health: What You Need to Know..", "", "Yesterday", imageRes = R.drawable.artikeldua) }
-        item { NewsCard("Tech Solutions for Hypertension Management..", "", "2 days ago", imageRes = R.drawable.artikeltiga) }
+        item { NewsCard("Lifestyle Changes to Combat Hypertension...", "Hypertension, or high blood pressure, is a major health concern that could lead to...", "17 hours ago", imageRes = R.drawable.artikelsatu, fontSizeTitle = 18, isFirst = true) }
+        item { NewsCard("Hypertension and Heart Health: What You Need to Know..", "", "Yesterday", imageRes = R.drawable.artikeldua, fontSizeTitle = 16) }
+        item { NewsCard("Tech Solutions for Hypertension Management..", "", "2 days ago", imageRes = R.drawable.artikeltiga, fontSizeTitle = 16) }
     }
 }
 
@@ -239,8 +239,7 @@ fun HeartRateCard(navController: NavController?) {
                     }
                 }
             }
-
-            // Heartbeat line decoration at bottom
+            
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -358,7 +357,9 @@ fun NewsCard(
     title: String,
     subtitle: String,
     timeAgo: String,
-    imageRes: Int? = null
+    imageRes: Int? = null,
+    fontSizeTitle: Int = 18,
+    isFirst: Boolean = false // <<< tambahkan ini
 ) {
     Card(
         modifier = Modifier
@@ -369,85 +370,104 @@ fun NewsCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         border = BorderStroke(0.8.dp, Color(0xFFE4E4E4))
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top
-        ) {
 
-            // LEFT SIDE — LOGO, TITLE, SUBTITLE, TIME
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+        Column(modifier = Modifier.padding(20.dp)) {
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
             ) {
 
-                // LOGO + TEXT
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.logo_newscard),
-                        contentDescription = "Hyperaid Logo",
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                    )
+                Column(modifier = Modifier.weight(1f)) {
+
+                    // Logo + Name
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.logo_newscard),
+                            contentDescription = "Hyperaid Logo",
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(CircleShape)
+                        )
+                        Text(
+                            text = "Hyperaid",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+
+                    Spacer(Modifier.height(10.dp))
+
                     Text(
-                        text = "Hyperaid",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color(0xFF222222)
+                        text = title,
+                        fontSize = fontSizeTitle.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        lineHeight = 22.sp
                     )
+
+                    if (isFirst) {
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = timeAgo,
+                            fontSize = 13.sp,
+                            color = Color.Gray
+                        )
+                    }
                 }
 
-                // TITLE
-                Text(
-                    text = title,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.Black,
-                    lineHeight = 22.sp,
-                    modifier = Modifier.padding(top = 6.dp)
-                )
+                Spacer(Modifier.width(16.dp))
 
-                // SUBTITLE
-                if (subtitle.isNotEmpty()) {
-                    Text(
-                        text = subtitle,
-                        fontSize = 14.sp,
-                        color = Color.Gray,
-                        lineHeight = 20.sp,
-                    )
+                Column(horizontalAlignment = Alignment.End) {
+                    if (imageRes != null) {
+                        Image(
+                            painter = painterResource(id = imageRes),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(95.dp)
+                                .clip(RoundedCornerShape(16.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+
+                    if (isFirst) {
+                        Spacer(Modifier.height(12.dp))
+                        Icon(
+                            imageVector = Icons.Default.MoreHoriz,
+                            contentDescription = "More",
+                            tint = Color.Gray
+                        )
+                    }
                 }
+            }
 
-                // TIME AGO
+            if (subtitle.isNotEmpty()) {
+                Spacer(Modifier.height(16.dp))
+
                 Text(
-                    text = timeAgo,
-                    fontSize = 13.sp,
+                    text = subtitle,
+                    fontSize = 14.sp,
                     color = Color.Gray,
-                    modifier = Modifier.padding(top = 6.dp)
+                    lineHeight = 20.sp,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
-
-            // RIGHT SIDE — BIGGER IMAGE
-            if (imageRes != null) {
-                Image(
-                    painter = painterResource(id = imageRes),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(95.dp)      // <<< PERBESAR LIKE IOS
-                        .clip(RoundedCornerShape(16.dp)),
-                    contentScale = ContentScale.Crop
+            if (!isFirst) {
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    text = timeAgo,
+                    fontSize = 13.sp,
+                    color = Color.Gray
                 )
             }
         }
     }
 }
+
 
 
 @Preview(showBackground = true)
