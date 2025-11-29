@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,16 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -31,7 +24,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kelompok6.hyperaid.ui.helper.AuthHelper
@@ -41,6 +33,7 @@ import androidx.compose.ui.res.painterResource
 import com.kelompok6.hyperaid.R
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.ui.text.style.TextOverflow
 
 
 //@Composable
@@ -123,9 +116,49 @@ fun HomeScreen(navController: NavController) {
             )
         }
 
-        item { NewsCard("Lifestyle Changes to Combat Hypertension...", "Hypertension, or high blood pressure, is a major health concern that could lead to...", "17 hours ago", imageRes = R.drawable.artikelsatu, fontSizeTitle = 18, isFirst = true) }
-        item { NewsCard("Hypertension and Heart Health: What You Need to Know..", "", "Yesterday", imageRes = R.drawable.artikeldua, fontSizeTitle = 16) }
-        item { NewsCard("Tech Solutions for Hypertension Management..", "", "2 days ago", imageRes = R.drawable.artikeltiga, fontSizeTitle = 16) }
+        item {
+            Box(modifier = Modifier.padding(top = 16.dp)) {
+                NewsCard(
+                    title = "Lifestyle Changes to Combat Hypertension",
+                    subtitle = "Hypertension, or high blood pressure, is a major health concern...",
+                    timeAgo = "17 hours ago",
+                    imageRes = R.drawable.artikelsatu,
+                    onClick = {
+                        navController.navigate("article_screen/1")
+                    }
+                )
+            }
+        }
+
+        item {
+            Box(modifier = Modifier.padding(top = 12.dp)) {
+                NewsCard(
+                    title = "Hypertension and Heart Health: What You Need to Know",
+                    subtitle = "",
+                    timeAgo = "Yesterday",
+                    imageRes = R.drawable.artikeldua,
+                    fontSizeTitle = 16,
+                    onClick = {
+                        navController.navigate("article_screen/2")
+                    }
+                )
+            }
+        }
+
+        item {
+            Box(modifier = Modifier.padding(top = 12.dp)) {
+                NewsCard(
+                    title = "Tech Solutions for Hypertension Management",
+                    subtitle = "",
+                    timeAgo = "2 days ago",
+                    imageRes = R.drawable.artikeltiga,
+                    fontSizeTitle = 16,
+                    onClick = {
+                        navController.navigate("article_screen/3")
+                    }
+                )
+            }
+        }
     }
 }
 
@@ -359,12 +392,14 @@ fun NewsCard(
     timeAgo: String,
     imageRes: Int? = null,
     fontSizeTitle: Int = 18,
-    isFirst: Boolean = false // <<< tambahkan ini
+    isFirst: Boolean = false,
+    onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 10.dp),
+            .padding(vertical = 10.dp)
+            .clickable { onClick() },
         shape = RoundedCornerShape(22.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -406,7 +441,9 @@ fun NewsCard(
                         text = title,
                         fontSize = fontSizeTitle.sp,
                         fontWeight = FontWeight.SemiBold,
-                        lineHeight = 22.sp
+                        lineHeight = 22.sp,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
 
                     if (isFirst) {

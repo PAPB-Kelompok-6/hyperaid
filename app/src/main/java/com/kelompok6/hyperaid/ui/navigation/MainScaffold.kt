@@ -28,10 +28,12 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.kelompok6.hyperaid.ui.screens.fitsync.bmi.BMIHistoryScreen
 import com.kelompok6.hyperaid.ui.screens.fitsync.bmi.BMIScreen
 import com.kelompok6.hyperaid.ui.screens.home.HomeScreen
@@ -42,6 +44,7 @@ import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncScreen
 import com.kelompok6.hyperaid.ui.screens.vitalsync.SfigmomanometerScreen
 import com.kelompok6.hyperaid.ui.screens.fitsync.nutritrack.NutriTrackScreen
 import com.kelompok6.hyperaid.ui.screens.fitsync.nutritrack.NutritrackAddScreen
+import com.kelompok6.hyperaid.ui.screens.home.ArticleScreen
 import com.kelompok6.hyperaid.ui.screens.home.NotificationScreen
 import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncAddNotesScreen
 import com.kelompok6.hyperaid.ui.screens.measure.MeasureInstruction
@@ -114,8 +117,18 @@ private fun MainNavHost(
         composable(Routes.MEASURE_PROCESS) { MeasureProcess(navController) }
         composable(Routes.MEASURE_RESULT) { MeasureResult(navController) }
         composable(Routes.NOTIFICATION) { NotificationScreen(navController) }
-
-
+        composable(
+            // Definisikan route dengan argumen "articleId"
+            route = "article_screen/{articleId}",
+            arguments = listOf(navArgument("articleId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            // Ambil articleId dari argumen
+            val articleId = backStackEntry.arguments?.getInt("articleId") ?: 0
+            ArticleScreen(
+                navController = navController,
+                articleId = articleId
+            )
+        }
     }
 }
 
