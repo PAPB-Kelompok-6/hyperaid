@@ -30,7 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
-
+import com.kelompok6.hyperaid.ui.navigation.Routes
 
 
 @Composable
@@ -68,16 +68,7 @@ fun MeasureResult(navController: NavController) {
                         .size(36.dp)
                         .background(Color(0xFFF4F4F4), RoundedCornerShape(12.dp))
                         .padding(8.dp)
-                        .clickable {
-                            // navigate to Home directly instead of popping back to MeasureProcess
-                            navController.navigate(com.kelompok6.hyperaid.ui.navigation.Routes.HOME) {
-                                // clear intermediate destinations so Home becomes top
-                                popUpTo(com.kelompok6.hyperaid.ui.navigation.Routes.HOME) {
-                                    inclusive = true
-                                }
-                                launchSingleTop = true
-                            }
-                        }
+                        .clickable { navController.navigate(Routes.MEASURE_INSTRUCTION) }
                 )
 
                 Spacer(Modifier.width(12.dp))

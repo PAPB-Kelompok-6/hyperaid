@@ -85,7 +85,7 @@ fun MeasureProcess(navController: NavController) {
                         contentDescription = "Back",
                         modifier = Modifier
                             .clip(CircleShape)
-                            .clickable { navController.popBackStack() }
+                            .clickable { navController.navigate(Routes.MEASURE_INSTRUCTION) }
                             .padding(4.dp)
                     )
                     Spacer(Modifier.width(16.dp))

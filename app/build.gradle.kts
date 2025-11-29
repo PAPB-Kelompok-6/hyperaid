@@ -50,6 +50,9 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.foundation)
 
+    // Hilt ViewModel
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
     // Navigation Dependencies
     val navVersion = "2.7.3"
     implementation(platform("androidx.compose:compose-bom:$navVersion"))
