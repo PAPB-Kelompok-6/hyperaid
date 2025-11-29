@@ -46,7 +46,7 @@ fun getArticleById(id: Int): ArticleData {
 
         1 -> ArticleData(
             title = "Lifestyle Changes to Combat Hypertension and Long-Term Health Strategies",
-            image = R.drawable.artikelsatu,
+            image = R.drawable.artikel1,
             time = "Wed, Jan 18",
             sections = listOf(
                 ArticleSection(
@@ -73,7 +73,7 @@ fun getArticleById(id: Int): ArticleData {
 
         2 -> ArticleData(
             title = "Hypertension and Heart Health: What You Need to Know for Better Long-Term Wellness",
-            image = R.drawable.artikeldua,
+            image = R.drawable.artikel2,
             time = "Yesterday",
             sections = listOf(
 
@@ -118,7 +118,7 @@ fun getArticleById(id: Int): ArticleData {
 
         3 -> ArticleData(
             title = "Tech Solutions for Hypertension Management and Early Detection of Cardiovascular Risks",
-            image = R.drawable.artikeltiga,
+            image = R.drawable.artikel3,
             time = "2 days ago",
             sections = listOf(
 

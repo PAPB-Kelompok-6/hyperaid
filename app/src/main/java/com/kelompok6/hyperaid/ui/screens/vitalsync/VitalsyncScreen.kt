@@ -66,13 +66,11 @@ fun VitalsyncScreen(navController: NavController) {
             .background(Color(0xFFF5F5F5))
     ) {
         item {
-            PulseMeasureCard()
+            PulseMeasureCard(navController = navController)
         }
 
-        // Show pairing card when not connected
         item {
             if (!isSfigConnected) {
-                // pass navController so dialog can navigate directly
                 PairSfigmoCard(
                     onConnect = { isSfigConnected = true },
                     navController = navController
@@ -100,7 +98,6 @@ fun VitalsyncScreen(navController: NavController) {
             )
         }
 
-        // CHANGE THIS -> Grab most recent measurement
         item {
             VitalsyncDetailHistoryScreen()
         }
@@ -110,7 +107,6 @@ fun VitalsyncScreen(navController: NavController) {
         }
     }
 
-    // Observe nav back stack to detect when SfigmomanometerScreen signals completion or when notes are returned
     LaunchedEffect(navController) {
         navController.currentBackStackEntryFlow.collect { backStackEntry ->
             val completed = backStackEntry.savedStateHandle.get<Boolean>("sfig_connected")
@@ -122,7 +118,6 @@ fun VitalsyncScreen(navController: NavController) {
             val notes = backStackEntry.savedStateHandle.get<Map<String, String>>("vitalsync_notes")
             if (notes != null) {
                 lastNotes = notes
-                // remove after consuming
                 backStackEntry.savedStateHandle.remove<Map<String, String>>("vitalsync_notes")
             }
         }
@@ -239,7 +234,6 @@ fun PairSfigmoCard(
 
                     Button(
                         onClick = {
-                            // close dialog then set navigate flag; navigation happens in LaunchedEffect below
                             showDialog = false
                             navigateNow = true
                         },
@@ -256,7 +250,6 @@ fun PairSfigmoCard(
         }
     }
 
-    // navigate after dialog has been dismissed to avoid timing issues
     LaunchedEffect(navigateNow) {
         if (navigateNow) {
             try {
@@ -270,7 +263,7 @@ fun PairSfigmoCard(
 }
 
 @Composable
-fun PulseMeasureCard() {
+fun PulseMeasureCard(navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -300,7 +293,7 @@ fun PulseMeasureCard() {
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 Button(
-                    onClick = { },
+                    onClick = { navController.navigate(Routes.MEASURE_INSTRUCTION) },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C2C2C)),
                     shape = RoundedCornerShape(20.dp)
                 ) {

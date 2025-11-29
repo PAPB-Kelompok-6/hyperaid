@@ -118,11 +118,9 @@ private fun MainNavHost(
         composable(Routes.MEASURE_RESULT) { MeasureResult(navController) }
         composable(Routes.NOTIFICATION) { NotificationScreen(navController) }
         composable(
-            // Definisikan route dengan argumen "articleId"
             route = "article_screen/{articleId}",
             arguments = listOf(navArgument("articleId") { type = NavType.IntType })
         ) { backStackEntry ->
-            // Ambil articleId dari argumen
             val articleId = backStackEntry.arguments?.getInt("articleId") ?: 0
             ArticleScreen(
                 navController = navController,

@@ -122,7 +122,7 @@ fun HomeScreen(navController: NavController) {
                     title = "Lifestyle Changes to Combat Hypertension",
                     subtitle = "Hypertension, or high blood pressure, is a major health concern...",
                     timeAgo = "17 hours ago",
-                    imageRes = R.drawable.artikelsatu,
+                    imageRes = R.drawable.artikel1,
                     onClick = {
                         navController.navigate("article_screen/1")
                     }
@@ -136,8 +136,9 @@ fun HomeScreen(navController: NavController) {
                     title = "Hypertension and Heart Health: What You Need to Know",
                     subtitle = "",
                     timeAgo = "Yesterday",
-                    imageRes = R.drawable.artikeldua,
+                    imageRes = R.drawable.artikel2,
                     fontSizeTitle = 16,
+                    modifier = Modifier.height(170.dp),
                     onClick = {
                         navController.navigate("article_screen/2")
                     }
@@ -151,8 +152,9 @@ fun HomeScreen(navController: NavController) {
                     title = "Tech Solutions for Hypertension Management",
                     subtitle = "",
                     timeAgo = "2 days ago",
-                    imageRes = R.drawable.artikeltiga,
+                    imageRes = R.drawable.artikel3,
                     fontSizeTitle = 16,
+                    modifier = Modifier.height(170.dp),
                     onClick = {
                         navController.navigate("article_screen/3")
                     }
@@ -219,6 +221,7 @@ fun HeartRateCard(navController: NavController?) {
                     .fillMaxWidth()
                     .padding(20.dp)
             ) {
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -243,12 +246,14 @@ fun HeartRateCard(navController: NavController?) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Favorite,
-                        contentDescription = "Heart",
-                        tint = Color.White,
+
+                    // 🔥 GANTI ICON DENGAN GAMBAR PNG SENDIRI
+                    Image(
+                        painter = painterResource(id = R.drawable.logoheartrate),
+                        contentDescription = "Heart Icon",
                         modifier = Modifier.size(48.dp)
                     )
+
                     Column {
                         Text(
                             text = "NA",
@@ -262,7 +267,9 @@ fun HeartRateCard(navController: NavController?) {
                             fontSize = 14.sp
                         )
                     }
+
                     Spacer(modifier = Modifier.weight(1f))
+
                     Button(
                         onClick = { navController?.navigate(Routes.MEASURE_INSTRUCTION) },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C2C2C)),
@@ -272,7 +279,8 @@ fun HeartRateCard(navController: NavController?) {
                     }
                 }
             }
-            
+
+            // background icon dekorasi
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -282,12 +290,15 @@ fun HeartRateCard(navController: NavController?) {
                     imageVector = Icons.Default.Clear,
                     contentDescription = "Chart",
                     tint = Color.White.copy(alpha = 0.3f),
-                    modifier = Modifier.size(80.dp).padding(top = 16.dp)
+                    modifier = Modifier
+                        .size(80.dp)
+                        .padding(top = 16.dp)
                 )
             }
         }
     }
 }
+
 
 @Composable
 fun BloodPressureCard() {
@@ -392,7 +403,7 @@ fun NewsCard(
     timeAgo: String,
     imageRes: Int? = null,
     fontSizeTitle: Int = 18,
-    isFirst: Boolean = false,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
     Card(
@@ -405,18 +416,17 @@ fun NewsCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         border = BorderStroke(0.8.dp, Color(0xFFE4E4E4))
     ) {
-
         Column(modifier = Modifier.padding(20.dp)) {
 
+            // --- Bagian Atas: Teks dan Gambar ---
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top
             ) {
-
+                // Kolom untuk Teks di Kiri
                 Column(modifier = Modifier.weight(1f)) {
-
-                    // Logo + Name
+                    // Logo + Nama
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -437,6 +447,7 @@ fun NewsCard(
 
                     Spacer(Modifier.height(10.dp))
 
+                    // Judul Artikel
                     Text(
                         text = title,
                         fontSize = fontSizeTitle.sp,
@@ -445,45 +456,27 @@ fun NewsCard(
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
-
-                    if (isFirst) {
-                        Spacer(Modifier.height(8.dp))
-                        Text(
-                            text = timeAgo,
-                            fontSize = 13.sp,
-                            color = Color.Gray
-                        )
-                    }
                 }
 
+                // Spasi antara teks dan gambar
                 Spacer(Modifier.width(16.dp))
 
-                Column(horizontalAlignment = Alignment.End) {
-                    if (imageRes != null) {
-                        Image(
-                            painter = painterResource(id = imageRes),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(95.dp)
-                                .clip(RoundedCornerShape(16.dp)),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-
-                    if (isFirst) {
-                        Spacer(Modifier.height(12.dp))
-                        Icon(
-                            imageVector = Icons.Default.MoreHoriz,
-                            contentDescription = "More",
-                            tint = Color.Gray
-                        )
-                    }
+                // Gambar di Kanan
+                if (imageRes != null) {
+                    Image(
+                        painter = painterResource(id = imageRes),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(95.dp)
+                            .clip(RoundedCornerShape(16.dp)),
+                        contentScale = ContentScale.Crop
+                    )
                 }
             }
 
+            // --- Bagian Tengah: Subtitle ---
             if (subtitle.isNotEmpty()) {
-                Spacer(Modifier.height(16.dp))
-
+                Spacer(Modifier.height(8.dp))
                 Text(
                     text = subtitle,
                     fontSize = 14.sp,
@@ -493,12 +486,24 @@ fun NewsCard(
                 )
             }
 
-            if (!isFirst) {
-                Spacer(Modifier.height(12.dp))
+            // --- Bagian Bawah: Waktu dan Ikon Titik Tiga ---
+            Spacer(Modifier.height(8.dp)) // Beri jarak dari konten di atasnya
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween, // Ini kuncinya
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Teks Waktu di Kiri
                 Text(
                     text = timeAgo,
                     fontSize = 13.sp,
                     color = Color.Gray
+                )
+                // Ikon Titik Tiga di Kanan
+                Icon(
+                    imageVector = Icons.Default.MoreHoriz,
+                    contentDescription = "More options",
+                    tint = Color.Gray
                 )
             }
         }
