@@ -66,7 +66,7 @@ fun HomeScreen(navController: NavController) {
             ) {
                 Text(
                     text = "Good Morning, ${displayName}!",
-                    fontSize = 24.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
