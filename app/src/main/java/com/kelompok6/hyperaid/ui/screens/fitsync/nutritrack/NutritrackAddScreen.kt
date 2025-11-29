@@ -9,12 +9,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -23,12 +23,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.kelompok6.hyperaid.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
-fun NutritrackAddScreen() {
+fun NutritrackAddScreen(navController: NavController? = null) {
     var foodName by remember { mutableStateOf("") }
     var selectedMealTime by remember { mutableStateOf("") }
     var portionAmount by remember { mutableStateOf(1) }
@@ -51,9 +52,9 @@ fun NutritrackAddScreen() {
                 )
             },
             navigationIcon = {
-                IconButton(onClick = { }) {
+                IconButton(onClick = { navController?.popBackStack() }) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
                         tint = Color.Black
                     )
@@ -85,7 +86,7 @@ fun NutritrackAddScreen() {
                     Image(
                         painter = painterResource(id = R.drawable.food_served),
                         contentDescription = "food_served",
-                        Modifier.scale(3.5f)
+                        modifier = Modifier.scale(3.5f)
                     )
                 }
             }
@@ -166,7 +167,7 @@ fun NutritrackAddScreen() {
 
             item {
                 Button(
-                    onClick = { },
+                    onClick = { /* TODO: save action */ },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),

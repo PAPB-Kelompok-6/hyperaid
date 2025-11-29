@@ -78,7 +78,7 @@ fun NutriTrackScreen(navController: NavController) {
         }
 
         item {
-            MealTimeSelector()
+            MealTimeSelector(navController = navController)
         }
 
         item {
@@ -333,7 +333,7 @@ fun NutritionItem(label: String, percentage: Float, amount: String, color: Color
 }
 
 @Composable
-fun MealTimeSelector() {
+fun MealTimeSelector(navController: NavController) {
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(horizontal = 16.dp),
@@ -341,6 +341,7 @@ fun MealTimeSelector() {
     ) {
         item {
             MealTimeCard(
+                navController = navController,
                 icon = "🌅",
                 title = "Morning",
                 time = "05.00 - 10.00",
@@ -349,6 +350,7 @@ fun MealTimeSelector() {
         }
         item {
             MealTimeCard(
+                navController = navController,
                 icon = "☀️",
                 title = "Afternoon",
                 time = "10.00 - 15.00",
@@ -357,6 +359,7 @@ fun MealTimeSelector() {
         }
         item {
             MealTimeCard(
+                navController = navController,
                 icon = "🌙",
                 title = "Evening",
                 time = "15.00 - 20.00",
@@ -367,7 +370,7 @@ fun MealTimeSelector() {
 }
 
 @Composable
-fun MealTimeCard(icon: String, title: String, time: String, iconColor: Color) {
+fun MealTimeCard(navController: NavController, icon: String, title: String, time: String, iconColor: Color) {
     Card(
         modifier = Modifier
             .width(140.dp)
@@ -413,7 +416,7 @@ fun MealTimeCard(icon: String, title: String, time: String, iconColor: Color) {
             }
 
             IconButton(
-                onClick = { },
+                onClick = { navController.navigate(Routes.NUTRITRACK_ADD) },
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)

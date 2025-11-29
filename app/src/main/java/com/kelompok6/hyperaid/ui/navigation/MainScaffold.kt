@@ -41,6 +41,7 @@ import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncDetailHistoryScreen
 import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncScreen
 import com.kelompok6.hyperaid.ui.screens.vitalsync.SfigmomanometerScreen
 import com.kelompok6.hyperaid.ui.screens.fitsync.nutritrack.NutriTrackScreen
+import com.kelompok6.hyperaid.ui.screens.fitsync.nutritrack.NutritrackAddScreen
 import com.kelompok6.hyperaid.ui.screens.home.NotificationScreen
 import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncAddNotesScreen
 import com.kelompok6.hyperaid.ui.screens.measure.MeasureInstruction
@@ -64,7 +65,8 @@ fun MainScaffold(
         Routes.MEASURE_RESULT,
         Routes.VITALSYNC_SFIGMOMANOMETER, // hide nav bar on sfigmomanometer measurement screen
         Routes.VITALSYNC_ADDNOTES, // hide nav bar on add notes screen
-        Routes.NOTIFICATION // hide nav bar on notification screen
+        Routes.NOTIFICATION, // hide nav bar on notification screen
+        Routes.NUTRITRACK_ADD // hide nav bar on add nutrition screen
     )
 
     Scaffold(
@@ -107,6 +109,7 @@ private fun MainNavHost(
             ) // NANTI DI-PASS PROFILE VIEW MODEL
         }
         composable(Routes.NUTRITRACK) { NutriTrackScreen(navController) }
+        composable(Routes.NUTRITRACK_ADD) { NutritrackAddScreen(navController) }
         composable(Routes.MEASURE_INSTRUCTION) { MeasureInstruction(navController) }
         composable(Routes.MEASURE_PROCESS) { MeasureProcess(navController) }
         composable(Routes.MEASURE_RESULT) { MeasureResult(navController) }
