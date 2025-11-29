@@ -59,13 +59,12 @@ fun HomeScreen(navController: NavController) {
             .fillMaxSize()
             .background(Color(0xFFF5F5F5))
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp, bottom = 8.dp),
+                    .padding(top = 24.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -90,20 +89,27 @@ fun HomeScreen(navController: NavController) {
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
-                modifier = Modifier.padding(top = 4.dp)
+                modifier = Modifier.padding(top = 8.dp)
+//                    .padding(top = (-8).dp)
             )
         }
 
         item {
-            HeartRateReminderCard(navController)
+            Box(modifier = Modifier.padding(top = 24.dp)) {
+                HeartRateReminderCard(navController)
+            }
         }
 
         item {
-            HeartRateCard(navController)
+            Box(modifier = Modifier.padding(top = 16.dp)) {
+                HeartRateCard(navController)
+            }
         }
 
         item {
-            BloodPressureCard()
+            Box(modifier = Modifier.padding(top = 16.dp)) {
+                BloodPressureCard()
+            }
         }
 
         item {
@@ -112,7 +118,7 @@ fun HomeScreen(navController: NavController) {
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
-                modifier = Modifier.padding(top = 8.dp)
+                modifier = Modifier.padding(top = 24.dp)
             )
         }
 
