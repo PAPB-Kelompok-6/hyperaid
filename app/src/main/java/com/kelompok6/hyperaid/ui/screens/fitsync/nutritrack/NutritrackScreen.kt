@@ -28,8 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kelompok6.hyperaid.ui.navigation.Routes
-import com.kelompok6.hyperaid.ui.screens.fitsync.bmi.TopTabSelector
-import com.kelompok6.hyperaid.ui.navigation.Routes
 
 //@Preview(showBackground = true)
 @Composable
