@@ -194,7 +194,8 @@ fun PairSfigmoCard(
                 ) {
                     Box(modifier = Modifier.fillMaxWidth()) {
                         IconButton(
-                            onClick = { onConnect(); showDialog = false },
+                            onClick =
+                                { onConnect(); showDialog = false },
                             modifier = Modifier.align(Alignment.TopEnd)
                         ) {
                             Icon(
@@ -215,7 +216,7 @@ fun PairSfigmoCard(
                     )
 
                     Image(
-                        painter = painterResource(id = R.drawable.checked),
+                        painter = painterResource(id = R.drawable.sfigmo),
                         contentDescription = "Connected",
                         modifier = Modifier.size(72.dp)
                     )
@@ -300,11 +301,10 @@ fun PulseMeasureCard(navController: NavController) {
                     Text("Measure Now", color = Color.White)
                 }
             }
-            Icon(
-                imageVector = Icons.Default.Favorite,
-                contentDescription = "Heart",
-                tint = Color(0xFFB94A4A),
-                modifier = Modifier.size(80.dp)
+            Image(
+                painter = painterResource(id = R.drawable.logoheartrate), // <-- Gunakan gambar Anda
+                contentDescription = "Heart Rate Logo",
+                modifier = Modifier.size(80.dp) // Ukuran bisa disesuaikan jika perlu
             )
         }
     }
