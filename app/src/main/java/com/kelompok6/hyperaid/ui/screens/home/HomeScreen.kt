@@ -1,11 +1,11 @@
 package com.kelompok6.hyperaid.ui.screens.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -13,16 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -30,12 +24,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kelompok6.hyperaid.ui.helper.AuthHelper
 import com.kelompok6.hyperaid.ui.navigation.Routes
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.res.painterResource
+import com.kelompok6.hyperaid.R
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.ui.text.style.TextOverflow
+
 
 //@Composable
 //fun HomeScreen(navController: NavHostController) {
@@ -54,51 +53,57 @@ fun HomeScreen(navController: NavController) {
             .fillMaxSize()
             .background(Color(0xFFF5F5F5))
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp, bottom = 8.dp),
+                    .padding(top = 24.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Good Morning, ${displayName}!",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-
-                Box(
+                Image(
+                    painter = painterResource(id = R.drawable.hyperaid),
+                    contentDescription = "Hyperaid logo",
                     modifier = Modifier
-                        .size(40.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0xFFF4F4F4))
-                        .clickable { navController.navigate(Routes.NOTIFICATION) },
-                    contentAlignment = Alignment.Center
-                ) {
+                        .widthIn(max = 180.dp)
+                )
+                IconButton(onClick = { navController.navigate(Routes.NOTIFICATION) }) {
                     Icon(
                         imageVector = Icons.Default.Notifications,
                         contentDescription = "Notifications",
-                        modifier = Modifier
-                            .clickable { navController.navigate(Routes.NOTIFICATION) }
+                        tint = Color.Black
                     )
                 }
             }
         }
-
         item {
-            HeartRateReminderCard(navController)
+            Text(
+                text = "Good Morning, ${displayName}!",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                modifier = Modifier.padding(top = 8.dp)
+//                    .padding(top = (-8).dp)
+            )
         }
 
         item {
-            HeartRateCard(navController)
+            Box(modifier = Modifier.padding(top = 24.dp)) {
+                HeartRateReminderCard(navController)
+            }
         }
 
         item {
-            BloodPressureCard()
+            Box(modifier = Modifier.padding(top = 16.dp)) {
+                HeartRateCard(navController)
+            }
+        }
+
+        item {
+            Box(modifier = Modifier.padding(top = 16.dp)) {
+                BloodPressureCard()
+            }
         }
 
         item {
@@ -107,13 +112,55 @@ fun HomeScreen(navController: NavController) {
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
-                modifier = Modifier.padding(top = 8.dp)
+                modifier = Modifier.padding(top = 24.dp)
             )
         }
 
-        item { NewsCard("Lifestyle Changes to Combat Hypertension...", "Hypertension, or high blood pressure, is a major health concern that could lead to...", "17 hours ago") }
-        item { NewsCard("Hypertension and Heart Health: What You Need to Know..", "", "Yesterday") }
-        item { NewsCard("Tech Solutions for Hypertension Management..", "", "2 days ago") }
+        item {
+            Box(modifier = Modifier.padding(top = 16.dp)) {
+                NewsCard(
+                    title = "Lifestyle Changes to Combat Hypertension",
+                    subtitle = "Hypertension, or high blood pressure, is a major health concern...",
+                    timeAgo = "17 hours ago",
+                    imageRes = R.drawable.artikel1,
+                    onClick = {
+                        navController.navigate("article_screen/1")
+                    }
+                )
+            }
+        }
+
+        item {
+            Box(modifier = Modifier.padding(top = 12.dp)) {
+                NewsCard(
+                    title = "Hypertension and Heart Health: What You Need to Know",
+                    subtitle = "",
+                    timeAgo = "Yesterday",
+                    imageRes = R.drawable.artikel2,
+                    fontSizeTitle = 16,
+                    modifier = Modifier.height(170.dp),
+                    onClick = {
+                        navController.navigate("article_screen/2")
+                    }
+                )
+            }
+        }
+
+        item {
+            Box(modifier = Modifier.padding(top = 12.dp)) {
+                NewsCard(
+                    title = "Tech Solutions for Hypertension Management",
+                    subtitle = "",
+                    timeAgo = "2 days ago",
+                    imageRes = R.drawable.artikel3,
+                    fontSizeTitle = 16,
+                    modifier = Modifier.height(170.dp),
+                    onClick = {
+                        navController.navigate("article_screen/3")
+                    }
+                )
+            }
+        }
     }
 }
 
@@ -174,6 +221,7 @@ fun HeartRateCard(navController: NavController?) {
                     .fillMaxWidth()
                     .padding(20.dp)
             ) {
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -198,12 +246,14 @@ fun HeartRateCard(navController: NavController?) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Favorite,
-                        contentDescription = "Heart",
-                        tint = Color.White,
+
+                    // 🔥 GANTI ICON DENGAN GAMBAR PNG SENDIRI
+                    Image(
+                        painter = painterResource(id = R.drawable.logoheartrate),
+                        contentDescription = "Heart Icon",
                         modifier = Modifier.size(48.dp)
                     )
+
                     Column {
                         Text(
                             text = "NA",
@@ -217,7 +267,9 @@ fun HeartRateCard(navController: NavController?) {
                             fontSize = 14.sp
                         )
                     }
+
                     Spacer(modifier = Modifier.weight(1f))
+
                     Button(
                         onClick = { navController?.navigate(Routes.MEASURE_INSTRUCTION) },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C2C2C)),
@@ -228,7 +280,7 @@ fun HeartRateCard(navController: NavController?) {
                 }
             }
 
-            // Heartbeat line decoration at bottom
+            // background icon dekorasi
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -238,12 +290,15 @@ fun HeartRateCard(navController: NavController?) {
                     imageVector = Icons.Default.Clear,
                     contentDescription = "Chart",
                     tint = Color.White.copy(alpha = 0.3f),
-                    modifier = Modifier.size(80.dp).padding(top = 16.dp)
+                    modifier = Modifier
+                        .size(80.dp)
+                        .padding(top = 16.dp)
                 )
             }
         }
     }
 }
+
 
 @Composable
 fun BloodPressureCard() {
@@ -342,87 +397,120 @@ fun BloodPressureItem(value: String, label: String, unit: String, modifier: Modi
 }
 
 @Composable
-fun NewsCard(title: String, subtitle: String, timeAgo: String) {
+fun NewsCard(
+    title: String,
+    subtitle: String,
+    timeAgo: String,
+    imageRes: Int? = null,
+    fontSizeTitle: Int = 18,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 10.dp)
+            .clickable { onClick() },
+        shape = RoundedCornerShape(22.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        shape = RoundedCornerShape(16.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        border = BorderStroke(0.8.dp, Color(0xFFE4E4E4))
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+
+            // --- Bagian Atas: Teks dan Gambar ---
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFFFFEBEE)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Favorite,
-                        contentDescription = "Hyperaid",
-                        tint = Color(0xFFD85C5C),
-                        modifier = Modifier.size(20.dp)
+                // Kolom untuk Teks di Kiri
+                Column(modifier = Modifier.weight(1f)) {
+                    // Logo + Nama
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.logo_newscard),
+                            contentDescription = "Hyperaid Logo",
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(CircleShape)
+                        )
+                        Text(
+                            text = "Hyperaid",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+
+                    Spacer(Modifier.height(10.dp))
+
+                    // Judul Artikel
+                    Text(
+                        text = title,
+                        fontSize = fontSizeTitle.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        lineHeight = 22.sp,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
-                Text(
-                    text = "Hyperaid",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Box(
-                    modifier = Modifier
-                        .size(80.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0xFFE0E0E0))
-                )
+
+                // Spasi antara teks dan gambar
+                Spacer(Modifier.width(16.dp))
+
+                // Gambar di Kanan
+                if (imageRes != null) {
+                    Image(
+                        painter = painterResource(id = imageRes),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(95.dp)
+                            .clip(RoundedCornerShape(16.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-                text = title,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.Black
-            )
-
+            // --- Bagian Tengah: Subtitle ---
             if (subtitle.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(Modifier.height(8.dp))
                 Text(
                     text = subtitle,
                     fontSize = 14.sp,
                     color = Color.Gray,
-                    lineHeight = 20.sp
+                    lineHeight = 20.sp,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
-
+            // --- Bagian Bawah: Waktu dan Ikon Titik Tiga ---
+            Spacer(Modifier.height(8.dp)) // Beri jarak dari konten di atasnya
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.SpaceBetween, // Ini kuncinya
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Teks Waktu di Kiri
                 Text(
                     text = timeAgo,
-                    fontSize = 12.sp,
+                    fontSize = 13.sp,
                     color = Color.Gray
                 )
+                // Ikon Titik Tiga di Kanan
                 Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "More",
+                    imageVector = Icons.Default.MoreHoriz,
+                    contentDescription = "More options",
                     tint = Color.Gray
                 )
             }
         }
     }
 }
+
+
 
 @Preview(showBackground = true)
 @Composable

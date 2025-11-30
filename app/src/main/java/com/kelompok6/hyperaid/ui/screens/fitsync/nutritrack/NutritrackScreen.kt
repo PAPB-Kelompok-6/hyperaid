@@ -393,6 +393,7 @@ fun MealTimeSelector(navController: NavController) {
     ) {
         item {
             MealTimeCard(
+                navController = navController,
                 icon = "🌅",
                 title = "Morning",
                 time = "05.00 - 10.00",
@@ -402,6 +403,7 @@ fun MealTimeSelector(navController: NavController) {
         }
         item {
             MealTimeCard(
+                navController = navController,
                 icon = "☀️",
                 title = "Afternoon",
                 time = "10.00 - 15.00",
@@ -411,6 +413,7 @@ fun MealTimeSelector(navController: NavController) {
         }
         item {
             MealTimeCard(
+                navController = navController,
                 icon = "🌙",
                 title = "Evening",
                 time = "15.00 - 20.00",

@@ -25,4 +25,9 @@ object Routes {
     const val NOTIFICATION = "notification"
     const val VITALSYNC_SFIGMOMANOMETER = "vitalsync_sfigmomanometer"
 
+    const val ARTICLE_SCREEN = "article_screen/{id}"
+
 }
+
+
+

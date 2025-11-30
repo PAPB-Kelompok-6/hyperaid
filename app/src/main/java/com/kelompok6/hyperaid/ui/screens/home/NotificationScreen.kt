@@ -80,19 +80,23 @@ fun NotificationScreen(navController: NavController) {
 
         Spacer(Modifier.height(16.dp))
 
+        // Mix of notifications: some have the green dot (unread), some don't
         NotificationItem(
             text = "Quick check! How’s your heart rate today? Tap to measure and stay on top of your health.",
-            time = "5h 18m ago"
+            time = "5h 18m ago",
+            hasDot = true
         )
 
         NotificationItem(
             text = "Tip of the day: Keeping your stress levels in check can boost your mood!",
-            time = "12h 18m ago"
+            time = "12h 18m ago",
+            hasDot = false
         )
 
         NotificationItem(
             text = "Tip of the day: Keeping your stress levels in check can boost your mood!",
-            time = "12h 18m ago"
+            time = "12h 18m ago",
+            hasDot = true
         )
 
         Spacer(Modifier.height(24.dp))
@@ -108,27 +112,32 @@ fun NotificationScreen(navController: NavController) {
 
         NotificationItem(
             text = "It’s time for a health check! Don’t forget to measure your stress.",
-            time = "1 day ago"
+            time = "1 day ago",
+            hasDot = false
         )
 
         NotificationItem(
             text = "Ready for another day of wellness? Check your heart rate and don’t be stress.",
-            time = "1 day ago"
+            time = "1 day ago",
+            hasDot = true
         )
 
         NotificationItem(
             text = "How’s your stress level today? Take a quick check and see if you're in the healthy range.",
-            time = "2 day ago"
+            time = "2 day ago",
+            hasDot = false
         )
 
         NotificationItem(
             text = "Small steps lead to big changes. Check your heart rate now and track your progress!",
-            time = "3 day ago"
+            time = "3 day ago",
+            hasDot = true
         )
 
         NotificationItem(
             text = "Don't forget to monitor your stress! A quick check today can help keep you feeling your best.",
-            time = "7 day ago"
+            time = "7 day ago",
+            hasDot = false
         )
 
         Spacer(Modifier.height(90.dp))
@@ -138,7 +147,8 @@ fun NotificationScreen(navController: NavController) {
 @Composable
 fun NotificationItem(
     text: String,
-    time: String
+    time: String,
+    hasDot: Boolean = true // new parameter: control whether the green dot is shown
 ) {
     Row(
         modifier = Modifier
@@ -173,15 +183,17 @@ fun NotificationItem(
                     .align(Alignment.Center)
             )
 
-            // TITIK HIJAU
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .offset(x = 2.dp, y = (-2).dp)
-                    .size(14.dp)
-                    .background(Color(0xFF4CAF50), CircleShape)
-                    .border(2.dp, Color.White, CircleShape)
-            )
+            // TITIK HIJAU (only shown when hasDot == true)
+            if (hasDot) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .offset(x = 2.dp, y = (-2).dp)
+                        .size(14.dp)
+                        .background(Color(0xFF4CAF50), CircleShape)
+                        .border(2.dp, Color.White, CircleShape)
+                )
+            }
         }
 
         Spacer(Modifier.width(14.dp))

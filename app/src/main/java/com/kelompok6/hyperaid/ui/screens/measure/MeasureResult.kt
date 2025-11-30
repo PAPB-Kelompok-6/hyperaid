@@ -68,7 +68,7 @@ fun MeasureResult(navController: NavController) {
                         .size(36.dp)
                         .background(Color(0xFFF4F4F4), RoundedCornerShape(12.dp))
                         .padding(8.dp)
-                        .clickable { navController.navigate(Routes.MEASURE_INSTRUCTION) }
+                        .clickable { navController.navigate(Routes.HOME) }
                 )
 
                 Spacer(Modifier.width(12.dp))
