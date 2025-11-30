@@ -41,6 +41,8 @@ import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncDetailHistoryScreen
 import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncScreen
 import com.kelompok6.hyperaid.ui.screens.vitalsync.SfigmomanometerScreen
 import com.kelompok6.hyperaid.ui.screens.fitsync.nutritrack.NutriTrackScreen
+import com.kelompok6.hyperaid.ui.screens.fitsync.nutritrack.NutritrackAddScreen
+import com.kelompok6.hyperaid.ui.screens.fitsync.nutritrack.NutritrackResultsLoadingScreen
 import com.kelompok6.hyperaid.ui.screens.home.NotificationScreen
 import com.kelompok6.hyperaid.ui.screens.vitalsync.VitalsyncAddNotesScreen
 import com.kelompok6.hyperaid.ui.screens.measure.MeasureInstruction
@@ -111,7 +113,8 @@ private fun MainNavHost(
         composable(Routes.MEASURE_PROCESS) { MeasureProcess(navController) }
         composable(Routes.MEASURE_RESULT) { MeasureResult(navController) }
         composable(Routes.NOTIFICATION) { NotificationScreen(navController) }
-
+        composable(Routes.NUTRITRACK_ADD) { NutritrackAddScreen(navController) }
+        composable(Routes.NUTRITRACK_LOADING) { NutritrackResultsLoadingScreen() }
 
     }
 }

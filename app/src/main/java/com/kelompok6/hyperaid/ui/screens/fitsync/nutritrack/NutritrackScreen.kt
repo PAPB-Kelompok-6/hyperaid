@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -26,14 +27,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.kelompok6.hyperaid.data.model.NutritionData
 import com.kelompok6.hyperaid.ui.navigation.Routes
 
 //@Preview(showBackground = true)
 @Composable
-fun NutriTrackScreen(navController: NavController) {
+fun NutriTrackScreen(navController: NavController, viewModel: NutritrackViewModel = viewModel()) {
     var selectedTab by remember { mutableStateOf("NutriTrack") }
     var historyTab by remember { mutableStateOf("Recent") }
+
+    LaunchedEffect(Unit) {
+        viewModel.loadTodayTotals()
+    }
+
+    val meals by viewModel.allNutritionData.collectAsState()
+    val todayTotals by viewModel.todayTotals.collectAsState()
 
     LazyColumn(
         modifier = Modifier
@@ -62,7 +72,7 @@ fun NutriTrackScreen(navController: NavController) {
         }
 
         item {
-            NutritionOverviewCard()
+            NutritionOverviewCard(todayTotals)
         }
 
         item {
@@ -78,7 +88,7 @@ fun NutriTrackScreen(navController: NavController) {
         }
 
         item {
-            MealTimeSelector()
+            MealTimeSelector(navController)
         }
 
         item {
@@ -92,8 +102,8 @@ fun NutriTrackScreen(navController: NavController) {
             )
         }
 
-        item {
-            MealHistoryCard()
+        items(meals) { meal ->
+            MealHistoryCard(nutrition = meal)
         }
 
         item {
@@ -103,7 +113,11 @@ fun NutriTrackScreen(navController: NavController) {
 }
 
 @Composable
-fun TopTabSelector(selectedTab: String, navController: NavController, onTabSelected: (String) -> Unit) {
+fun TopTabSelector(
+    selectedTab: String,
+    navController: NavController,
+    onTabSelected: (String) -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -173,7 +187,13 @@ fun TopTabSelector(selectedTab: String, navController: NavController, onTabSelec
 }
 
 @Composable
-fun NutritionOverviewCard() {
+fun NutritionOverviewCard(nutrition: NutritionData?) {
+    val totalGrams = nutrition?.totalGrams ?: 0
+    val carbo = nutrition?.carbohydrate?.toFloat() ?: 0f
+    val protein = nutrition?.protein?.toFloat() ?: 0f
+    val fiber = nutrition?.fiber?.toFloat() ?: 0f
+    val fat = nutrition?.fat?.toFloat() ?: 0f
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -193,16 +213,16 @@ fun NutritionOverviewCard() {
                 contentAlignment = Alignment.Center
             ) {
                 CalorieCircularProgress(
-                    carbs = 50f,
-                    protein = 75f,
-                    fat = 25f,
-                    lemak = 52f
+                    carbs = carbo,
+                    protein = protein,
+                    fat = fat,
+                    lemak = fiber // if your component uses `lemak` for fiber
                 )
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "1101",
+                        text = totalGrams.toString(),
                         fontSize = 32.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black
@@ -220,10 +240,30 @@ fun NutritionOverviewCard() {
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                NutritionItem("Carbo", 50f, "163/190 gr", Color(0xFF5C6BC0))
-                NutritionItem("Protein", 75f, "163/190 gr", Color(0xFFD85C5C))
-                NutritionItem("Serat", 25f, "163/190 gr", Color(0xFFD85C5C))
-                NutritionItem("Lemak", 52f, "163/190 gr", Color(0xFF5C6BC0))
+                NutritionItem(
+                    "Carbo",
+                    carbo,
+                    "${nutrition?.carbohydrate ?: 0}/${nutrition?.totalGrams ?: 0} gr",
+                    Color(0xFF5C6BC0)
+                )
+                NutritionItem(
+                    "Protein",
+                    protein,
+                    "${nutrition?.protein ?: 0}/${nutrition?.totalGrams ?: 0} gr",
+                    Color(0xFFD85C5C)
+                )
+                NutritionItem(
+                    "Serat",
+                    fiber,
+                    "${nutrition?.fiber ?: 0}/${nutrition?.totalGrams ?: 0} gr",
+                    Color(0xFFD85C5C)
+                )
+                NutritionItem(
+                    "Lemak",
+                    fat,
+                    "${nutrition?.fat ?: 0}/${nutrition?.totalGrams ?: 0} gr",
+                    Color(0xFF5C6BC0)
+                )
             }
         }
     }
@@ -250,7 +290,10 @@ fun CalorieCircularProgress(carbs: Float, protein: Float, fat: Float, lemak: Flo
             useCenter = false,
             style = Stroke(width = strokeWidth, cap = StrokeCap.Round),
             topLeft = Offset(strokeWidth / 2, strokeWidth / 2),
-            size = androidx.compose.ui.geometry.Size(size.width - strokeWidth, size.height - strokeWidth)
+            size = androidx.compose.ui.geometry.Size(
+                size.width - strokeWidth,
+                size.height - strokeWidth
+            )
         )
 
         // Draw protein arc (red)
@@ -261,7 +304,10 @@ fun CalorieCircularProgress(carbs: Float, protein: Float, fat: Float, lemak: Flo
             useCenter = false,
             style = Stroke(width = strokeWidth, cap = StrokeCap.Round),
             topLeft = Offset(strokeWidth / 2, strokeWidth / 2),
-            size = androidx.compose.ui.geometry.Size(size.width - strokeWidth, size.height - strokeWidth)
+            size = androidx.compose.ui.geometry.Size(
+                size.width - strokeWidth,
+                size.height - strokeWidth
+            )
         )
 
         // Draw fat arc (red continued)
@@ -272,7 +318,10 @@ fun CalorieCircularProgress(carbs: Float, protein: Float, fat: Float, lemak: Flo
             useCenter = false,
             style = Stroke(width = strokeWidth, cap = StrokeCap.Round),
             topLeft = Offset(strokeWidth / 2, strokeWidth / 2),
-            size = androidx.compose.ui.geometry.Size(size.width - strokeWidth, size.height - strokeWidth)
+            size = androidx.compose.ui.geometry.Size(
+                size.width - strokeWidth,
+                size.height - strokeWidth
+            )
         )
 
         // Draw lemak arc (purple)
@@ -283,7 +332,10 @@ fun CalorieCircularProgress(carbs: Float, protein: Float, fat: Float, lemak: Flo
             useCenter = false,
             style = Stroke(width = strokeWidth, cap = StrokeCap.Round),
             topLeft = Offset(strokeWidth / 2, strokeWidth / 2),
-            size = androidx.compose.ui.geometry.Size(size.width - strokeWidth, size.height - strokeWidth)
+            size = androidx.compose.ui.geometry.Size(
+                size.width - strokeWidth,
+                size.height - strokeWidth
+            )
         )
     }
 }
@@ -333,7 +385,7 @@ fun NutritionItem(label: String, percentage: Float, amount: String, color: Color
 }
 
 @Composable
-fun MealTimeSelector() {
+fun MealTimeSelector(navController: NavController) {
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(horizontal = 16.dp),
@@ -344,7 +396,8 @@ fun MealTimeSelector() {
                 icon = "🌅",
                 title = "Morning",
                 time = "05.00 - 10.00",
-                iconColor = Color(0xFFD85C5C)
+                iconColor = Color(0xFFD85C5C),
+                navController = navController
             )
         }
         item {
@@ -352,7 +405,8 @@ fun MealTimeSelector() {
                 icon = "☀️",
                 title = "Afternoon",
                 time = "10.00 - 15.00",
-                iconColor = Color(0xFF2C2C2C)
+                iconColor = Color(0xFF2C2C2C),
+                navController = navController
             )
         }
         item {
@@ -360,14 +414,21 @@ fun MealTimeSelector() {
                 icon = "🌙",
                 title = "Evening",
                 time = "15.00 - 20.00",
-                iconColor = Color(0xFFD85C5C)
+                iconColor = Color(0xFFD85C5C),
+                navController = navController
             )
         }
     }
 }
 
 @Composable
-fun MealTimeCard(icon: String, title: String, time: String, iconColor: Color) {
+fun MealTimeCard(
+    icon: String,
+    title: String,
+    time: String,
+    iconColor: Color,
+    navController: NavController
+) {
     Card(
         modifier = Modifier
             .width(140.dp)
@@ -413,7 +474,9 @@ fun MealTimeCard(icon: String, title: String, time: String, iconColor: Color) {
             }
 
             IconButton(
-                onClick = { },
+                onClick = {
+                    navController.navigate(Routes.NUTRITRACK_ADD)
+                },
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
@@ -486,7 +549,7 @@ fun HistoryTab(
 }
 
 @Composable
-fun MealHistoryCard() {
+fun MealHistoryCard(nutrition: NutritionData) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -495,18 +558,20 @@ fun MealHistoryCard() {
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
+            // Date & Time
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Optional: convert date to weekday
                 Text(
-                    text = "Tuesday",
+                    text = nutrition.time, // or convert date to "Tuesday"
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
                 Text(
-                    text = "26/09/23 14:25:58",
+                    text = nutrition.date,
                     fontSize = 14.sp,
                     color = Color.Gray
                 )
@@ -514,6 +579,7 @@ fun MealHistoryCard() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Meal details
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -522,7 +588,7 @@ fun MealHistoryCard() {
             ) {
                 Column {
                     Text(
-                        text = "Baked Sweet Potato : 2",
+                        text = "${nutrition.name} : ${nutrition.portion}",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = Color.Black
@@ -532,22 +598,22 @@ fun MealHistoryCard() {
 
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(
-                            text = "Karbohidrat : 10gr",
+                            text = "Karbohidrat : ${nutrition.carbohydrate} gr",
                             fontSize = 14.sp,
                             color = Color.Gray
                         )
                         Text(
-                            text = "Lemak : 10gr",
+                            text = "Lemak : ${nutrition.fat} gr",
                             fontSize = 14.sp,
                             color = Color.Gray
                         )
                         Text(
-                            text = "Serat : 10gr",
+                            text = "Serat : ${nutrition.fiber} gr",
                             fontSize = 14.sp,
                             color = Color.Gray
                         )
                         Text(
-                            text = "Protein : 10gr",
+                            text = "Protein : ${nutrition.protein} gr",
                             fontSize = 14.sp,
                             color = Color.Gray
                         )

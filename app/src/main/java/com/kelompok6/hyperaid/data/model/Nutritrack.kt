@@ -1,27 +1,18 @@
 package com.kelompok6.hyperaid.data.model
 
 data class NutritionData(
-    val date: String,
-    val time: String,
-    val totalGrams: Int,
-    val carbohydrate: NutrientInfo,
-    val protein: NutrientInfo,
-    val fiber: NutrientInfo,
-    val fat: NutrientInfo,
-    val meals: List<MealDetail>
+    val id: String = "",
+    val date: String = "",
+    val time: String = "",
+    val totalGrams: Int = 0,
+    val carbohydrate: Int = 0,
+    val protein: Int = 0,
+    val fiber: Int = 0,
+    val fat: Int = 0,
+    val name: String = "",
+    val portion: Int = 0,
 )
 
 data class NutrientInfo(
-    val current: Int,
     val target: Int,
-    val percentage: Float
-)
-
-data class MealDetail(
-    val name: String,
-    val portion: Int,
-    val carbohydrate: Int,
-    val fat: Int,
-    val fiber: Int,
-    val protein: Int
 )

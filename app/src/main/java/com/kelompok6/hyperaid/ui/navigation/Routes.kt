@@ -6,6 +6,8 @@ object Routes {
     const val FITSYNC = "BMI"
     const val FITSYNC_HISTORY = "BMI_History"
     const val NUTRITRACK = "Nutritrack"
+    const val NUTRITRACK_LOADING = "Nutritrack_Loading"
+    const val NUTRITRACK_ADD = "nutritrack_add"
     const val VITALSYNC = "Vitalsync"
     const val VITALSYNC_HISTORY = "vitalsync_history"
     const val VITALSYNC_ADDNOTES = "vitalsync_addnotes"

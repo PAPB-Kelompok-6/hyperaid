@@ -23,8 +23,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kelompok6.hyperaid.R
-import com.kelompok6.hyperaid.data.model.MealDetail
 import com.kelompok6.hyperaid.data.model.NutrientInfo
 import com.kelompok6.hyperaid.data.model.NutritionData
 
@@ -32,15 +32,15 @@ import com.kelompok6.hyperaid.data.model.NutritionData
 @Composable
 fun NutritrackResultsScreen(
     nutritionId: String? = null,
-    viewModel: NutritrackViewModel = hiltViewModel()
+    viewModel: NutritrackViewModel = viewModel()
 ) {
     val nutritionData by viewModel.nutritionData.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
-    // Load data when screen opens
-    LaunchedEffect(nutritionId) {
-        viewModel.loadNutritionData(nutritionId)
-    }
+//    // Load data when screen opens
+//    LaunchedEffect(nutritionId) {
+//        viewModel.loadNutritionData(nutritionId)
+//    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         if (isLoading) {
@@ -103,8 +103,8 @@ fun NutritrackResultsContent(data: NutritionData) {
             )
         }
 
-        items(data.meals) { meal ->
-            MealDetailsCard(meal = meal)
+        item {
+            MealDetailsCard(meal = data)
         }
 
         item {
@@ -204,10 +204,11 @@ fun DateTimeCard(date: String, time: String) {
 @Composable
 fun NutritionSummaryCard(
     totalGrams: Int,
-    carbohydrate: NutrientInfo,
-    protein: NutrientInfo,
-    fiber: NutrientInfo,
-    fat: NutrientInfo
+    carbohydrate: Int,
+    protein: Int,
+    fiber: Int,
+    fat: Int,
+    target: Int = 190
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -226,10 +227,10 @@ fun NutritionSummaryCard(
                 contentAlignment = Alignment.Center
             ) {
                 NutritionCircularProgress(
-                    carbohydrate = carbohydrate.percentage,
-                    protein = protein.percentage,
-                    fiber = fiber.percentage,
-                    fat = fat.percentage
+                    carbohydrate = carbohydrate.toFloat() / target,
+                    protein = protein.toFloat() / target,
+                    fiber = fiber.toFloat() / target,
+                    fat = fat.toFloat() / target
                 )
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -255,77 +256,31 @@ fun NutritionSummaryCard(
             ) {
                 NutritionBar(
                     "Carbohydrate",
-                    carbohydrate.percentage,
-                    "${carbohydrate.current}/${carbohydrate.target} gr",
+                    carbohydrate.toFloat() / target,
+                    "$carbohydrate/$target gr",
                     Color(0xFF5C6BC0)
                 )
                 NutritionBar(
                     "Protein",
-                    protein.percentage,
-                    "${protein.current}/${protein.target} gr",
+                    protein.toFloat() / target,
+                    "$protein/$target gr",
                     Color(0xFFD85C5C)
                 )
                 NutritionBar(
                     "Fiber",
-                    fiber.percentage,
-                    "${fiber.current}/${fiber.target} gr",
+                    fiber.toFloat() / target,
+                    "$fiber/$target gr",
                     Color(0xFFE0E0E0)
                 )
                 NutritionBar(
                     "Fat",
-                    fat.percentage,
-                    "${fat.current}/${fat.target} gr",
+                    fat.toFloat() / target,
+                    "$fat/$target gr",
                     Color(0xFF5C6BC0)
                 )
             }
         }
     }
-//    Card(
-//        modifier = Modifier.fillMaxWidth(),
-//        colors = CardDefaults.cardColors(containerColor = Color.White),
-//        shape = RoundedCornerShape(16.dp)
-//    ) {
-//        Row(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(20.dp),
-//            horizontalArrangement = Arrangement.spacedBy(24.dp)
-//        ) {
-//            // Circular progress
-//            Box(
-//                modifier = Modifier.size(120.dp),
-//                contentAlignment = Alignment.Center
-//            ) {
-//                NutritionCircularProgress()
-//                Column(
-//                    horizontalAlignment = Alignment.CenterHorizontally
-//                ) {
-//                    Text(
-//                        text = "40",
-//                        fontSize = 32.sp,
-//                        fontWeight = FontWeight.Bold,
-//                        color = Color.Black
-//                    )
-//                    Text(
-//                        text = "gr/day",
-//                        fontSize = 14.sp,
-//                        color = Color.Gray
-//                    )
-//                }
-//            }
-//
-//            // Nutrition bars
-//            Column(
-//                modifier = Modifier.weight(1f),
-//                verticalArrangement = Arrangement.spacedBy(12.dp)
-//            ) {
-//                NutritionBar("Carbohydrate", 50f, "10/190 gr", Color(0xFF5C6BC0))
-//                NutritionBar("Protein", 75f, "10/190 gr", Color(0xFFD85C5C))
-//                NutritionBar("Fiber", 25f, "10/190 gr", Color(0xFFE0E0E0))
-//                NutritionBar("Fat", 65f, "10/190 gr", Color(0xFF5C6BC0))
-//            }
-//        }
-//    }
 }
 
 @Composable
@@ -357,7 +312,10 @@ fun NutritionCircularProgress(
             useCenter = false,
             style = Stroke(width = strokeWidth, cap = StrokeCap.Round),
             topLeft = androidx.compose.ui.geometry.Offset(strokeWidth / 2, strokeWidth / 2),
-            size = androidx.compose.ui.geometry.Size(size.width - strokeWidth, size.height - strokeWidth)
+            size = androidx.compose.ui.geometry.Size(
+                size.width - strokeWidth,
+                size.height - strokeWidth
+            )
         )
         startAngle += carbSweep
 
@@ -370,7 +328,10 @@ fun NutritionCircularProgress(
             useCenter = false,
             style = Stroke(width = strokeWidth, cap = StrokeCap.Round),
             topLeft = androidx.compose.ui.geometry.Offset(strokeWidth / 2, strokeWidth / 2),
-            size = androidx.compose.ui.geometry.Size(size.width - strokeWidth, size.height - strokeWidth)
+            size = androidx.compose.ui.geometry.Size(
+                size.width - strokeWidth,
+                size.height - strokeWidth
+            )
         )
     }
 }
@@ -418,7 +379,7 @@ fun NutritionBar(label: String, percentage: Float, amount: String, color: Color)
 }
 
 @Composable
-fun MealDetailsCard(meal: MealDetail) {
+fun MealDetailsCard(meal: NutritionData) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.White),

@@ -1,5 +1,6 @@
 package com.kelompok6.hyperaid.ui.screens.fitsync.nutritrack
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,12 +24,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.kelompok6.hyperaid.R
+import com.kelompok6.hyperaid.ui.navigation.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
 @Composable
-fun NutritrackAddScreen() {
+fun NutritrackAddScreen(navController: NavController) {
+    val viewModel: NutritrackViewModel = viewModel()
+
     var foodName by remember { mutableStateOf("") }
     var selectedMealTime by remember { mutableStateOf("") }
     var portionAmount by remember { mutableStateOf(1) }
@@ -41,28 +47,28 @@ fun NutritrackAddScreen() {
             .background(Color.White)
     ) {
         // Top Bar
-        TopAppBar(
-            title = {
-                Text(
-                    text = "Morning NutriTrack",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.Black
-                )
-            },
-            navigationIcon = {
-                IconButton(onClick = { }) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.Black
-                    )
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.White
-            )
-        )
+//        TopAppBar(
+//            title = {
+//                Text(
+//                    text = "Morning NutriTrack",
+//                    fontSize = 18.sp,
+//                    fontWeight = FontWeight.SemiBold,
+//                    color = Color.Black
+//                )
+//            },
+//            navigationIcon = {
+//                IconButton(onClick = { }) {
+//                    Icon(
+//                        imageVector = Icons.Default.ArrowBack,
+//                        contentDescription = "Back",
+//                        tint = Color.Black
+//                    )
+//                }
+//            },
+//            colors = TopAppBarDefaults.topAppBarColors(
+//                containerColor = Color.White
+//            )
+//        )
 
         LazyColumn(
             modifier = Modifier
@@ -131,7 +137,14 @@ fun NutritrackAddScreen() {
                         selectedMealTime = it
                         expanded = false
                     },
-                    items = listOf("Breakfast", "Morning Snack", "Lunch", "Afternoon Snack", "Dinner", "Evening Snack")
+                    items = listOf(
+                        "Breakfast",
+                        "Morning Snack",
+                        "Lunch",
+                        "Afternoon Snack",
+                        "Dinner",
+                        "Evening Snack"
+                    )
                 )
             }
 
@@ -166,7 +179,30 @@ fun NutritrackAddScreen() {
 
             item {
                 Button(
-                    onClick = { },
+                    onClick = {
+                        Log.d("NutritrackAddScreen", "Button clicked")
+                        navController.navigate(Routes.NUTRITRACK_LOADING)
+
+                        viewModel.predictAndSave(
+                            foodName = foodName,
+                            mealTime = selectedMealTime,
+                            portion = portionAmount,
+                            onSuccess = {
+                                Log.d(
+                                    "NutritrackAddScreen",
+                                    "Prediction success, navigating to home"
+                                )
+                                // Must run on Main
+                                navController.navigate(Routes.NUTRITRACK) {
+                                    popUpTo(Routes.NUTRITRACK_ADD) { inclusive = true }
+                                }
+                            },
+                            onError = { e ->
+                                Log.e("NutritrackAddScreen", "Prediction failed", e)
+                                navController.popBackStack() // back from loading
+                            }
+                        )
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
