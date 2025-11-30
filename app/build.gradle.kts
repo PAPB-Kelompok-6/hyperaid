@@ -108,9 +108,14 @@ dependencies {
     implementation("androidx.credentials:credentials:1.3.0")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
-    //Material3 & Lazy grid
+    // Material3 & Lazy grid
     implementation("androidx.compose.material:material-icons-core")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.material3:material3:1.2.0")
     implementation("androidx.compose.foundation:foundation:1.7.5")
+
+    // Gemini
+    implementation("com.google.ai.client.generativeai:generativeai:0.7.0")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 }
