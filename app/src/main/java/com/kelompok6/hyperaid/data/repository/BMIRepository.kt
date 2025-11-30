@@ -22,7 +22,7 @@ class BMIRepository(
         bmiCollection.add(bmi).await()
     }
 
-    //  Get BMI by ID
+    //  Get all BMI (limit 7 dulu)
     suspend fun getBMI(): Flow<List<BMI>> = flow {
         val currentUserId = auth.currentUser?.uid ?: run {
             emit(emptyList())

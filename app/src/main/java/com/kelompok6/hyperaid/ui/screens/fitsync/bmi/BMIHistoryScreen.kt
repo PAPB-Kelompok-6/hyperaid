@@ -186,14 +186,21 @@ fun BMIHistoryScreen(navController: NavController) {
                             .fillMaxSize()
                             .padding(16.dp),
                         colors = CardDefaults.cardColors(containerColor = Color.White),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Text(
-                            text = "Kamu belum pernah cek BMI",
-                            textAlign = TextAlign.Center,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium
-                        )
+                        shape = RoundedCornerShape(16.dp),
+
+                        ) {
+                        Box(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Kamu belum pernah cek BMI",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
                     }
                 }
             } else {

@@ -31,6 +31,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.kelompok6.hyperaid.data.model.NutritionData
 import com.kelompok6.hyperaid.ui.navigation.Routes
+import com.kelompok6.hyperaid.ui.screens.fitsync.bmi.HistoryTabSelector
 
 //@Preview(showBackground = true)
 @Composable
@@ -98,11 +99,16 @@ fun NutriTrackScreen(navController: NavController, viewModel: NutritrackViewMode
         item {
             HistoryTabSelector(
                 selectedTab = historyTab,
-                onTabSelected = { historyTab = it }
+                onTabSelected = { tab ->
+                    selectedTab = tab
+                    if (tab == "History") {
+                        navController.navigate(Routes.NUTRITRACK_HISTORY)
+                    }
+                }
             )
         }
 
-        items(meals) { meal ->
+        items(meals.takeLast(1)) { meal ->
             MealHistoryCard(nutrition = meal)
         }
 
@@ -493,7 +499,10 @@ fun MealTimeCard(
 }
 
 @Composable
-fun HistoryTabSelector(selectedTab: String, onTabSelected: (String) -> Unit) {
+fun HistoryTabSelector(
+    selectedTab: String,
+    onTabSelected: (String) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

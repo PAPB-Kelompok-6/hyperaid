@@ -5,6 +5,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import com.kelompok6.hyperaid.data.model.NutritionData
 import kotlinx.coroutines.channels.awaitClose
@@ -55,7 +56,7 @@ class NutritionRepository(
 
     fun getAllNutritionData(): Flow<List<NutritionData>> = callbackFlow {
         val listener = userCollection()
-            .orderBy("date") // optional, for chronological order
+            .orderBy("date", Query.Direction.DESCENDING) // optional, for chronological order
             .addSnapshotListener { snap, _ ->
                 Log.d("NutritionRepo", "Docs found: ${snap?.documents?.size}")
                 val dataList = snap?.documents
