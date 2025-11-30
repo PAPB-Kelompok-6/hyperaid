@@ -18,7 +18,6 @@ sealed class SaveUserState {
 }
 
 data class OnboardingState(
-    val fullName: String = "",
     val languagePreference: String = "",
     val height: Double? = null,
     val weight: Double? = null,
@@ -61,29 +60,51 @@ class OnboardingViewModel(
     }
 
     fun saveAll(userId: String) {
-        val current = _state.value
-        val user = User(
-            id = userId,
-            fullName = current.fullName,
-            languagePreference = current.languagePreference.ifEmpty { "en" },
-            height = current.height,
-            weight = current.weight,
-            gender = current.gender,
-            age = current.age,
-            avatar = current.avatar,
-            address = current.address,
-            isAlcoholic = current.isAlcoholic,
-            isSmoking = current.isSmoking
-        )
-
         _saveState.value = SaveUserState.Loading
         viewModelScope.launch {
-            userRepository.saveUser(user) { result ->
-                result.onSuccess {
-                    _saveState.value = SaveUserState.Success
+            userRepository.getUser(userId) { result ->
+                result.onSuccess { existingUser ->
+                    // merge with existing user
+                    val current = _state.value
+                    val updatedUser = existingUser.copy(
+                        languagePreference = current.languagePreference.ifEmpty { "en" },
+                        height = current.height,
+                        weight = current.weight,
+                        gender = current.gender,
+                        age = current.age,
+                        avatar = current.avatar,
+                        address = current.address,
+                        isAlcoholic = current.isAlcoholic,
+                        isSmoking = current.isSmoking
+                    )
+                    saveUser(updatedUser)
                 }.onFailure { e ->
-                    _saveState.value = SaveUserState.Error(e.message ?: "Unknown error")
+                    // document not found, create new one
+                    val current = _state.value
+                    val newUser = User(
+                        id = userId,
+                        languagePreference = current.languagePreference.ifEmpty { "en" },
+                        height = current.height,
+                        weight = current.weight,
+                        gender = current.gender,
+                        age = current.age,
+                        avatar = current.avatar,
+                        address = current.address,
+                        isAlcoholic = current.isAlcoholic,
+                        isSmoking = current.isSmoking
+                    )
+                    saveUser(newUser)
                 }
+            }
+        }
+    }
+
+    private fun saveUser(user: User) {
+        userRepository.saveUser(user) { saveResult ->
+            saveResult.onSuccess {
+                _saveState.value = SaveUserState.Success
+            }.onFailure { e ->
+                _saveState.value = SaveUserState.Error(e.message ?: "Unknown error")
             }
         }
     }
